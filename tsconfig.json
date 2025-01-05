@@ -17,6 +17,8 @@
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   },
-  "include": ["src/**/*", "generateKeys.ts"],
+  "include": ["src/**/*",
+    "generateKeys.js"
+  ],
   "files": ["src/type.d.ts"]
 }

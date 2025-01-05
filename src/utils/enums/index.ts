@@ -1,13 +1,24 @@
-export enum ImageType {
-  IMAGE = 'image',
-  AVATAR = 'avatar',
-  COVER = 'cover'
-}
-
 export enum Gender {
   MALE = 'male',
   FEMALE = 'female',
   OTHER = 'other'
+}
+
+export enum ImageType {
+  AVATAR = 'AVATAR', // Ảnh đại diện của người dùng
+  COVER = 'COVER', // Ảnh bìa (cho trang cá nhân hoặc gian hàng)
+  LOGO = 'LOGO', // Logo của cửa hàng hoặc thương hiệu
+  PRODUCT = 'PRODUCT', // Ảnh sản phẩm chính
+  PRODUCT_GALLERY = 'PRODUCT_GALLERY', // Ảnh sản phẩm bổ sung (gallery)
+  CATEGORY = 'CATEGORY', // Ảnh danh mục sản phẩm
+  BANNER = 'BANNER', // Banner quảng cáo
+  PROMOTION = 'PROMOTION', // Ảnh chương trình khuyến mãi
+  BRAND = 'BRAND', // Ảnh thương hiệu
+  USER_UPLOAD = 'USER_UPLOAD', // Ảnh do người dùng tải lên (review sản phẩm)
+  BLOG = 'BLOG', // Ảnh minh họa bài blog
+  FEATURED = 'FEATURED', // Ảnh nổi bật (ví dụ: top sản phẩm, sản phẩm hot)
+  BACKGROUND = 'BACKGROUND', // Ảnh nền (cho trang hoặc popup)
+  THUMBNAIL = 'THUMBNAIL' // Ảnh thu nhỏ (thumbnail)
 }
 
 export enum TokenType {

@@ -1,6 +1,9 @@
 import { hash } from 'bcryptjs'
 import { cloneDeep, isArray, isObject, map, omit, reduce } from 'lodash'
 import { type ObjectLiteral } from 'typeorm'
+import { v7 } from 'uuid'
+import path from 'path'
+import fs from 'fs'
 
 export const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {
@@ -8,6 +11,34 @@ export const formatDate = (date: Date) => {
     minute: 'numeric',
     second: 'numeric'
   })
+}
+
+export const UPLOAD_TEMP_DIR = 'uploads'
+export const UPLOAD_TEMP_DIR_OPTIMIZE = 'uploads/optimized'
+
+export const initFolder = () => {
+  const uploadFolderPath = path.resolve(UPLOAD_TEMP_DIR)
+  const optimizeFolderPath = path.resolve(UPLOAD_TEMP_DIR_OPTIMIZE)
+  if (!fs.existsSync(uploadFolderPath)) {
+    fs.mkdirSync(uploadFolderPath, { recursive: true })
+    console.log('Created: ' + uploadFolderPath)
+  }
+  if (!fs.existsSync(optimizeFolderPath)) {
+    fs.mkdirSync(optimizeFolderPath, { recursive: true })
+    console.log('Created: ' + optimizeFolderPath)
+  }
+}
+
+export const getUsername = (fullName: string) => {
+  const arr = fullName.trim().split(' ')
+  let newName = ''
+  if (arr.length >= 2) {
+    newName = arr[0].trim() + ' ' + arr[arr.length - 1].trim()
+  } else {
+    newName = arr[0].trim()
+  }
+  newName = newName.replace(/\s/g, '_').replace(/[^a-zA-Z0-9_]/g, '')
+  return newName + '_' + v7().replace(/-/g, '').slice(9)
 }
 
 export const omitFields = <T extends ObjectLiteral>(data: T, fields: string[] = []) => {

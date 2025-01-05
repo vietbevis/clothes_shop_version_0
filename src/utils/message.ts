@@ -6,5 +6,8 @@ export const MESSAGES = {
   ACCOUNT_DELETED: 'Account is deleted',
   ACCOUNT_NOT_FOUND: 'Account not found',
   INVALID_VERIFICATION_TOKEN: 'Invalid verification token',
-  REQUEST_IN_PROGRESS: 'Request in progress. Please wait a moment'
+  REQUEST_IN_PROGRESS: 'Request in progress. Please wait a moment',
+  ROLE_NOT_FOUND: 'Role not found',
+  DEVICE_ALREADY_LOGGED_IN: 'Device already logged in',
+  ADDRESS_NOT_FOUND: 'Address not found'
 }
