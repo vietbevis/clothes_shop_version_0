@@ -14,7 +14,7 @@ export const UserRepository = AppDataSource.getRepository(User).extend({
     return this.findOne({
       where: { email },
       relations,
-      cache: { id: 'loaded_user', milliseconds: ms(envConfig.ACCESS_TOKEN_EXPIRES_IN) }
+      cache: { id: `loaded_user_${email}`, milliseconds: ms(envConfig.ACCESS_TOKEN_EXPIRES_IN) }
     })
   },
   async findByUsername(username: string, relations?: FindOptionsRelations<User>): Promise<User | null> {

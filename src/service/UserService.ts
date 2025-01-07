@@ -3,12 +3,12 @@ import { hashPassword, omitFields } from '@/utils/helper'
 import { UserRepository } from '@/repository/UserRepository'
 import { BadRequestError } from '@/core/ErrorResponse'
 import { ImageType } from '@/utils/enums'
-import { Image } from '@/model/Image'
+import { UpdateProfileType } from '@/validation/CommonSchema'
+import { ProfileRepository } from '@/repository/ProfileRepository'
+import { MESSAGES } from '@/utils/message'
 import ImageRepository from '@/repository/ImageRepository'
 
 class UserService {
-  constructor() {}
-
   async createUser(userData: Partial<User>): Promise<User> {
     const { username, email, password, fullName } = userData
 
@@ -48,20 +48,10 @@ class UserService {
     return omitFields(result, [])
   }
 
-  async changeImageProfile(user: User, body: Image[], type: ImageType.AVATAR | ImageType.COVER) {
-    if (type === ImageType.AVATAR) {
-      user.avatar = body[0]
-    } else if (type === ImageType.COVER) {
-      user.coverPhoto = body[0]
-    }
+  async changeImageProfile(user: User, filename: string, type: ImageType) {
+    const targetImage = await ImageRepository.findByFileNameAndUserId(filename, user.id)
 
-    const result = await UserRepository.save(user)
-    const res = type === ImageType.AVATAR ? result.avatar : result.coverPhoto
-    return omitFields(res, ['userId', 'user'])
-  }
-
-  async changeImageProfileLink(user: User, filename: string, type: ImageType) {
-    const targetImage = await this.findOrCreateImage(user, filename, type)
+    if (!targetImage) throw new BadRequestError('Image not found')
 
     if (type === ImageType.AVATAR) {
       user.avatar = targetImage
@@ -75,36 +65,20 @@ class UserService {
     return omitFields(res, ['userId', 'user'])
   }
 
-  async findOrCreateImage(user: User, filename: string, type: ImageType) {
-    // Lấy tất cả ảnh theo fileName và userId
-    const imgs = await ImageRepository.findByFileNameAndUserId(filename, user.id)
-    if (!imgs || imgs.length === 0) {
-      throw new BadRequestError('Image not found')
-    }
+  async updateProfile(user: User, data: UpdateProfileType) {
+    const profile = await ProfileRepository.findByUserId(user.id)
+    if (!profile) throw new BadRequestError(MESSAGES.ACCOUNT_NOT_FOUND)
+    const updatedUser = ProfileRepository.merge(profile, data)
+    const result = await ProfileRepository.save(updatedUser)
+    return omitFields(result, [])
+  }
 
-    // Tìm ảnh có type trùng khớp với yêu cầu
-    const existingImageWithType = imgs.find((img) => img.type === type)
-
-    let targetImage: Image
-
-    if (!existingImageWithType) {
-      // Nếu không có ảnh với type mong muốn, tạo mới dựa trên ảnh đầu tiên
-      const newImage = ImageRepository.create({
-        fileName: imgs[0].fileName, // Dùng fileName của ảnh gốc
-        width: imgs[0].width,
-        height: imgs[0].height,
-        type, // Gán type mới
-        user // Liên kết với user hiện tại
-      })
-
-      // Lưu ảnh mới vào database
-      targetImage = await ImageRepository.save(newImage)
-    } else {
-      // Nếu đã có ảnh với type mong muốn, sử dụng ảnh đó
-      targetImage = existingImageWithType
-    }
-
-    return targetImage
+  async hideProfile(user: User) {
+    const profile = await ProfileRepository.findByUserId(user.id)
+    if (!profile) throw new BadRequestError(MESSAGES.ACCOUNT_NOT_FOUND)
+    profile.isPublic = !profile.isPublic
+    const result = await ProfileRepository.save(profile)
+    omitFields(result, [])
   }
 }
 

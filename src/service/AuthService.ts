@@ -225,8 +225,8 @@ class AuthService {
     }
   }
 
-  async sendTokenForgotPassword(params: EmailParamsType): Promise<boolean> {
-    const { email } = params
+  async sendTokenForgotPassword(body: EmailParamsType): Promise<boolean> {
+    const { email } = body
 
     const user = await UserRepository.findByEmail(email)
     if (!user || user.status !== UserStatus.VERIFIED) {

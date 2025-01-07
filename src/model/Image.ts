@@ -1,12 +1,10 @@
-import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { User } from './User'
-import { ImageType } from '@/utils/enums'
 import { AbstractModel } from '@/model/base/AbstractModel'
 
 @Entity('tbl_image')
-@Unique(['fileName', 'type', 'userId'])
 export class Image extends AbstractModel {
-  @Column()
+  @Column({ name: 'file_name', unique: true })
   fileName!: string
 
   @Column()
@@ -14,9 +12,6 @@ export class Image extends AbstractModel {
 
   @Column()
   height!: number
-
-  @Column({ type: 'enum', enum: ImageType, nullable: false })
-  type!: string
 
   @Column({ name: 'user_id', select: false })
   userId!: string

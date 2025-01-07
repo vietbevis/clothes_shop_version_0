@@ -1,12 +1,12 @@
 import { SendEmailType } from '@/validation/CommonSchema'
 import apiClient from '@/config/axiosClient'
-import { logError } from '@/utils/log'
+import { logError, logInfo } from '@/utils/log'
 
 class EmailService {
   async sendEmail(body: SendEmailType) {
     try {
-      const result = await apiClient.post('/send-email-verify-account', body)
-      console.log(result.data)
+      await apiClient.post('/send-email-verify-account', body)
+      logInfo('Email sent successfully')
     } catch (error) {
       logError('Error when sending email: ' + error)
     }

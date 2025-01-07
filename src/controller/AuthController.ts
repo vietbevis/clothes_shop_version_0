@@ -20,7 +20,7 @@ class AuthController {
   }
 
   async sendEmailForgotPassword(req: Request<EmailParamsType>, res: Response) {
-    const result = await authService.sendTokenForgotPassword(req.params)
+    const result = await authService.sendTokenForgotPassword(req.body)
     new OkResponse('Email verified successfully', result).send(res)
   }
 

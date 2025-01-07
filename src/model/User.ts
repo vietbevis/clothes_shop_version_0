@@ -1,5 +1,5 @@
 import { AbstractModel } from '@/model/base/AbstractModel'
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne } from 'typeorm'
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm'
 import { Role } from '@/model/Role'
 import { UserStatus } from '@/utils/enums'
 import { compare } from 'bcryptjs'
@@ -7,6 +7,7 @@ import { UserDevice } from '@/model/UserDevice'
 import { Address } from '@/model/Address'
 import { Profile } from '@/model/Profile'
 import { Image } from '@/model/Image'
+import { Shop } from '@/model/Shop'
 
 @Entity('tbl_user')
 export class User extends AbstractModel {
@@ -39,6 +40,13 @@ export class User extends AbstractModel {
   @ManyToMany(() => Role)
   @JoinTable()
   roles!: Role[]
+
+  @OneToOne(() => Shop, (shop) => shop.owner)
+  shop!: Shop
+
+  @ManyToOne(() => Shop, (shop) => shop.staff)
+  @JoinColumn({ name: 'shop_id' })
+  staffIn!: string
 
   @OneToMany(() => UserDevice, (device) => device.user)
   devices!: UserDevice[]

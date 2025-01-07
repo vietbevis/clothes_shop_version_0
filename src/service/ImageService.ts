@@ -1,24 +1,33 @@
 import path from 'path'
 import sharp from 'sharp'
 import fs from 'fs/promises'
-import { UPLOAD_TEMP_DIR_OPTIMIZE } from '@/utils/helper'
+import { omitFields, UPLOAD_TEMP_DIR_OPTIMIZE } from '@/utils/helper'
 import { ImageType } from '@/utils/enums'
 import { ProcessedImage } from '@/utils/types'
 import { User } from '@/model/User'
 import { BUCKET_NAME, minioClient } from '@/config/minio'
 import ImageRepository from '@/repository/ImageRepository'
+import { Request } from 'express'
+import { PaginationUtils } from '@/utils/PaginationUtils'
 
-class UploadFileService {
+class ImageService {
   async uploadImages(uploadedFiles: Express.Multer.File[], type: ImageType, user: User) {
     const processedImages = await Promise.all(uploadedFiles.map(this.processImage))
     const newImages = processedImages.map((image) =>
       ImageRepository.create({
         ...image,
-        type,
         user
       })
     )
     return ImageRepository.save(newImages)
+  }
+
+  async getImage(req: Request, username: string) {
+    const paginationOptions = PaginationUtils.extractPaginationOptions(req, 'createdAt')
+    const paginatedUsers = await PaginationUtils.paginate(ImageRepository, paginationOptions, {
+      user: { username }
+    })
+    return omitFields(paginatedUsers, ['userId', 'user'])
   }
 
   private async processImage(file: Express.Multer.File): Promise<ProcessedImage> {
@@ -57,5 +66,5 @@ class UploadFileService {
   }
 }
 
-const uploadFileService = new UploadFileService()
-export default uploadFileService
+const imageService = new ImageService()
+export default imageService

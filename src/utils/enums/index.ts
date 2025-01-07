@@ -4,6 +4,16 @@ export enum Gender {
   OTHER = 'other'
 }
 
+export enum ESort {
+  ASC = 'ASC',
+  DESC = 'DESC'
+}
+
+export enum AttributeType {
+  DISPLAY = 'display', // For display only attributes
+  VARIANT = 'variant' // For purchase option attributes
+}
+
 export enum ImageType {
   AVATAR = 'AVATAR', // Ảnh đại diện của người dùng
   COVER = 'COVER', // Ảnh bìa (cho trang cá nhân hoặc gian hàng)
@@ -37,6 +47,21 @@ export enum UserStatus {
   VERIFIED = 'verified',
   BLOCKED = 'blocked',
   DELETED = 'deleted'
+}
+
+export enum ShopStatus {
+  BLOCKED = 'blocked',
+  DELETED = 'deleted',
+  CLOSED = 'closed',
+  OPEN = 'open'
+}
+
+export enum ProductStatus {
+  AVAILABLE = 'available', // Sản phẩm còn hàng và có thể mua
+  SOLD_OUT = 'sold_out', // Sản phẩm đã hết hàng
+  COMING_SOON = 'coming_soon', // Sản phẩm sắp ra mắt
+  DISCONTINUED = 'discontinued', // Sản phẩm đã ngừng sản xuất hoặc bán
+  PREORDER = 'preorder' // Sản phẩm đang ở trạng thái đặt trước
 }
 
 export type LoginResponseType = {

@@ -11,6 +11,12 @@ class AddressController {
     new OkResponse('Address data', result).send(res)
   }
 
+  async getAddressById(req: Request<IdParamsType>, res: Response) {
+    if (!req.user) throw new UnauthorizedError()
+    const result = await addressService.getAddressById(req.user, req.params.id)
+    new OkResponse('Address data', result).send(res)
+  }
+
   async setAddressDefault(req: Request<IdParamsType>, res: Response) {
     if (!req.user) throw new UnauthorizedError()
     const result = await addressService.setAddressDefault(req.user, req.params.id)

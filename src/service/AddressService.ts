@@ -11,6 +11,12 @@ class AddressService {
     return omitFields(result, [])
   }
 
+  async getAddressById(user: User, addressId: string) {
+    const result = await AddressRepository.findByIdAndUserId(addressId, user.id)
+    if (!result) throw new BadRequestError(MESSAGES.ADDRESS_NOT_FOUND)
+    return omitFields(result, ['user', 'userId'])
+  }
+
   async addAddress(user: User, addressData: AddressBodyType) {
     const countAddress = await AddressRepository.countByUserId(user.id)
     if (countAddress >= 10) throw new BadRequestError('Address limit reached')

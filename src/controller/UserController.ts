@@ -16,21 +16,24 @@ class UserController {
     new OkResponse('User data', result).send(res)
   }
 
-  async changeImageProfile(req: Request<ChangeImageProfileParamsType>, res: Response) {
+  async changeImageProfile(req: Request, res: Response) {
     if (!req.user) throw new UnauthorizedError()
-
-    const type = req.params.type
-    const result = await userService.changeImageProfile(req.user, req.filesUploaded, type)
-    new OkResponse('Image profile changed', result).send(res)
+    const type = (req.query as ChangeImageProfileParamsType).type
+    const filename = req.body.filename as string
+    const result = await userService.changeImageProfile(req.user, filename, type)
+    new OkResponse('Image profile changed', [result]).send(res)
   }
 
-  async changeImageProfileLink(req: Request<ChangeImageProfileParamsType>, res: Response) {
+  async updateProfile(req: Request, res: Response) {
     if (!req.user) throw new UnauthorizedError()
+    const result = await userService.updateProfile(req.user, req.body)
+    new OkResponse('Profile updated', result).send(res)
+  }
 
-    const type = req.params.type
-    const filename = req.query.filename as string
-    const result = await userService.changeImageProfileLink(req.user, filename, type)
-    new OkResponse('Image profile changed', result).send(res)
+  async hideProfile(req: Request, res: Response) {
+    if (!req.user) throw new UnauthorizedError()
+    await userService.hideProfile(req.user)
+    new OkResponse('Profile hidden').send(res)
   }
 }
 

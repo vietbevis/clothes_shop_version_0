@@ -4,6 +4,7 @@ import { type ObjectLiteral } from 'typeorm'
 import { v7 } from 'uuid'
 import path from 'path'
 import fs from 'fs'
+import slugify from 'slugify'
 
 export const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {
@@ -29,6 +30,15 @@ export const initFolder = () => {
   }
 }
 
+export const getSlug = (str: string): string => {
+  const newStr = slugify(str, {
+    lower: true,
+    strict: true,
+    locale: 'vi'
+  })
+  return newStr + '-' + v7().replace(/-/g, '').slice(9)
+}
+
 export const getUsername = (fullName: string) => {
   const arr = fullName.trim().split(' ')
   let newName = ''
@@ -51,6 +61,8 @@ export const omitFields = <T extends ObjectLiteral>(data: T, fields: string[] = 
     'privateKey',
     'publicKey',
     'status',
+    'type',
+    'isPublic',
     ...fields
   ]
 

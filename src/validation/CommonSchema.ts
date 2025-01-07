@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ImageType } from '@/utils/enums'
+import { ESort, Gender, ImageType } from '@/utils/enums'
 
 export const EmailSchema = z.string({ message: 'Email can not be blank' }).email({
   message: 'Invalid email address.'
@@ -59,11 +59,59 @@ export const ChangeImageProfileParamsSchema = z
 
 export type ChangeImageProfileParamsType = z.infer<typeof ChangeImageProfileParamsSchema>
 
-export const FilenameQuerySchema = z
+export const FilenameBodySchema = z
   .object({
     filename: z.string()
   })
   .strict()
   .strip()
 
-export type FilenameQueryType = z.infer<typeof FilenameQuerySchema>
+export type FilenameBodyType = z.infer<typeof FilenameBodySchema>
+
+export const PaginationQuerySchema = z
+  .object({
+    page: z
+      .string()
+      .default('1')
+      .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+        message: 'Page must be a positive number'
+      })
+      .transform((val) => Number(val)),
+    limit: z
+      .string()
+      .default('24')
+      .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+        message: 'Limit must be a positive number'
+      })
+      .transform((val) => Number(val)),
+    sortBy: z.enum(['createdAt', 'updatedAt']).optional(),
+    sortDirection: z.nativeEnum(ESort).optional()
+  })
+  .strict()
+  .strip()
+
+export type PaginationQueryType = z.infer<typeof PaginationQuerySchema>
+
+export const GetImagesQuerySchema = PaginationQuerySchema.extend({
+  type: z.nativeEnum(ImageType).optional()
+})
+  .strict()
+  .strip()
+
+export type GetImageQueryType = z.infer<typeof GetImagesQuerySchema>
+
+export const UpdateProfileSchema = z
+  .object({
+    gender: z.nativeEnum(Gender).optional(),
+    dateOfBirth: z.string().date().optional(),
+    bio: z.string().optional(),
+    phone: phoneNumberSchema.optional(),
+    website: z.string().url().optional(),
+    facebookUrl: z.string().url().optional(),
+    twitterUrl: z.string().url().optional(),
+    instagramUrl: z.string().url().optional()
+  })
+  .strict()
+  .strip()
+
+export type UpdateProfileType = z.infer<typeof UpdateProfileSchema>
