@@ -5,6 +5,7 @@ import UserRoute from '@/route/v1/UserRoute'
 import AddressRoute from '@/route/v1/AddressRoute'
 import CategoryRoute from '@/route/v1/CategoryRoute'
 import ImageRoute from '@/route/v1/ImageRoute'
+import ShopRoute from '@/route/v1/ShopRoute'
 
 const routes_v1 = express.Router()
 
@@ -13,5 +14,6 @@ routes_v1.use('/users', UserRoute)
 routes_v1.use('/address', AddressRoute)
 routes_v1.use('/categories', CategoryRoute)
 routes_v1.use('/images', ImageRoute)
+routes_v1.use('/shops', ShopRoute)
 
 export default routes_v1

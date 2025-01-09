@@ -60,7 +60,6 @@ export const omitFields = <T extends ObjectLiteral>(data: T, fields: string[] = 
     'roles',
     'privateKey',
     'publicKey',
-    'status',
     'type',
     'isPublic',
     ...fields

@@ -45,8 +45,8 @@ export class User extends AbstractModel {
   shop!: Shop
 
   @ManyToOne(() => Shop, (shop) => shop.staff)
-  @JoinColumn({ name: 'shop_id' })
-  staffIn!: string
+  @JoinColumn({ name: 'staff_in_shop_id' })
+  staffIn!: Shop
 
   @OneToMany(() => UserDevice, (device) => device.user)
   devices!: UserDevice[]

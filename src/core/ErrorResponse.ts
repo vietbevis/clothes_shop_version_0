@@ -58,7 +58,17 @@ class ValidationError extends ErrorResponse {
   }
 }
 
+class EntityError {
+  field: string
+  message: string
+  constructor(field: string, message: string) {
+    this.field = field
+    this.message = message
+  }
+}
+
 export {
+  EntityError,
   BadRequestError,
   ErrorResponse,
   ForbiddenError,

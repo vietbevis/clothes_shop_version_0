@@ -1,5 +1,5 @@
 import { Request } from 'express'
-import { FindOptionsWhere, ObjectLiteral, Repository } from 'typeorm'
+import { FindOptionsRelations, FindOptionsWhere, ObjectLiteral, Repository } from 'typeorm'
 
 export type SortDirection = 'ASC' | 'DESC'
 
@@ -55,7 +55,8 @@ export class PaginationUtils {
   static async paginate<T extends ObjectLiteral>(
     repository: Repository<T>,
     options: PaginationOptions<T>,
-    whereConditions: FindOptionsWhere<T>
+    whereConditions: FindOptionsWhere<T>,
+    relations?: FindOptionsRelations<T>
   ): Promise<PaginatedResult<T>> {
     const { page = this.DEFAULT_PAGE, limit = this.DEFAULT_PAGE_SIZE, sortBy, sortDirection = 'ASC' } = options
 
@@ -64,6 +65,7 @@ export class PaginationUtils {
 
     const [items, totalItems] = await repository.findAndCount({
       where: whereConditions,
+      relations,
       order,
       skip,
       take: limit

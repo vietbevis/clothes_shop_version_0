@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ESort, Gender, ImageType } from '@/utils/enums'
+import { ApproveStatus, ESort, Gender, ImageType } from '@/utils/enums'
 
 export const EmailSchema = z.string({ message: 'Email can not be blank' }).email({
   message: 'Invalid email address.'
@@ -115,3 +115,36 @@ export const UpdateProfileSchema = z
   .strip()
 
 export type UpdateProfileType = z.infer<typeof UpdateProfileSchema>
+
+export const DepthQuerySchema = z
+  .object({
+    depth: z
+      .string()
+      .default('1')
+      .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+        message: 'Limit must be a positive number'
+      })
+      .transform((val) => Number(val))
+  })
+  .strict()
+  .strip()
+
+export type DepthQueryType = z.infer<typeof DepthQuerySchema>
+
+export const SlugParamsSchema = z
+  .object({
+    slug: z.string().nonempty()
+  })
+  .strict()
+  .strip()
+
+export type SlugParamsType = z.infer<typeof SlugParamsSchema>
+
+export const ApproveQuerySchema = z
+  .object({
+    status: z.nativeEnum(ApproveStatus)
+  })
+  .strict()
+  .strip()
+
+export type ApproveQueryType = z.infer<typeof ApproveQuerySchema>

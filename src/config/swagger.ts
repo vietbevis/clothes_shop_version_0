@@ -484,6 +484,20 @@ export const options: swaggerJSDoc.Options = {
           },
           required: ['name']
         },
+        UpdateCategoryRequest: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              example: 'Category Name'
+            },
+            imageFilename: {
+              type: 'string',
+              example: 'filename.webp'
+            }
+          },
+          required: ['name']
+        },
         CategorySchema: {
           type: 'object',
           properties: {
@@ -538,6 +552,260 @@ export const options: swaggerJSDoc.Options = {
                     },
                     parent: {
                       $ref: '#/components/schemas/CategorySchema'
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        UpdateCategoryResponse: {
+          allOf: [
+            { $ref: '#/components/schemas/BaseResponse' },
+            {
+              type: 'object',
+              properties: {
+                data: {
+                  $ref: '#/components/schemas/CategorySchema'
+                }
+              }
+            }
+          ]
+        },
+        GetCategoriesResponse: {
+          allOf: [
+            { $ref: '#/components/schemas/BaseResponse' },
+            {
+              type: 'object',
+              properties: {
+                data: {
+                  type: 'array',
+                  items: {
+                    $ref: '#/components/schemas/CategorySchema'
+                  }
+                }
+              }
+            }
+          ]
+        },
+        GetCategoryResponse: {
+          allOf: [
+            { $ref: '#/components/schemas/BaseResponse' },
+            {
+              type: 'object',
+              properties: {
+                data: {
+                  $ref: '#/components/schemas/CategorySchema'
+                }
+              }
+            }
+          ]
+        },
+        CreateShopRequest: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              example: 'Shop Name'
+            },
+            slogan: {
+              type: 'string',
+              example: 'Shop Slogan'
+            },
+            address: {
+              $ref: '#/components/schemas/UpdateAddressShopRequest'
+            },
+            description: {
+              type: 'string',
+              example: 'Shop Description'
+            },
+            logo: {
+              type: 'string',
+              example: 'filename.webp'
+            },
+            banner: {
+              type: 'string',
+              example: 'filename.webp'
+            }
+          },
+          required: ['name', 'slogan', 'address', 'description', 'logo']
+        },
+        CreateShopResponse: {
+          allOf: [
+            { $ref: '#/components/schemas/BaseResponse' },
+            {
+              type: 'object',
+              properties: {
+                data: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'string',
+                      example: '1'
+                    },
+                    name: {
+                      type: 'string',
+                      example: 'Shop Name'
+                    },
+                    slogan: {
+                      type: 'string',
+                      example: 'Shop Slogan'
+                    },
+                    slug: {
+                      type: 'string',
+                      example: 'shop-name'
+                    },
+                    address: {
+                      $ref: '#/components/schemas/UpdateAddressShopRequest'
+                    },
+                    description: {
+                      type: 'string',
+                      example: 'Shop Description'
+                    },
+                    logo: {
+                      $ref: '#/components/schemas/ImageSchema'
+                    },
+                    banner: {
+                      $ref: '#/components/schemas/ImageSchema'
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        UpdateShopRequest: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              example: 'Shop Name'
+            },
+            slogan: {
+              type: 'string',
+              example: 'Shop Slogan'
+            },
+            description: {
+              type: 'string',
+              example: 'Shop Description'
+            },
+            logo: {
+              type: 'string',
+              example: 'filename.webp'
+            },
+            banner: {
+              type: 'string',
+              example: 'filename.webp'
+            }
+          }
+        },
+        UpdateShopResponse: {
+          allOf: [
+            { $ref: '#/components/schemas/BaseResponse' },
+            {
+              type: 'object',
+              properties: {
+                data: {
+                  $ref: '#/components/schemas/ShopSchema'
+                }
+              }
+            }
+          ]
+        },
+        ShopSchema: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              example: '1'
+            },
+            name: {
+              type: 'string',
+              example: 'Shop Name'
+            },
+            slogan: {
+              type: 'string',
+              example: 'Shop Slogan'
+            },
+            slug: {
+              type: 'string',
+              example: 'shop-name'
+            },
+            address: {
+              $ref: '#/components/schemas/AddressSchema'
+            },
+            description: {
+              type: 'string',
+              example: 'Shop Description'
+            },
+            logo: {
+              $ref: '#/components/schemas/ImageSchema'
+            },
+            banner: {
+              $ref: '#/components/schemas/ImageSchema'
+            }
+          }
+        },
+        UpdateAddressShopRequest: {
+          type: 'object',
+          properties: {
+            streetNumber: {
+              type: 'string',
+              example: '123'
+            },
+            streetName: {
+              type: 'string',
+              example: 'Street'
+            },
+            ward: {
+              type: 'string',
+              example: 'Ward'
+            },
+            district: {
+              type: 'string',
+              example: 'District'
+            },
+            province: {
+              type: 'string',
+              example: 'Province'
+            },
+            note: {
+              type: 'string',
+              example: 'Near the school'
+            }
+          },
+          required: ['streetNumber', 'streetName', 'ward', 'district', 'province']
+        },
+        ShopResponse: {
+          allOf: [
+            { $ref: '#/components/schemas/BaseResponse' },
+            {
+              type: 'object',
+              properties: {
+                data: {
+                  $ref: '#/components/schemas/ShopSchema'
+                }
+              }
+            }
+          ]
+        },
+        ShopsResponse: {
+          allOf: [
+            { $ref: '#/components/schemas/BaseResponse' },
+            {
+              type: 'object',
+              properties: {
+                data: {
+                  type: 'object',
+                  properties: {
+                    items: {
+                      type: 'array',
+                      items: {
+                        $ref: '#/components/schemas/ShopSchema'
+                      }
+                    },
+                    meta: {
+                      $ref: '#/components/schemas/MetaSchema'
                     }
                   }
                 }

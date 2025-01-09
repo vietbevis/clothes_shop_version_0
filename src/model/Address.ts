@@ -32,7 +32,7 @@ export class Address extends AbstractModel {
   isDefault!: boolean
 
   @Index()
-  @Column({ name: 'user_id', select: false })
+  @Column({ name: 'user_id', select: false, nullable: true })
   userId!: string
 
   @ManyToOne(() => User, (user) => user.addresses)

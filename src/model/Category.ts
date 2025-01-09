@@ -22,10 +22,10 @@ export class Category extends AbstractModel {
   @Column({ nullable: false, unique: true })
   slug!: string
 
-  @TreeChildren()
+  @TreeChildren({ cascade: true })
   children!: Category[]
 
-  @TreeParent()
+  @TreeParent({ onDelete: 'CASCADE' })
   parent!: Category | null
 
   @TreeLevelColumn()

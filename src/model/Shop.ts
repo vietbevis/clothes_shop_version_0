@@ -1,29 +1,38 @@
 import { AbstractModel } from '@/model/base/AbstractModel'
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, VirtualColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, Unique, VirtualColumn } from 'typeorm'
 import { User } from '@/model/User'
 import { Product } from '@/model/Product'
 import { Image } from '@/model/Image'
 import { ShopStatus } from '@/utils/enums'
+import { Address } from '@/model/Address'
 
 @Entity('tbl_shop')
+@Unique(['owner'])
 export class Shop extends AbstractModel {
-  @Column()
+  @Column({ nullable: false, type: 'nvarchar' })
   name!: string
 
   @Column({ nullable: false })
+  slogan!: string
+
+  @Column({ nullable: false, unique: true })
   slug!: string
 
-  @Column()
+  @ManyToOne(() => Address, { eager: true, nullable: false, cascade: true })
+  @JoinColumn({ name: 'address_id' })
+  address!: Address
+
+  @Column({ type: 'text', nullable: false })
   description!: string
 
   @VirtualColumn({ query: (shop) => `SELECT COUNT(id) FROM tbl_product WHERE shop_id = ${shop}.id` })
   totalProducts!: number
 
-  @Column({ type: 'enum', enum: ShopStatus, default: ShopStatus.OPEN })
+  @Column({ type: 'enum', enum: ShopStatus, default: ShopStatus.PENDING })
   status!: ShopStatus
 
   @OneToOne(() => User, (user) => user.shop)
-  @JoinColumn()
+  @JoinColumn({ name: 'owner_id' })
   owner!: User
 
   @OneToMany(() => User, (user) => user.staffIn)
@@ -32,11 +41,11 @@ export class Shop extends AbstractModel {
   @OneToMany(() => Product, (product) => product.shop)
   products!: Product[]
 
-  @OneToOne(() => Image, { eager: true })
-  @JoinColumn()
+  @ManyToOne(() => Image, { eager: true })
+  @JoinColumn({ name: 'logo_id' })
   logo!: Image
 
-  @OneToOne(() => Image, { eager: true })
-  @JoinColumn()
+  @ManyToOne(() => Image, { eager: true })
+  @JoinColumn({ name: 'banner_id' })
   banner!: Image
 }

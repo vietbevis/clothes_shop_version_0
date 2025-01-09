@@ -53,7 +53,13 @@ export enum ShopStatus {
   BLOCKED = 'blocked',
   DELETED = 'deleted',
   CLOSED = 'closed',
-  OPEN = 'open'
+  OPEN = 'open',
+  PENDING = 'pending'
+}
+
+export enum ApproveStatus {
+  APPROVED = 'approved',
+  REJECTED = 'rejected'
 }
 
 export enum ProductStatus {
