@@ -1,5 +1,5 @@
 import { AbstractModel } from '@/model/base/AbstractModel'
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, VirtualColumn } from 'typeorm'
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm'
 import { Category } from '@/model/Category'
 import { ProductAttribute } from '@/model/ProductAttribute'
 import { Comment } from '@/model/Comment'
@@ -20,11 +20,6 @@ export class Product extends AbstractModel {
   @ManyToOne(() => Image, { eager: true })
   @JoinColumn({ name: 'thumbnail' })
   thumbnail!: Image
-
-  @VirtualColumn({
-    query: (alias) => `SELECT COALESCE(MIN(price), 0) FROM tbl_product_variant WHERE product_id = ${alias}.id`
-  })
-  price!: number
 
   @ManyToMany(() => Image)
   @JoinTable()

@@ -9,6 +9,7 @@ import { BUCKET_NAME, minioClient } from '@/config/minio'
 import ImageRepository from '@/repository/ImageRepository'
 import { Request } from 'express'
 import { PaginationUtils } from '@/utils/PaginationUtils'
+import { BadRequestError } from '@/core/ErrorResponse'
 
 class ImageService {
   async uploadImages(uploadedFiles: Express.Multer.File[], type: ImageType, user: User) {
@@ -20,6 +21,23 @@ class ImageService {
       })
     )
     return ImageRepository.save(newImages)
+  }
+
+  async findImageByFilenamesOrFail(filename: string | string[]) {
+    if (filename instanceof Array) {
+      const imagesReq = new Set(filename)
+      const images = await ImageRepository.findByFilenames([...imagesReq])
+      if (images.length !== imagesReq.size) {
+        throw new BadRequestError('Image not found')
+      }
+      return images
+    }
+
+    const image = await ImageRepository.findByFileName(filename)
+    if (!image) {
+      throw new BadRequestError('Image not found')
+    }
+    return image
   }
 
   async getImage(req: Request, username: string) {

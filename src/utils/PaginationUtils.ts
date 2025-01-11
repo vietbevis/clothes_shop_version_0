@@ -26,7 +26,7 @@ export interface PaginatedResult<T> {
 
 export class PaginationUtils {
   private static readonly DEFAULT_PAGE = 1
-  private static readonly DEFAULT_PAGE_SIZE = 10
+  private static readonly DEFAULT_PAGE_SIZE = 24
   private static readonly MAX_PAGE_SIZE = 100
 
   /**

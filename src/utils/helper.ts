@@ -5,6 +5,7 @@ import { v7 } from 'uuid'
 import path from 'path'
 import fs from 'fs'
 import slugify from 'slugify'
+import { Product } from '@/model/Product'
 
 export const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {
@@ -87,3 +88,76 @@ export const omitFields = <T extends ObjectLiteral>(data: T, fields: string[] = 
 
 const saltRounds = 10
 export const hashPassword = async (password: string) => hash(password, saltRounds)
+
+export function serializeProduct(product: Product) {
+  const transformedProduct = {
+    id: product.id,
+    name: product.name,
+    slug: product.slug,
+    description: product.description,
+    price: getLowestInStockPrice(product),
+    thumbnail: product.thumbnail,
+    images: product.images,
+    category: product.category,
+    status: product.status,
+    attributes: product.attributes.map((attr) => ({
+      name: attr.name,
+      value: attr.value.value
+    })),
+    variants: product.variants.map((variant) => {
+      return {
+        id: variant.id,
+        sku: variant.sku,
+        price: variant.price,
+        oldPrice: variant.oldPrice,
+        stock: variant.stock,
+        options: variant.options.map((option) => ({
+          variantName: option.variant.name,
+          value: option.value,
+          imageFilename: option.image
+        }))
+      }
+    }),
+    variantGroups: getGroupedVariantOptions(product)
+  }
+
+  return omitFields(transformedProduct)
+}
+
+const getGroupedVariantOptions = (product: Product) => {
+  // Create a Map for better performance with object keys
+  const variantGroups = new Map<string, Set<string>>()
+
+  // Process each variant's options
+  for (const variant of product.variants) {
+    for (const option of variant.options) {
+      const variantName = option.variant.name
+
+      // Get or create Set for this variant type
+      if (!variantGroups.has(variantName)) {
+        variantGroups.set(variantName, new Set())
+      }
+
+      // Add the option value
+      variantGroups.get(variantName)!.add(option.value)
+    }
+  }
+
+  // Convert to final array format
+  return Array.from(variantGroups.entries()).map(([name, options]) => ({
+    name,
+    options: Array.from(options)
+  }))
+}
+
+export const getLowestInStockPrice = (product: Product) => {
+  let lowestPrice = Infinity
+
+  for (const variant of product.variants) {
+    if (variant.stock > 0 && variant.price < lowestPrice) {
+      lowestPrice = variant.price
+    }
+  }
+
+  return lowestPrice === Infinity ? 0 : parseFloat(lowestPrice + '').toFixed(2)
+}

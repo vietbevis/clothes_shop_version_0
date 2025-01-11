@@ -9,11 +9,6 @@ export enum ESort {
   DESC = 'DESC'
 }
 
-export enum AttributeType {
-  DISPLAY = 'display', // For display only attributes
-  VARIANT = 'variant' // For purchase option attributes
-}
-
 export enum ImageType {
   AVATAR = 'AVATAR', // Ảnh đại diện của người dùng
   COVER = 'COVER', // Ảnh bìa (cho trang cá nhân hoặc gian hàng)

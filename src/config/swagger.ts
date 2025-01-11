@@ -812,6 +812,292 @@ export const options: swaggerJSDoc.Options = {
               }
             }
           ]
+        },
+        CreateProductRequest: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string',
+              example: 'Product Name'
+            },
+            description: {
+              type: 'string',
+              example: 'Product Description'
+            },
+            categoryId: {
+              type: 'string',
+              example: '019450da-5dcb-751c-9a19-aa53d375e819'
+            },
+            attributes: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: {
+                    type: 'string',
+                    example: 'Size'
+                  },
+                  value: {
+                    type: 'string',
+                    example: 'XL'
+                  }
+                }
+              }
+            },
+            variants: {
+              type: 'object',
+              properties: {
+                sku: {
+                  type: 'string',
+                  example: 'SKU123'
+                },
+                price: {
+                  type: 'float',
+                  example: 100.0
+                },
+                oldPrice: {
+                  type: 'float',
+                  example: 100.0
+                },
+                stock: {
+                  type: 'integer',
+                  example: 10
+                },
+                options: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      variantName: {
+                        type: 'string',
+                        example: 'Color'
+                      },
+                      value: {
+                        type: 'string',
+                        example: 'Red'
+                      },
+                      imageFilename: {
+                        type: 'string',
+                        example: 'filename.webp'
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            thumbnail: {
+              type: 'string',
+              example: 'filename.webp'
+            },
+            images: {
+              type: 'array',
+              items: {
+                type: 'string',
+                example: 'filename.webp'
+              }
+            },
+            status: {
+              type: 'enum',
+              enum: ['available', 'sold_out', 'coming_soon', 'discontinued', 'preorder'],
+              example: 'available'
+            }
+          },
+          required: [
+            'name',
+            'description',
+            'categoryId',
+            'shopId',
+            'images',
+            'attributes',
+            'variants',
+            'thumbnail',
+            'thumbnail'
+          ]
+        },
+        ProductResponse: {
+          allOf: [
+            { $ref: '#/components/schemas/BaseResponse' },
+            {
+              type: 'object',
+              properties: {
+                data: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'string',
+                      example: '1'
+                    },
+                    price: {
+                      type: 'float',
+                      example: 100.0
+                    },
+                    name: {
+                      type: 'string',
+                      example: 'Product Name'
+                    },
+                    slug: {
+                      type: 'string',
+                      example: 'product-name'
+                    },
+                    thumbnail: {
+                      $ref: '#/components/schemas/ImageSchema'
+                    },
+                    images: {
+                      type: 'array',
+                      items: {
+                        $ref: '#/components/schemas/ImageSchema'
+                      }
+                    },
+                    description: {
+                      type: 'string',
+                      example: 'Product Description'
+                    },
+                    category: {
+                      $ref: '#/components/schemas/CategorySchema'
+                    },
+                    status: {
+                      type: 'string',
+                      example: 'available'
+                    },
+                    attributes: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          name: {
+                            type: 'string',
+                            example: 'Size'
+                          },
+                          value: {
+                            type: 'string',
+                            example: 'XL'
+                          }
+                        }
+                      }
+                    },
+                    variants: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          sku: {
+                            type: 'string',
+                            example: 'SKU123'
+                          },
+                          price: {
+                            type: 'float',
+                            example: 100.0
+                          },
+                          oldPrice: {
+                            type: 'float',
+                            example: 100.0
+                          },
+                          stock: {
+                            type: 'integer',
+                            example: 10
+                          },
+                          options: {
+                            type: 'array',
+                            items: {
+                              type: 'object',
+                              properties: {
+                                variantName: {
+                                  type: 'string',
+                                  example: 'Color'
+                                },
+                                value: {
+                                  type: 'string',
+                                  example: 'Red'
+                                },
+                                image: {
+                                  $ref: '#/components/schemas/ImageSchema'
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    variantGroups: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          name: {
+                            type: 'string',
+                            example: 'Color'
+                          },
+                          values: {
+                            type: 'array',
+                            items: {
+                              type: 'string',
+                              example: 'Red'
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        ProductListResponse: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              example: '1'
+            },
+            price: {
+              type: 'float',
+              example: 100.0
+            },
+            name: {
+              type: 'string',
+              example: 'Product Name'
+            },
+            slug: {
+              type: 'string',
+              example: 'product-name'
+            },
+            thumbnail: {
+              $ref: '#/components/schemas/ImageSchema'
+            },
+            description: {
+              type: 'string',
+              example: 'Product Description'
+            },
+            status: {
+              type: 'string',
+              example: 'available'
+            }
+          }
+        },
+        PaginatedProductResponse: {
+          allOf: [
+            { $ref: '#/components/schemas/BaseResponse' },
+            {
+              type: 'object',
+              properties: {
+                data: {
+                  type: 'object',
+                  properties: {
+                    items: {
+                      type: 'array',
+                      items: {
+                        $ref: '#/components/schemas/ProductListResponse'
+                      }
+                    },
+                    meta: {
+                      $ref: '#/components/schemas/MetaSchema'
+                    }
+                  }
+                }
+              }
+            }
+          ]
         }
       }
     },
