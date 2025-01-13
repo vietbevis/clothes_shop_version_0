@@ -22,8 +22,8 @@ export const LoginSchema = z
   .object({
     email: EmailSchema,
     password: PasswordSchema,
-    deviceName: z.string().min(3).max(100),
-    deviceType: z.string().min(3).max(100)
+    deviceName: z.string().min(3).max(255),
+    deviceType: z.string().min(3).max(255)
   })
   .strict()
   .strip()

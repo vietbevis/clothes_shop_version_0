@@ -5,10 +5,10 @@ import { AbstractModel } from '@/model/base/AbstractModel'
 @Entity('tbl_user_device')
 @Unique(['deviceName', 'deviceType', 'user'])
 export class UserDevice extends AbstractModel {
-  @Column({ name: 'device_name', type: 'varchar', length: 100 })
+  @Column({ name: 'device_name', type: 'varchar' })
   deviceName!: string
 
-  @Column({ name: 'device_type', type: 'varchar', length: 100 })
+  @Column({ name: 'device_type', type: 'varchar' })
   deviceType!: string
 
   @Column({ name: 'ip_address', type: 'varchar', length: 50 })
