@@ -18,7 +18,7 @@ export const options: swaggerJSDoc.Options = {
     },
     servers: [
       {
-        url: 'http://localhost:4001/api',
+        url: 'https://ecom.vittapcode.id.vn/api',
         description: 'Development server'
       }
     ],
