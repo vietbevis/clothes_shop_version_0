@@ -14,6 +14,7 @@ RUN npm install
 COPY . .
 
 # Build ứng dụng TypeScript
+RUN npm run generate:keys
 RUN npm run build
 
 # Chỉ định cổng mà ứng dụng sử dụng (ví dụ: 3000)
