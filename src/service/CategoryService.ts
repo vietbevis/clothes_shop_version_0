@@ -32,13 +32,14 @@ class CategoryService {
   async create(body: CreateCategoryType, user: User | null) {
     if (!user) throw new UnauthorizedError()
 
-    const { name, parentId, imageFilename } = body
+    const { name, parentId, imageFilename, description } = body
 
     const existingCategory = await CategoryRepository.existByName(name)
     if (existingCategory) throw new BadRequestError('Category already exists')
 
     const newCategory = CategoryRepository.create({
       name,
+      description: description ?? '',
       slug: getSlug(name),
       image: null,
       parent: null
@@ -69,7 +70,7 @@ class CategoryService {
     const category = await CategoryRepository.findById(id)
     if (!category) throw new BadRequestError('Category not found')
 
-    const { name, imageFilename } = body
+    const { name, imageFilename, description } = body
 
     if (name !== category.name) {
       const existingCategory = await CategoryRepository.existByName(name)
@@ -77,6 +78,7 @@ class CategoryService {
     }
 
     category.name = name
+    category.description = description ?? ''
     category.slug = getSlug(name)
 
     if (imageFilename) {

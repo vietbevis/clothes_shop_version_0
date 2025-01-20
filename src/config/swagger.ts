@@ -477,6 +477,10 @@ export const options: swaggerJSDoc.Options = {
               type: 'string',
               example: 'Category Name'
             },
+            description: {
+              type: 'string',
+              example: 'Category Description'
+            },
             parentId: {
               type: 'string',
               example: '1'
@@ -495,6 +499,10 @@ export const options: swaggerJSDoc.Options = {
               type: 'string',
               example: 'Category Name'
             },
+            description: {
+              type: 'string',
+              example: 'Category Description'
+            },
             imageFilename: {
               type: 'string',
               example: 'filename.webp'
@@ -512,6 +520,10 @@ export const options: swaggerJSDoc.Options = {
             name: {
               type: 'string',
               example: 'Category Name'
+            },
+            description: {
+              type: 'string',
+              example: 'Category Description'
             },
             slug: {
               type: 'string',
@@ -542,6 +554,10 @@ export const options: swaggerJSDoc.Options = {
                     name: {
                       type: 'string',
                       example: 'Category Name'
+                    },
+                    description: {
+                      type: 'string',
+                      example: 'Category Description'
                     },
                     slug: {
                       type: 'string',

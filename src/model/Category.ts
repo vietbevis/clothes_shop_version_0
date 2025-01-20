@@ -22,6 +22,9 @@ export class Category extends AbstractModel {
   @Column({ nullable: false, unique: true })
   slug!: string
 
+  @Column({ type: 'text', nullable: true })
+  description!: string
+
   @TreeChildren({ cascade: true })
   children!: Category[]
 
