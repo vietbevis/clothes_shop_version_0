@@ -131,6 +131,13 @@ export const DepthQuerySchema = z
 
 export type DepthQueryType = z.infer<typeof DepthQuerySchema>
 
+export const GetCategoriesSchema = PaginationQuerySchema.extend({
+  name: z.string().optional(),
+  parentId: z.string().optional()
+})
+  .strict()
+  .strip()
+
 export const SlugParamsSchema = z
   .object({
     slug: z.string().nonempty()

@@ -17,8 +17,15 @@
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   },
-  "include": ["src/**/*",
-    "generateKeys.js"
-  ],
-  "files": ["src/type.d.ts"]
+  "include": ["src/**/*", "generateKeys.js"],
+  "files": ["src/type.d.ts"],
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "tsc: build - tsconfig.json",
+      "type": "typescript",
+      "tsconfig": "tsconfig.json",
+      "problemMatcher": ["$tsc"]
+    }
+  ]
 }

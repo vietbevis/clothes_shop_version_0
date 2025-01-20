@@ -19,6 +19,10 @@ export const options: swaggerJSDoc.Options = {
     servers: [
       {
         url: 'https://ecom.vittapcode.id.vn/api',
+        description: 'Production server'
+      },
+      {
+        url: 'http://localhost:4001/api',
         description: 'Development server'
       }
     ],
@@ -1088,6 +1092,30 @@ export const options: swaggerJSDoc.Options = {
                       type: 'array',
                       items: {
                         $ref: '#/components/schemas/ProductListResponse'
+                      }
+                    },
+                    meta: {
+                      $ref: '#/components/schemas/MetaSchema'
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        PaginatedCategoryResponse: {
+          allOf: [
+            { $ref: '#/components/schemas/BaseResponse' },
+            {
+              type: 'object',
+              properties: {
+                data: {
+                  type: 'object',
+                  properties: {
+                    items: {
+                      type: 'array',
+                      items: {
+                        $ref: '#/components/schemas/CategorySchema'
                       }
                     },
                     meta: {

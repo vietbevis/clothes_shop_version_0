@@ -11,10 +11,10 @@ const CategoryRepository = AppDataSource.getTreeRepository(Category).extend({
   async findAll(depth: number = 1) {
     return this.findTrees({ depth: depth - 1, relations: ['image'] })
   },
-  async findBySlug(slug: string, depth: number) {
+  async findBySlug(slug: string) {
     const category = await this.findOneBy({ slug })
     if (!category) return null
-    return this.findDescendantsTree(category, { depth: depth - 1, relations: ['image'] })
+    return this.findDescendantsTree(category, { relations: ['image'] })
   }
 })
 

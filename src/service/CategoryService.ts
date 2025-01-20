@@ -1,17 +1,32 @@
 import { CreateCategoryType, UpdateCategoryType } from '@/validation/CategorySchema'
 import CategoryRepository from '@/repository/CategoryRepository'
-import { getSlug } from '@/utils/helper'
+import { getSlug, omitFields } from '@/utils/helper'
 import { BadRequestError, UnauthorizedError } from '@/core/ErrorResponse'
 import ImageRepository from '@/repository/ImageRepository'
 import { User } from '@/model/User'
+import { Request } from 'express'
+import { PaginationUtils } from '@/utils/PaginationUtils'
+import { Like } from 'typeorm'
 
 class CategoryService {
-  async getCategories(depth: number = 1) {
-    return CategoryRepository.findAll(depth)
+  async getCategories(name: string, parentId: string, req: Request) {
+    const paginationOptions = PaginationUtils.extractPaginationOptions(req, 'createdAt')
+    const paginatedProducts = await PaginationUtils.paginate(
+      CategoryRepository,
+      paginationOptions,
+      {
+        name: name ? Like(`%${name}%`) : undefined,
+        parent: { id: parentId ?? undefined }
+      },
+      { image: true }
+    )
+    return omitFields(paginatedProducts)
   }
 
-  async getCategoryBySlug(slug: string, depth: number) {
-    return CategoryRepository.findBySlug(slug, depth)
+  async getCategoryBySlug(slug: string) {
+    const result = await CategoryRepository.findBySlug(slug)
+    if (!result) throw new BadRequestError('Category not found')
+    return omitFields(result, ['children'])
   }
 
   async create(body: CreateCategoryType, user: User | null) {

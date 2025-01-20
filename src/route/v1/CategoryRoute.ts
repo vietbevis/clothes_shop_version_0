@@ -4,7 +4,7 @@ import { CreateCategorySchema, UpdateCategorySchema } from '@/validation/Categor
 import categoryController from '@/controller/CategoryController'
 import { authMiddleware } from '@/middleware/authMiddleware'
 import asyncHandler from '@/middleware/asyncHandler'
-import { DepthQuerySchema, IdParamsSchema, SlugParamsSchema } from '@/validation/CommonSchema'
+import { DepthQuerySchema, GetCategoriesSchema, IdParamsSchema, SlugParamsSchema } from '@/validation/CommonSchema'
 
 const CategoryRoute = Router()
 
@@ -103,21 +103,52 @@ CategoryRoute.delete(
  *     tags: [Categories]
  *     parameters:
  *       - in: query
- *         name: depth
+ *         name: name
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: parentId
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         required: false
  *         schema:
  *           type: integer
- *           default: 1
+ *           example: 1
  *           minimum: 1
- *           maximum: 5
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 24
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 24
+ *       - in: query
+ *         name: sortBy
+ *         required: false
+ *         schema:
+ *           type: string
+ *           example: 'createdAt'
+ *       - in: query
+ *         name: sortDirection
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: ['ASC', 'DESC']
+ *           example: 'ASC'
  *     responses:
  *       200:
  *         description: Categories retrieved
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/GetCategoriesResponse'
+ *               $ref: '#/components/schemas/PaginatedCategoryResponse'
  */
-CategoryRoute.get('/', validateRequest({ query: DepthQuerySchema }), asyncHandler(categoryController.getCategories))
+CategoryRoute.get('/', validateRequest({ query: GetCategoriesSchema }), asyncHandler(categoryController.getCategories))
 
 /**
  * @openapi
@@ -131,13 +162,6 @@ CategoryRoute.get('/', validateRequest({ query: DepthQuerySchema }), asyncHandle
  *         required: true
  *         schema:
  *           type: string
- *       - in: query
- *         name: depth
- *         schema:
- *           type: integer
- *           default: 1
- *           minimum: 1
- *           maximum: 5
  *     responses:
  *       200:
  *         description: Category retrieved
@@ -148,7 +172,7 @@ CategoryRoute.get('/', validateRequest({ query: DepthQuerySchema }), asyncHandle
  */
 CategoryRoute.get(
   '/:slug',
-  validateRequest({ query: DepthQuerySchema, params: SlugParamsSchema }),
+  validateRequest({ params: SlugParamsSchema }),
   asyncHandler(categoryController.getCategoryBySlug)
 )
 
