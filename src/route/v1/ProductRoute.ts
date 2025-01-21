@@ -100,7 +100,7 @@ ProductRoute.get('/:slug', validateRequest({ params: SlugParamsSchema }), asyncH
  *         schema:
  *           type: string
  *           enum: ['ASC', 'DESC']
- *           example: 'ASC'
+ *           example: 'DESC'
  *     responses:
  *       200:
  *         description: OK

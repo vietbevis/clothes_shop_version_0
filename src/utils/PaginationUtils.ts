@@ -39,13 +39,13 @@ export class PaginationUtils {
       Math.max(1, parseInt(req.query.limit as string) || this.DEFAULT_PAGE_SIZE)
     )
     const sortBy = ((req.query.sortBy as string) || defaultSort) as keyof T
-    const sortDirection = ((req.query.sortDirection as string)?.toUpperCase() || 'ASC') as SortDirection
+    const sortDirection = ((req.query.sortDirection as string)?.toUpperCase() || 'DESC') as SortDirection
 
     return {
       page,
       limit,
       sortBy,
-      sortDirection: ['ASC', 'DESC'].includes(sortDirection) ? sortDirection : 'ASC'
+      sortDirection: ['ASC', 'DESC'].includes(sortDirection) ? sortDirection : 'DESC'
     }
   }
 
@@ -58,7 +58,7 @@ export class PaginationUtils {
     whereConditions: FindOptionsWhere<T>,
     relations?: FindOptionsRelations<T>
   ): Promise<PaginatedResult<T>> {
-    const { page = this.DEFAULT_PAGE, limit = this.DEFAULT_PAGE_SIZE, sortBy, sortDirection = 'ASC' } = options
+    const { page = this.DEFAULT_PAGE, limit = this.DEFAULT_PAGE_SIZE, sortBy, sortDirection = 'DESC' } = options
 
     const skip = (page - 1) * limit
     const order: any = sortBy ? { [sortBy]: sortDirection } : {}
@@ -79,7 +79,7 @@ export class PaginationUtils {
     totalItems: number,
     options: PaginationOptions<T>
   ): PaginatedResult<T> {
-    const { page = this.DEFAULT_PAGE, limit = this.DEFAULT_PAGE_SIZE, sortBy, sortDirection = 'ASC' } = options
+    const { page = this.DEFAULT_PAGE, limit = this.DEFAULT_PAGE_SIZE, sortBy, sortDirection = 'DESC' } = options
 
     const totalPages = Math.ceil(totalItems / limit)
 

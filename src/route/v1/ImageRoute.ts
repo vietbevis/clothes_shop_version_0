@@ -73,7 +73,7 @@ ImageRoute.post(
  *         schema:
  *           type: string
  *           enum: ['ASC', 'DESC']
- *           example: 'ASC'
+ *           example: 'DESC'
  *     responses:
  *       200:
  *         description: Get images
