@@ -17,6 +17,11 @@ class ProductController {
     const result = await productService.getProductByShopSlug(req.params.slug, req)
     new OkResponse('Product found', result).send(res)
   }
+
+  async getProducts(req: Request, res: Response) {
+    const result = await productService.getProducts(req)
+    new OkResponse('Product found', result).send(res)
+  }
 }
 
 const productController = new ProductController()

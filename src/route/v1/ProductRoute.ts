@@ -4,7 +4,7 @@ import asyncHandler from '@/middleware/asyncHandler'
 import productController from '@/controller/ProductController'
 import { validateRequest } from '@/middleware/validateRequest'
 import { ProductSchema } from '@/validation/ProductSchema'
-import { SlugParamsSchema } from '@/validation/CommonSchema'
+import { PaginationQuerySchema, SlugParamsSchema } from '@/validation/CommonSchema'
 
 const ProductRoute = Router()
 
@@ -36,7 +36,58 @@ ProductRoute.post(
   asyncHandler(productController.createProduct)
 )
 
-// generate openapi docs get product by slug
+/**
+ * @swagger
+ * /v1/products/shop:
+ *   get:
+ *     summary: Get all products
+ *     tags: [Products]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 1
+ *           minimum: 1
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           example: 24
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 24
+ *       - in: query
+ *         name: sortBy
+ *         required: false
+ *         schema:
+ *           type: string
+ *           example: 'createdAt'
+ *       - in: query
+ *         name: sortDirection
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: ['ASC', 'DESC']
+ *           example: 'DESC'
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedProductResponse'
+ */
+ProductRoute.get(
+  '/shop',
+  validateRequest({ query: PaginationQuerySchema }),
+  authMiddleware,
+  asyncHandler(productController.getProducts)
+)
+
 /**
  * @swagger
  * /v1/products/{slug}:
@@ -111,7 +162,7 @@ ProductRoute.get('/:slug', validateRequest({ params: SlugParamsSchema }), asyncH
  */
 ProductRoute.get(
   '/shop/:slug',
-  validateRequest({ params: SlugParamsSchema }),
+  validateRequest({ params: SlugParamsSchema, query: PaginationQuerySchema }),
   asyncHandler(productController.getProductByShopSlug)
 )
 export default ProductRoute

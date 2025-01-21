@@ -137,6 +137,13 @@ class ProductService {
     )
   }
 
+  async getProducts(req: Request) {
+    if (!req?.user) throw new UnauthorizedError()
+    const shop = await ShopRepository.findByOwner(req.user.id)
+    if (!shop) throw new BadRequestError('Shop not found')
+    return this.getProductByShopSlug(shop.slug, req)
+  }
+
   private async checkAndCreateAttribute(
     attributes: { value: string; name: string }[],
     savedProduct: Product,
