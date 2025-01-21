@@ -186,9 +186,10 @@ class AuthService {
   }
 
   async refreshToken(body: RefreshTokenBodyType): Promise<LoginResponseType> {
-    const { refreshToken, deviceName, deviceType } = body
+    const { refreshToken } = body
 
     const decoded = await jwtService.verifyToken(refreshToken, TokenType.REFRESH_TOKEN)
+    const { deviceName, deviceType } = decoded.payload
 
     // Get token from redis
     const refreshTokenFromCached = await redisService.getCacheItem(

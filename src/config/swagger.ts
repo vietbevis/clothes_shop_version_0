@@ -172,17 +172,9 @@ export const options: swaggerJSDoc.Options = {
             refreshToken: {
               type: 'string',
               example: 'eyJhbGciOi...'
-            },
-            deviceName: {
-              type: 'string',
-              example: 'Chrome'
-            },
-            deviceType: {
-              type: 'string',
-              example: 'Ubuntu'
             }
           },
-          required: ['refreshToken', 'deviceName', 'deviceType']
+          required: ['refreshToken']
         },
         ResetPasswordRequest: {
           type: 'object',

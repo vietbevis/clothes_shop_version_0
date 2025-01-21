@@ -42,9 +42,7 @@ export type VerifyAccountBodyType = z.infer<typeof VerifyAccountSchema>
 
 export const RefreshTokenSchema = z
   .object({
-    refreshToken: z.string(),
-    deviceName: z.string().min(3).max(100),
-    deviceType: z.string().min(3).max(100)
+    refreshToken: z.string()
   })
   .strict()
   .strip()
