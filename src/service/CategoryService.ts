@@ -85,6 +85,8 @@ class CategoryService {
       const image = await ImageRepository.findByFileNameAndUserId(imageFilename, user.id)
       if (!image) throw new BadRequestError('Image not found')
       category.image = image
+    } else {
+      category.image = null
     }
 
     return CategoryRepository.save(category)
