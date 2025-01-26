@@ -121,7 +121,8 @@ class ProductService {
       },
       {
         variants: true,
-        thumbnail: true
+        thumbnail: true,
+        shop: true
       }
     )
 
@@ -133,7 +134,8 @@ class ProductService {
             ...item,
             price: getLowestInStockPrice(item),
             oldPrice: getLowestInStockOldPrice(item),
-            stock: item.variants.reduce((acc, variant) => acc + variant.stock, 0)
+            stock: item.variants.reduce((acc, variant) => acc + variant.stock, 0),
+            shopSlug: item.shop.slug
           }
         })
       },
