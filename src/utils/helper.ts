@@ -161,3 +161,25 @@ export const getLowestInStockPrice = (product: Product) => {
 
   return lowestPrice === Infinity ? 0 : parseFloat(lowestPrice + '').toFixed(2)
 }
+
+export const getLowestInStockOldPrice = (product: Product) => {
+  let lowestPrice = Infinity
+
+  for (const variant of product.variants) {
+    if (variant.stock > 0 && variant.oldPrice < lowestPrice) {
+      lowestPrice = variant.oldPrice
+    }
+  }
+
+  return lowestPrice === Infinity ? 0 : parseFloat(lowestPrice + '').toFixed(2)
+}
+
+export const getTotalStock = (product: Product) => {
+  let totalStock = 0
+
+  for (const variant of product.variants) {
+    totalStock += variant.stock
+  }
+
+  return totalStock
+}

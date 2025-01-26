@@ -11,7 +11,7 @@ import { BadRequestError, EntityError, UnauthorizedError, ValidationError } from
 import ImageRepository, { TImageRepository } from '@/repository/ImageRepository'
 import { User } from '@/model/User'
 import ShopRepository from '@/repository/ShopRepository'
-import { getLowestInStockPrice, getSlug, omitFields, serializeProduct } from '@/utils/helper'
+import { getLowestInStockOldPrice, getLowestInStockPrice, getSlug, omitFields, serializeProduct } from '@/utils/helper'
 import { PaginationUtils } from '@/utils/PaginationUtils'
 import { Request } from 'express'
 import { Product } from '@/model/Product'
@@ -131,7 +131,9 @@ class ProductService {
         items: paginatedProducts.items.map((item) => {
           return {
             ...item,
-            price: getLowestInStockPrice(item)
+            price: getLowestInStockPrice(item),
+            oldPrice: getLowestInStockOldPrice(item),
+            stock: item.variants.reduce((acc, variant) => acc + variant.stock, 0)
           }
         })
       },
