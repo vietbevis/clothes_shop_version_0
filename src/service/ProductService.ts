@@ -139,7 +139,7 @@ class ProductService {
           }
         })
       },
-      ['variants']
+      ['variants', 'shop']
     )
   }
 
