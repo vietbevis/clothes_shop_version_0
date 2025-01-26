@@ -198,13 +198,15 @@ class ProductService {
                 variant
               })
 
-              const optionImage = await imageRepo.findByFileName(imageFilename)
-              if (!optionImage) {
-                throw new ValidationError('Image not found', [
-                  new EntityError('variants.options.imageFilename', 'Image not found')
-                ])
+              if (imageFilename) {
+                const optionImage = await imageRepo.findByFileName(imageFilename)
+                if (!optionImage) {
+                  throw new ValidationError('Image not found', [
+                    new EntityError('variants.options.imageFilename', 'Image not found')
+                  ])
+                }
+                variantOption.image = optionImage
               }
-              variantOption.image = optionImage
 
               await variantOptionRepo.save(variantOption)
             }
