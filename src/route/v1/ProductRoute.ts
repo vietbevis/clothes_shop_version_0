@@ -4,7 +4,7 @@ import asyncHandler from '@/middleware/asyncHandler'
 import productController from '@/controller/ProductController'
 import { validateRequest } from '@/middleware/validateRequest'
 import { ProductSchema } from '@/validation/ProductSchema'
-import { PaginationQuerySchema, SlugParamsSchema } from '@/validation/CommonSchema'
+import { GetProductPaginationQuerySchema, PaginationQuerySchema, SlugParamsSchema } from '@/validation/CommonSchema'
 
 const ProductRoute = Router()
 
@@ -52,6 +52,11 @@ ProductRoute.post(
  *           minimum: 1
  *           default: 1
  *       - in: query
+ *         name: name
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
  *         name: limit
  *         required: false
  *         schema:
@@ -83,7 +88,7 @@ ProductRoute.post(
  */
 ProductRoute.get(
   '/shop',
-  validateRequest({ query: PaginationQuerySchema }),
+  validateRequest({ query: GetProductPaginationQuerySchema }),
   authMiddleware,
   asyncHandler(productController.getProducts)
 )
@@ -122,6 +127,11 @@ ProductRoute.get('/:slug', validateRequest({ params: SlugParamsSchema }), asyncH
  *         schema:
  *           type: string
  *         description: Shop slug
+ *       - in: query
+ *         name: name
+ *         required: false
+ *         schema:
+ *           type: string
  *       - in: query
  *         name: page
  *         required: false
@@ -162,7 +172,7 @@ ProductRoute.get('/:slug', validateRequest({ params: SlugParamsSchema }), asyncH
  */
 ProductRoute.get(
   '/shop/:slug',
-  validateRequest({ params: SlugParamsSchema, query: PaginationQuerySchema }),
+  validateRequest({ params: SlugParamsSchema, query: GetProductPaginationQuerySchema }),
   asyncHandler(productController.getProductByShopSlug)
 )
 export default ProductRoute

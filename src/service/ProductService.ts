@@ -15,6 +15,7 @@ import { getLowestInStockPrice, getSlug, omitFields, serializeProduct } from '@/
 import { PaginationUtils } from '@/utils/PaginationUtils'
 import { Request } from 'express'
 import { Product } from '@/model/Product'
+import { Like } from 'typeorm'
 
 class ProductService {
   async createProduct(body: ProductSchemaType, user: User | null) {
@@ -115,7 +116,8 @@ class ProductService {
       ProductRepository,
       paginationOptions,
       {
-        shop: { slug }
+        shop: { slug },
+        name: req.query.name ? Like(`%${req.query.name}%`) : undefined
       },
       {
         variants: true,
