@@ -15,8 +15,16 @@ const routes = (app: Express) => {
   const specs = swaggerJSDoc(options)
 
   // Routes
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))
-  app.get('/api-docs.json', (req: Request, res: Response) => {
+  app.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(specs, {
+      swaggerOptions: {
+        persistAuthorization: true
+      }
+    })
+  )
+  app.get('/api-docs.json', (_req: Request, res: Response) => {
     res.setHeader('Content-Type', 'application/json')
     res.send(specs)
   })
