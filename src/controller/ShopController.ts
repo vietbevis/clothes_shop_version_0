@@ -37,7 +37,8 @@ class ShopController {
   }
 
   async getAllShops(req: Request, res: Response) {
-    const result = await shopService.getAllShops(req)
+    const search = req.query.search as string
+    const result = await shopService.getAllShops(search, req)
     new OkResponse('Shops found', omitFields(result, ['userId'])).send(res)
   }
 }

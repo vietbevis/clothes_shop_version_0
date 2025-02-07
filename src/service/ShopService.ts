@@ -12,6 +12,7 @@ import { ApproveQueryType } from '@/validation/CommonSchema'
 import { AddressBodyType } from '@/validation/AddressSchema'
 import { Request } from 'express'
 import { PaginationUtils } from '@/utils/PaginationUtils'
+import { Like } from 'typeorm'
 
 class ShopService {
   async createShop(shop: CreateShopType, user: User | null) {
@@ -116,9 +117,14 @@ class ShopService {
     return ShopRepository.findByOwnerUsername(ownerUsername)
   }
 
-  async getAllShops(req: Request) {
+  async getAllShops(name: string, req: Request) {
     const paginationOptions = PaginationUtils.extractPaginationOptions(req, 'createdAt')
-    return PaginationUtils.paginate(ShopRepository, paginationOptions, {}, { owner: true })
+    return PaginationUtils.paginate(
+      ShopRepository,
+      paginationOptions,
+      { name: name ? Like(`%${name}%`) : undefined },
+      { owner: true }
+    )
   }
 }
 

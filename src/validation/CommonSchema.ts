@@ -138,6 +138,13 @@ export const GetCategoriesSchema = PaginationQuerySchema.extend({
   .strict()
   .strip()
 
+export const SeachSchema = z
+  .object({
+    search: z.string().optional()
+  })
+  .strict()
+  .strip()
+
 export const SlugParamsSchema = z
   .object({
     slug: z.string().nonempty()

@@ -8,6 +8,7 @@ import {
   ApproveQuerySchema,
   IdParamsSchema,
   PaginationQuerySchema,
+  SeachSchema,
   UsernameParamsSchema
 } from '@/validation/CommonSchema'
 import { AddressSchema } from '@/validation/AddressSchema'
@@ -185,6 +186,11 @@ ShopRoute.put(
  *     tags: [Shops]
  *     parameters:
  *       - in: query
+ *         name: search
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
  *         name: page
  *         required: false
  *         schema:
@@ -222,6 +228,10 @@ ShopRoute.put(
  *             schema:
  *               $ref: '#/components/schemas/ShopsResponse'
  */
-ShopRoute.get('/', validateRequest({ query: PaginationQuerySchema }), asyncHandler(shopController.getAllShops))
+ShopRoute.get(
+  '/',
+  validateRequest({ query: PaginationQuerySchema.merge(SeachSchema) }),
+  asyncHandler(shopController.getAllShops)
+)
 
 export default ShopRoute
