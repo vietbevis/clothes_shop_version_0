@@ -147,7 +147,7 @@ export const SeachSchema = z
 
 export const SlugParamsSchema = z
   .object({
-    slug: z.string().nonempty()
+    slug: z.string().default('')
   })
   .strict()
   .strip()
@@ -164,7 +164,8 @@ export const ApproveQuerySchema = z
 export type ApproveQueryType = z.infer<typeof ApproveQuerySchema>
 
 export const GetProductPaginationQuerySchema = PaginationQuerySchema.extend({
-  name: z.string().optional()
+  name: z.string().optional(),
+  shopSlug: z.string().optional()
 })
   .strict()
   .strip()

@@ -116,7 +116,7 @@ class ProductService {
       ProductRepository,
       paginationOptions,
       {
-        shop: { slug },
+        shop: slug ? { slug } : undefined,
         name: req.query.name ? Like(`%${req.query.name}%`) : undefined
       },
       {
@@ -144,10 +144,11 @@ class ProductService {
   }
 
   async getProducts(req: Request) {
-    if (!req?.user) throw new UnauthorizedError()
-    const shop = await ShopRepository.findByOwner(req.user.id)
-    if (!shop) throw new BadRequestError('Shop not found')
-    return this.getProductByShopSlug(shop.slug, req)
+    // if (!req?.user) throw new UnauthorizedError()
+    // const shop = await ShopRepository.findByOwner(req.user.id)
+    // if (!shop) throw new BadRequestError('Shop not found')
+    const shopSlug = req.query.shopSlug as string
+    return this.getProductByShopSlug(shopSlug, req)
   }
 
   private async checkAndCreateAttribute(

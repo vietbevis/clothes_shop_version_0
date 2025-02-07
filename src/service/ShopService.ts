@@ -113,8 +113,8 @@ class ShopService {
     return AddressRepository.save(updatedAddress)
   }
 
-  async getShopByOwner(ownerUsername: string) {
-    return ShopRepository.findByOwnerUsername(ownerUsername)
+  async getShopByShopSlug(slug: string) {
+    return ShopRepository.findByShopSlug(slug, { owner: true, address: true, logo: true, banner: true })
   }
 
   async getAllShops(name: string, req: Request) {

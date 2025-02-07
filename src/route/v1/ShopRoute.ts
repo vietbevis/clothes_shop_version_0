@@ -9,6 +9,7 @@ import {
   IdParamsSchema,
   PaginationQuerySchema,
   SeachSchema,
+  SlugParamsSchema,
   UsernameParamsSchema
 } from '@/validation/CommonSchema'
 import { AddressSchema } from '@/validation/AddressSchema'
@@ -66,13 +67,13 @@ ShopRoute.put('/', validateRequest({ body: UpdateShopSchema }), authMiddleware, 
 
 /**
  * @openapi
- * /v1/shops/{username}:
+ * /v1/shops/{slug}:
  *   get:
- *     summary: Get shop by owner
+ *     summary: Get shop by shop slug
  *     tags: [Shops]
  *     parameters:
  *       - in: path
- *         name: username
+ *         name: slug
  *         required: true
  *         schema:
  *           type: string
@@ -84,11 +85,7 @@ ShopRoute.put('/', validateRequest({ body: UpdateShopSchema }), authMiddleware, 
  *             schema:
  *               $ref: '#/components/schemas/ShopResponse'
  */
-ShopRoute.get(
-  '/:username',
-  validateRequest({ params: UsernameParamsSchema }),
-  asyncHandler(shopController.getShopByOwner)
-)
+ShopRoute.get('/:slug', validateRequest({ params: SlugParamsSchema }), asyncHandler(shopController.getShopByShopSlug))
 
 /**
  * @openapi
@@ -190,6 +187,7 @@ ShopRoute.put(
  *         required: false
  *         schema:
  *           type: string
+ *         description: 'Shop name'
  *       - in: query
  *         name: page
  *         required: false

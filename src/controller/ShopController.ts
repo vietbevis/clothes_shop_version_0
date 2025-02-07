@@ -30,8 +30,8 @@ class ShopController {
     new OkResponse('Shop address updated', omitFields(result, ['userId'])).send(res)
   }
 
-  async getShopByOwner(req: Request, res: Response) {
-    const result = await shopService.getShopByOwner(req.params.username)
+  async getShopByShopSlug(req: Request, res: Response) {
+    const result = await shopService.getShopByShopSlug(req.params.username)
     if (!result) throw new BadRequestError('Shop not found')
     new OkResponse('Shop found', omitFields(result, ['userId'])).send(res)
   }

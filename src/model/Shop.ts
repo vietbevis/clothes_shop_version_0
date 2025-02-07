@@ -18,7 +18,7 @@ export class Shop extends AbstractModel {
   @Column({ nullable: false, unique: true })
   slug!: string
 
-  @ManyToOne(() => Address, { eager: true, nullable: false, cascade: true })
+  @ManyToOne(() => Address, { nullable: false, cascade: true })
   @JoinColumn({ name: 'address_id' })
   address!: Address
 
@@ -41,11 +41,11 @@ export class Shop extends AbstractModel {
   @OneToMany(() => Product, (product) => product.shop)
   products!: Product[]
 
-  @ManyToOne(() => Image, { eager: true })
+  @ManyToOne(() => Image)
   @JoinColumn({ name: 'logo_id' })
   logo!: Image
 
-  @ManyToOne(() => Image, { eager: true })
+  @ManyToOne(() => Image)
   @JoinColumn({ name: 'banner_id' })
   banner!: Image
 }

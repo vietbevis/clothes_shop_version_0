@@ -38,11 +38,21 @@ ProductRoute.post(
 
 /**
  * @swagger
- * /v1/products/shop:
+ * /v1/products:
  *   get:
  *     summary: Get all products
  *     tags: [Products]
  *     parameters:
+ *       - in: query
+ *         name: name
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: shopSlug
+ *         required: false
+ *         schema:
+ *           type: string
  *       - in: query
  *         name: page
  *         required: false
@@ -51,11 +61,6 @@ ProductRoute.post(
  *           example: 1
  *           minimum: 1
  *           default: 1
- *       - in: query
- *         name: name
- *         required: false
- *         schema:
- *           type: string
  *       - in: query
  *         name: limit
  *         required: false
@@ -87,9 +92,8 @@ ProductRoute.post(
  *               $ref: '#/components/schemas/PaginatedProductResponse'
  */
 ProductRoute.get(
-  '/shop',
+  '/',
   validateRequest({ query: GetProductPaginationQuerySchema }),
-  authMiddleware,
   asyncHandler(productController.getProducts)
 )
 
@@ -115,64 +119,64 @@ ProductRoute.get(
  */
 ProductRoute.get('/:slug', validateRequest({ params: SlugParamsSchema }), asyncHandler(productController.getProduct))
 
-/**
- * @swagger
- * /v1/products/shop/{slug}:
- *   get:
- *     summary: Get all products by shop slug
- *     tags: [Products]
- *     parameters:
- *       - in: path
- *         name: slug
- *         schema:
- *           type: string
- *         description: Shop slug
- *       - in: query
- *         name: name
- *         required: false
- *         schema:
- *           type: string
- *       - in: query
- *         name: page
- *         required: false
- *         schema:
- *           type: integer
- *           example: 1
- *           minimum: 1
- *           default: 1
- *       - in: query
- *         name: limit
- *         required: false
- *         schema:
- *           type: integer
- *           example: 24
- *           minimum: 1
- *           maximum: 100
- *           default: 24
- *       - in: query
- *         name: sortBy
- *         required: false
- *         schema:
- *           type: string
- *           example: 'createdAt'
- *       - in: query
- *         name: sortDirection
- *         required: false
- *         schema:
- *           type: string
- *           enum: ['ASC', 'DESC']
- *           example: 'DESC'
- *     responses:
- *       200:
- *         description: OK
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/PaginatedProductResponse'
- */
-ProductRoute.get(
-  '/shop/:slug',
-  validateRequest({ params: SlugParamsSchema, query: GetProductPaginationQuerySchema }),
-  asyncHandler(productController.getProductByShopSlug)
-)
+// /**
+//  * @swagger
+//  * /v1/products/shop/{slug}:
+//  *   get:
+//  *     summary: Get all products by shop slug
+//  *     tags: [Products]
+//  *     parameters:
+//  *       - in: path
+//  *         name: slug
+//  *         schema:
+//  *           type: string
+//  *         description: Shop slug
+//  *       - in: query
+//  *         name: name
+//  *         required: false
+//  *         schema:
+//  *           type: string
+//  *       - in: query
+//  *         name: page
+//  *         required: false
+//  *         schema:
+//  *           type: integer
+//  *           example: 1
+//  *           minimum: 1
+//  *           default: 1
+//  *       - in: query
+//  *         name: limit
+//  *         required: false
+//  *         schema:
+//  *           type: integer
+//  *           example: 24
+//  *           minimum: 1
+//  *           maximum: 100
+//  *           default: 24
+//  *       - in: query
+//  *         name: sortBy
+//  *         required: false
+//  *         schema:
+//  *           type: string
+//  *           example: 'createdAt'
+//  *       - in: query
+//  *         name: sortDirection
+//  *         required: false
+//  *         schema:
+//  *           type: string
+//  *           enum: ['ASC', 'DESC']
+//  *           example: 'DESC'
+//  *     responses:
+//  *       200:
+//  *         description: OK
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               $ref: '#/components/schemas/PaginatedProductResponse'
+//  */
+// ProductRoute.get(
+//   '/shop/:slug',
+//   validateRequest({ params: SlugParamsSchema, query: GetProductPaginationQuerySchema }),
+//   asyncHandler(productController.getProductByShopSlug)
+// )
 export default ProductRoute
