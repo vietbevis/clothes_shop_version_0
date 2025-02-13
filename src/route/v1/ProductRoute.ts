@@ -49,6 +49,16 @@ ProductRoute.post(
  *         schema:
  *           type: string
  *       - in: query
+ *         name: categoryId
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: categoryId
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - in: query
  *         name: shopSlug
  *         required: false
  *         schema:

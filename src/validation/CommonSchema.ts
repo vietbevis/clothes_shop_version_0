@@ -165,7 +165,8 @@ export type ApproveQueryType = z.infer<typeof ApproveQuerySchema>
 
 export const GetProductPaginationQuerySchema = PaginationQuerySchema.extend({
   name: z.string().optional(),
-  shopSlug: z.string().optional()
+  shopSlug: z.string().optional(),
+  categoryId: z.string().optional()
 })
   .strict()
   .strip()

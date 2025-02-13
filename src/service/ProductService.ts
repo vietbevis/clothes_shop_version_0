@@ -117,7 +117,8 @@ class ProductService {
       paginationOptions,
       {
         shop: slug ? { slug } : undefined,
-        name: req.query.name ? Like(`%${req.query.name}%`) : undefined
+        name: req.query.name ? Like(`%${req.query.name}%`) : undefined,
+        ...((req.query.categoryId && { category: { id: req.query.categoryId } }) as any)
       },
       {
         variants: true,
