@@ -8,16 +8,17 @@ import { User } from '@/model/User'
 import { BUCKET_NAME, minioClient } from '@/config/minio'
 import ImageRepository from '@/repository/ImageRepository'
 import { Request } from 'express'
-import { PaginationUtils } from '@/utils/PaginationUtils'
+import { PaginationUtils } from '@/utils/PaginationUtilsV2'
 import { BadRequestError } from '@/core/ErrorResponse'
+import { DecodedJwtToken } from './JwtService'
 
 class ImageService {
-  async uploadImages(uploadedFiles: Express.Multer.File[], type: ImageType, user: User) {
+  async uploadImages(uploadedFiles: Express.Multer.File[], type: ImageType, user: DecodedJwtToken) {
     const processedImages = await Promise.all(uploadedFiles.map(this.processImage))
     const newImages = processedImages.map((image) =>
       ImageRepository.create({
         ...image,
-        user
+        user: { id: user.payload.id }
       })
     )
     return ImageRepository.save(newImages)
@@ -40,10 +41,10 @@ class ImageService {
     return image
   }
 
-  async getImage(req: Request, username: string) {
+  async getImage(req: Request, email: string) {
     const paginationOptions = PaginationUtils.extractPaginationOptions(req, 'createdAt')
     const paginatedUsers = await PaginationUtils.paginate(ImageRepository, paginationOptions, {
-      user: { username }
+      user: { email }
     })
     return omitFields(paginatedUsers, ['userId', 'user'])
   }

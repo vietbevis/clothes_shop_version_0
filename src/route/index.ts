@@ -1,32 +1,12 @@
 import { type Express, type NextFunction, type Request, type Response } from 'express'
-
 import routes_v1 from '@/route/v1'
-import swaggerJSDoc from 'swagger-jsdoc'
-import { options } from '@/config/swagger'
-import swaggerUi from 'swagger-ui-express'
 
-const PREFIX = '/api'
+const PREFIX = '/api/v1'
 
 const routes = (app: Express) => {
-  app.use(`${PREFIX}/v1`, routes_v1)
-  app.use('/ping', (req: Request, res: Response, next: NextFunction) => {
+  app.use(PREFIX, routes_v1)
+  app.use('/ping', (_req: Request, res: Response, _next: NextFunction) => {
     res.status(200).send('PONG')
-  })
-  const specs = swaggerJSDoc(options)
-
-  // Routes
-  app.use(
-    '/api-docs',
-    swaggerUi.serve,
-    swaggerUi.setup(specs, {
-      swaggerOptions: {
-        persistAuthorization: true
-      }
-    })
-  )
-  app.get('/api-docs.json', (_req: Request, res: Response) => {
-    res.setHeader('Content-Type', 'application/json')
-    res.send(specs)
   })
 }
 

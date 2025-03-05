@@ -13,7 +13,7 @@ export const OptionSchema = z
   .object({
     variantName: z.string().nonempty(),
     value: z.string().nonempty(),
-    imageFilename: z.string()
+    imageUrl: z.string()
   })
   .strict()
   .strip()
@@ -34,10 +34,15 @@ export const ProductSchema = z
     name: z.string().nonempty(),
     description: z.string().default(''),
     categoryId: z.string().nonempty(),
-    attributes: z.array(AttributeSchema).min(1),
+    attributes: z
+      .array(AttributeSchema)
+      .min(1)
+      .refine((attrs) => new Set(attrs.map((a) => a.name)).size === attrs.length, {
+        message: 'Duplicate attribute names found',
+        path: ['attributes']
+      }),
     variants: z.array(VariantSchema).min(1),
-    thumbnail: z.string().nonempty(),
-    images: z.array(z.string()).min(3),
+    images: z.array(z.string().nonempty()).min(5),
     status: z.nativeEnum(ProductStatus).default(ProductStatus.AVAILABLE)
   })
   .strict()

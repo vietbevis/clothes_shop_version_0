@@ -37,6 +37,11 @@ export enum ERole {
   ROLE_MODERATOR = 'ROLE_MODERATOR'
 }
 
+export enum VerificationCodeType {
+  REGISTER = 'REGISTER',
+  FORGOT_PASSWORD = 'FORGOT_PASSWORD'
+}
+
 export enum UserStatus {
   NOT_VERIFIED = 'not_verified',
   VERIFIED = 'verified',
@@ -57,6 +62,11 @@ export enum ApproveStatus {
   REJECTED = 'rejected'
 }
 
+export enum RoleBased {
+  ADMIN = 'admin',
+  USER = 'user'
+}
+
 export enum ProductStatus {
   AVAILABLE = 'available', // Sản phẩm còn hàng và có thể mua
   SOLD_OUT = 'sold_out', // Sản phẩm đã hết hàng
@@ -68,4 +78,15 @@ export enum ProductStatus {
 export type LoginResponseType = {
   [TokenType.ACCESS_TOKEN]: string
   [TokenType.REFRESH_TOKEN]: string
+}
+
+export enum HttpMethod {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE',
+  PATCH = 'PATCH',
+  OPTIONS = 'OPTIONS',
+  HEAD = 'HEAD',
+  ALL = 'ALL'
 }

@@ -12,8 +12,7 @@ import ms from 'ms'
 export type PayloadJwtToken = {
   id: string
   role: string[]
-  deviceName: string
-  deviceType: string
+  deviceId: string
 }
 
 export type DecodedJwtToken = {
@@ -27,12 +26,7 @@ class JwtService {
   private readonly publicKey = fs.readFileSync(path.resolve(__dirname, '..', '..', 'public_key.pem'), 'utf8')
   private readonly privateKey = fs.readFileSync(path.resolve(__dirname, '..', '..', 'private_key.pem'), 'utf8')
 
-  async generateToken(
-    user: User | DecodedJwtToken,
-    tokenType: TokenType,
-    deviceName: string,
-    deviceType: string
-  ): Promise<string> {
+  async generateToken(user: User | DecodedJwtToken, tokenType: TokenType, deviceId: string): Promise<string> {
     // Claims for the JWT token
     let payload: PayloadJwtToken
     let email: string
@@ -41,8 +35,7 @@ class JwtService {
       payload = {
         id: user.id,
         role: user.roles.map((role) => role.name),
-        deviceName,
-        deviceType
+        deviceId
       }
       email = user.email
     } else {

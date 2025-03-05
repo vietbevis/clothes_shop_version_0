@@ -9,8 +9,8 @@ class ImageController {
   }
 
   async getImages(req: Request, res: Response) {
-    const username = req.user?.username as string
-    const result = await imageService.getImage(req, username)
+    const email = req.user.sub as string
+    const result = await imageService.getImage(req, email)
     new OkResponse('Image data', result).send(res)
   }
 }

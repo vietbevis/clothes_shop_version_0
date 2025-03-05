@@ -6,6 +6,7 @@ import path from 'path'
 import fs from 'fs'
 import slugify from 'slugify'
 import { Product } from '@/model/Product'
+import { randomInt } from 'crypto'
 
 export const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {
@@ -31,7 +32,7 @@ export const initFolder = () => {
   }
 }
 
-export const getSlug = (str: string): string => {
+export const generateSlug = (str: string): string => {
   const newStr = slugify(str, {
     lower: true,
     strict: true,
@@ -40,7 +41,7 @@ export const getSlug = (str: string): string => {
   return newStr + '-' + v7().replace(/-/g, '').slice(9)
 }
 
-export const getUsername = (fullName: string) => {
+export const generateUsername = (fullName: string) => {
   const arr = fullName.trim().split(' ')
   let newName = ''
   if (arr.length >= 2) {
@@ -53,28 +54,17 @@ export const getUsername = (fullName: string) => {
 }
 
 export const omitFields = <T extends ObjectLiteral>(data: T, fields: string[] = []) => {
-  const omitFieldsDefault = [
-    'createdAt',
-    'updatedAt',
-    'password',
-    'providerId',
-    'roles',
-    'privateKey',
-    'publicKey',
-    'type',
-    'isPublic',
-    ...fields
-  ]
-
   const deepOmit = (obj: any): any => {
     if (isArray(obj)) {
       return map(obj, deepOmit)
     } else if (isObject(obj)) {
-      const omittedObject = omit(obj, omitFieldsDefault)
+      const omittedObject = omit(obj, fields)
       return reduce(
         omittedObject,
-        (acc, value, key) => {
+        (acc, value: any, key) => {
           acc[key] = isObject(value) ? deepOmit(value) : value
+          key === 'createdAt' && value instanceof Date && (acc[key] = value?.toISOString())
+          key === 'updatedAt' && value instanceof Date && (acc[key] = value?.toISOString())
           return acc
         },
         {} as Record<string, any>
@@ -90,48 +80,70 @@ const saltRounds = 10
 export const hashPassword = async (password: string) => hash(password, saltRounds)
 
 export function serializeProduct(product: Product) {
-  const transformedProduct = {
+  // Serialize attributes thành object key-value
+  const attributes = product.attributes.reduce((acc: any, attr) => {
+    acc[attr.attribute.name] = attr.value.value
+    return acc
+  }, {})
+
+  // Serialize variants
+  const variants = product.variants.map((variant) => {
+    // Serialize options, gắn imageUrl riêng cho mỗi option
+    const options = variant.options.map((option) => ({
+      variantName: option.variant.name,
+      value: option.value,
+      imageUrl: option.imageUrl || null
+    }))
+
+    return {
+      sku: variant.sku,
+      price: variant.price,
+      oldPrice: variant.oldPrice,
+      stock: variant.stock,
+      options
+    }
+  })
+
+  // Trả về sản phẩm đã serialize
+  return {
     id: product.id,
     name: product.name,
     slug: product.slug,
-    description: product.description,
-    price: getLowestInStockPrice(product),
-    thumbnail: product.thumbnail,
-    images: product.images,
-    category: product.category,
+    category: {
+      id: product.category.id,
+      name: product.category.name,
+      slug: product.category.slug,
+      imageUrl: product.category?.imageUrl || null
+    },
+    imageUrls: product.images,
+    description: product?.description || '',
     status: product.status,
-    attributes: product.attributes.map((attr) => ({
-      name: attr.name,
-      value: attr.value.value
-    })),
-    variants: product.variants.map((variant) => {
-      return {
-        id: variant.id,
-        sku: variant.sku,
-        price: variant.price,
-        oldPrice: variant.oldPrice,
-        stock: variant.stock,
-        options: variant.options.map((option) => ({
-          variantName: option.variant.name,
-          value: option.value,
-          imageFilename: option.image
-        }))
-      }
-    }),
-    variantGroups: getGroupedVariantOptions(product)
+    attributes,
+    variants,
+    groupedOptions: getGroupedVariantOptionsRes(variants)
   }
-
-  return omitFields(transformedProduct)
 }
 
-const getGroupedVariantOptions = (product: Product) => {
+export const getGroupedVariantOptionsRes = (
+  variants: {
+    sku: string
+    price: number
+    oldPrice: number
+    stock: number
+    options: {
+      variantName: string
+      value: string
+      imageUrl: string | null
+    }[]
+  }[]
+) => {
   // Create a Map for better performance with object keys
-  const variantGroups = new Map<string, Set<string>>()
+  const variantGroups = new Map<string, Set<{ imageUrl: string | null; value: string }>>()
 
   // Process each variant's options
-  for (const variant of product.variants) {
+  for (const variant of variants) {
     for (const option of variant.options) {
-      const variantName = option.variant.name
+      const variantName = option.variantName
 
       // Get or create Set for this variant type
       if (!variantGroups.has(variantName)) {
@@ -139,7 +151,46 @@ const getGroupedVariantOptions = (product: Product) => {
       }
 
       // Add the option value
-      variantGroups.get(variantName)!.add(option.value)
+      const variant = variantGroups.get(variantName)!
+      const existingOption = Array.from(variant).find((o) => o.value === option.value && o.imageUrl === option.imageUrl)
+      if (!existingOption) {
+        variant.add({
+          imageUrl: option.imageUrl,
+          value: option.value
+        })
+      }
+    }
+  }
+
+  // Convert to final array format
+  return Array.from(variantGroups.entries()).map(([name, options]) => ({
+    name,
+    options: Array.from(options)
+  }))
+}
+
+export const getGroupedVariantOptions = (
+  variants: { options: { imageUrl: string; value: string; variantName: string }[]; [key: string]: any }[]
+) => {
+  // Create a Map for better performance with object keys
+  const variantGroups = new Map<string, Set<{ imageUrl: string; value: string; variantName: string }>>()
+
+  // Process each variant's options
+  for (const variant of variants) {
+    for (const option of variant.options) {
+      const variantName = option.variantName
+
+      // Get or create Set for this variant type
+      if (!variantGroups.has(variantName)) {
+        variantGroups.set(variantName, new Set())
+      }
+
+      // Add the option value
+      const variant = variantGroups.get(variantName)!
+      const existingOption = Array.from(variant).find((o) => o.value === option.value && o.imageUrl === option.imageUrl)
+      if (!existingOption) {
+        variant.add(option)
+      }
     }
   }
 
@@ -182,4 +233,8 @@ export const getTotalStock = (product: Product) => {
   }
 
   return totalStock
+}
+
+export const generateOTP = () => {
+  return String(randomInt(100000, 1000000))
 }

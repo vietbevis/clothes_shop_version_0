@@ -4,7 +4,7 @@ import { VariantOption } from '@/model/VariantOption'
 
 @Entity('tbl_variant')
 export class Variant extends AbstractModel {
-  @Column({ nullable: false })
+  @Column({ nullable: false, unique: true })
   name!: string
 
   @OneToMany(() => VariantOption, (option) => option.variant)

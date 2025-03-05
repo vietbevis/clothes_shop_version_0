@@ -13,20 +13,18 @@ export const CreateShopSchema = z
   })
   .strip()
   .strip()
-export type CreateShopType = z.infer<typeof CreateShopSchema>
 
 export const UpdateShopSchema = z
   .object({
-    name: z.string().nonempty().optional(),
-    slogan: z.string().nonempty().optional(),
-    description: z.string().nonempty().optional(),
-    logo: z.string().nonempty().optional(),
-    banner: z.string().nonempty().optional()
+    name: z.string().nonempty(),
+    slogan: z.string().nonempty(),
+    description: z.string().nonempty(),
+    logo: z.string().nonempty(),
+    banner: z.string().nonempty(),
+    address: AddressSchema
   })
   .strip()
   .strip()
-
-export type UpdateShopType = z.infer<typeof UpdateShopSchema>
 
 export const UpdateShopStatusSchema = z
   .object({
@@ -36,3 +34,5 @@ export const UpdateShopStatusSchema = z
   .strip()
 
 export type UpdateShopStatusType = z.infer<typeof UpdateShopStatusSchema>
+export type CreateShopType = z.infer<typeof CreateShopSchema>
+export type UpdateShopType = z.infer<typeof UpdateShopSchema>

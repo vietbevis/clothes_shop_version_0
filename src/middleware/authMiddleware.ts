@@ -1,10 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { UnauthorizedError } from '@/core/ErrorResponse'
 import { TokenType } from '@/utils/enums'
-import RedisService from '@/service/RedisService'
-import { sessionKey } from '@/utils/keyRedis'
 import jwtService from '@/service/JwtService'
-import userService from '@/service/UserService'
 
 export const authMiddleware = async (req: Request, _res: Response, next: NextFunction) => {
   try {
@@ -15,25 +12,16 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
     const decoded = await jwtService.verifyToken(jwtToken, TokenType.ACCESS_TOKEN)
 
     // Get device info
-    const { deviceName, deviceType } = decoded.payload
+    const { deviceId } = decoded.payload
 
-    // Check token in redis
-    const tokenInRedis = await RedisService.getCacheItem(
-      sessionKey(decoded.sub, deviceName, deviceType, TokenType.ACCESS_TOKEN)
-    )
-
-    // If token in redis is not equal to the token in the header, throw an error
-    if (tokenInRedis !== jwtToken) {
-      throw new UnauthorizedError('Token is invalid (not equal to the token in redis)')
-    }
-
-    // Set user to req.user
-    req.user = await userService.loadUserByEmail(decoded.sub)
-    req.deviceName = deviceName
-    req.deviceType = deviceType
+    req.user = decoded
+    req.deviceId = deviceId
 
     next()
-  } catch (_e) {
+  } catch (e) {
+    if (e instanceof UnauthorizedError) {
+      return next(e)
+    }
     next(new UnauthorizedError('Token is invalid'))
   }
 }

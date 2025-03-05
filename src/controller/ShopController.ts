@@ -25,13 +25,8 @@ class ShopController {
     new OkResponse('Shop approved').send(res)
   }
 
-  async updateAddressShop(req: Request, res: Response) {
-    const result = await shopService.updateAddressShop(req.body, req.user)
-    new OkResponse('Shop address updated', omitFields(result, ['userId'])).send(res)
-  }
-
   async getShopByShopSlug(req: Request, res: Response) {
-    const result = await shopService.getShopByShopSlug(req.params.username)
+    const result = await shopService.getShopByShopSlug(req.params.slug)
     if (!result) throw new BadRequestError('Shop not found')
     new OkResponse('Shop found', omitFields(result, ['userId'])).send(res)
   }

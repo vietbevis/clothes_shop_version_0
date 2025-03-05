@@ -17,7 +17,7 @@ class Server {
     this.setupApplication()
   }
 
-  setupApplication() {
+  async setupApplication() {
     this.configureMiddlewares()
     this.configureRoutes()
     this.configureErrorHandling()

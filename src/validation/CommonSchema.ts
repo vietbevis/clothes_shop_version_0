@@ -84,8 +84,8 @@ export const PaginationQuerySchema = z
         message: 'Limit must be a positive number'
       })
       .transform((val) => Number(val)),
-    sortBy: z.enum(['createdAt', 'updatedAt']).optional(),
-    sortDirection: z.nativeEnum(ESort).optional()
+    sortBy: z.string().optional(),
+    sortDirection: z.string().optional()
   })
   .strict()
   .strip()

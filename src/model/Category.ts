@@ -4,6 +4,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  RelationId,
   Tree,
   TreeChildren,
   TreeLevelColumn,
@@ -38,7 +39,10 @@ export class Category extends AbstractModel {
   @OneToMany(() => Product, (product) => product.category)
   products!: Product[]
 
-  @ManyToOne(() => Image, { eager: true, nullable: true })
+  @Column({ nullable: true, name: 'image_id' })
+  imageUrl!: string
+
+  @ManyToOne(() => Image, { nullable: true })
   @JoinColumn({ name: 'image_id' })
   image!: Image | null
 }

@@ -22,6 +22,11 @@ class ProductController {
     const result = await productService.getProducts(req)
     new OkResponse('Product found', result).send(res)
   }
+
+  async updateProduct(req: Request, res: Response) {
+    const result = await productService.updateProduct(req.params.id, req.body, req.user)
+    new OkResponse('Product updated', result).send(res)
+  }
 }
 
 const productController = new ProductController()

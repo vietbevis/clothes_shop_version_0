@@ -1,12 +1,13 @@
 import { User } from '@/model/User'
 import { hashPassword, omitFields } from '@/utils/helper'
 import { UserRepository } from '@/repository/UserRepository'
-import { BadRequestError } from '@/core/ErrorResponse'
+import { BadRequestError, UnauthorizedError } from '@/core/ErrorResponse'
 import { ImageType } from '@/utils/enums'
 import { UpdateProfileType } from '@/validation/CommonSchema'
 import { ProfileRepository } from '@/repository/ProfileRepository'
 import { MESSAGES } from '@/utils/message'
 import ImageRepository from '@/repository/ImageRepository'
+import { DecodedJwtToken } from './JwtService'
 
 class UserService {
   async createUser(userData: Partial<User>): Promise<User> {
@@ -36,22 +37,24 @@ class UserService {
     return UserRepository.loadUserByEmail(email, { roles: true })
   }
 
-  async getMe(user: User) {
-    const result = await UserRepository.findById(user.id, { profile: true, avatar: true, coverPhoto: true })
+  async getMe(user: DecodedJwtToken) {
+    const result = await UserRepository.findById(user.payload.id, { profile: true })
     if (!result) throw new BadRequestError()
     return omitFields(result, [])
   }
 
   async getUserByUsername(username: string) {
-    const result = await UserRepository.findByUsernameAndActiveProfile(username, { avatar: true, coverPhoto: true })
+    const result = await UserRepository.findByUsernameAndActiveProfile(username)
     if (!result) throw new BadRequestError('User not found')
     return omitFields(result, [])
   }
 
-  async changeImageProfile(user: User, filename: string, type: ImageType) {
-    const targetImage = await ImageRepository.findByFileNameAndUserId(filename, user.id)
+  async changeImageProfile(userReq: DecodedJwtToken, filename: string, type: ImageType) {
+    const targetImage = await ImageRepository.findByFileName(filename)
 
     if (!targetImage) throw new BadRequestError('Image not found')
+    const user = await UserRepository.findByEmail(userReq.sub)
+    if (!user) throw new UnauthorizedError()
 
     if (type === ImageType.AVATAR) {
       user.avatar = targetImage
@@ -65,16 +68,16 @@ class UserService {
     return omitFields(res, ['userId', 'user'])
   }
 
-  async updateProfile(user: User, data: UpdateProfileType) {
-    const profile = await ProfileRepository.findByUserId(user.id)
+  async updateProfile(user: DecodedJwtToken, data: UpdateProfileType) {
+    const profile = await ProfileRepository.findByUserId(user.payload.id)
     if (!profile) throw new BadRequestError(MESSAGES.ACCOUNT_NOT_FOUND)
     const updatedUser = ProfileRepository.merge(profile, data)
     const result = await ProfileRepository.save(updatedUser)
     return omitFields(result, [])
   }
 
-  async hideProfile(user: User) {
-    const profile = await ProfileRepository.findByUserId(user.id)
+  async hideProfile(user: DecodedJwtToken) {
+    const profile = await ProfileRepository.findByUserId(user.payload.id)
     if (!profile) throw new BadRequestError(MESSAGES.ACCOUNT_NOT_FOUND)
     profile.isPublic = !profile.isPublic
     const result = await ProfileRepository.save(profile)

@@ -21,13 +21,13 @@ class SuccessResponse<T = any> {
   }
 }
 
-class OkResponse<T = any> extends SuccessResponse<T> {
+class OkResponse<T> extends SuccessResponse<T> {
   constructor(message: string = ReasonPhrases.OK, data?: T) {
     super(message, StatusCodes.OK, data)
   }
 }
 
-class CreatedResponse<T = any> extends SuccessResponse<T> {
+class CreatedResponse<T> extends SuccessResponse<T> {
   constructor(message: string = ReasonPhrases.CREATED, data?: T) {
     super(message, StatusCodes.CREATED, data)
   }

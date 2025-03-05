@@ -1,19 +1,23 @@
-import { Column, Entity, ManyToMany, ManyToOne } from 'typeorm'
+import { Column, Entity, ManyToMany, Unique } from 'typeorm'
 import { AbstractModel } from '@/model/base/AbstractModel'
-import { Role } from '@/model/Role'
-import { Resource } from '@/model/Resource'
+import { HttpMethod } from '@/utils/enums'
+import { Role } from './Role'
 
 @Entity('tbl_permission')
+@Unique(['name', 'apiPath', 'method', 'resource'])
 export class Permission extends AbstractModel {
-  @Column({ type: 'varchar', length: 50, nullable: false })
+  @Column({ type: 'varchar', length: 150, nullable: false })
   name!: string
 
-  @Column({ type: 'varchar' })
-  description!: string
+  @Column({ type: 'varchar', length: 100, nullable: false })
+  apiPath!: string
 
-  @ManyToMany(() => Role, (role) => role.permissions)
+  @Column({ type: 'enum', enum: HttpMethod, nullable: false })
+  method!: string
+
+  @Column({ type: 'varchar', length: 100, nullable: false })
+  resource!: string
+
+  @ManyToMany(() => Role, (role) => role.permissions, { onDelete: 'CASCADE' })
   roles!: Role[]
-
-  @ManyToOne(() => Resource)
-  resource!: Resource
 }

@@ -5,16 +5,23 @@ import { AbstractModel } from '@/model/base/AbstractModel'
 
 @Entity('tbl_role')
 export class Role extends AbstractModel {
-  @Column()
+  @Column({ nullable: false })
   name!: string
 
-  @Column()
+  @Column({ default: '', length: 255 })
   description!: string
+
+  @Column({ default: true, type: 'boolean' })
+  isActive!: boolean
 
   @ManyToMany(() => User, (user) => user.roles)
   users!: User[]
 
   @ManyToMany(() => Permission)
-  @JoinTable()
+  @JoinTable({
+    name: 'tbl_role_permission',
+    joinColumn: { name: 'role_id' },
+    inverseJoinColumn: { name: 'permission_id' }
+  })
   permissions!: Permission[]
 }

@@ -20,7 +20,8 @@ const configSchema = z.object({
   MINIO_HOST: z.string(),
   MINIO_PORT: z.coerce.number().default(9000),
   MINIO_ACCESSKEY: z.string(),
-  MINIO_SECRETKEY: z.string()
+  MINIO_SECRETKEY: z.string(),
+  BASE_IMAGE_URL: z.string()
 })
 
 const configServer = configSchema.safeParse(process.env)

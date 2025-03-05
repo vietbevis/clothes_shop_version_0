@@ -1,9 +1,9 @@
 import { AbstractModel } from '@/model/base/AbstractModel'
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm'
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, RelationId } from 'typeorm'
 import { Category } from '@/model/Category'
 import { ProductAttribute } from '@/model/ProductAttribute'
 import { Comment } from '@/model/Comment'
-import { ProductRating } from '@/model/ProductRating'
+import { Review } from '@/model/Review'
 import { Shop } from '@/model/Shop'
 import { Image } from '@/model/Image'
 import { ProductStatus } from '@/utils/enums'
@@ -14,19 +14,17 @@ export class Product extends AbstractModel {
   @Column({ nullable: false })
   name!: string
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, unique: true })
   slug!: string
 
-  @ManyToOne(() => Image, { eager: true })
-  @JoinColumn({ name: 'thumbnail' })
-  thumbnail!: Image
-
-  @ManyToMany(() => Image)
-  @JoinTable()
-  images!: Image[]
+  @Column({ name: 'images', nullable: false, type: 'json' })
+  images!: string[]
 
   @Column({ type: 'text', nullable: false })
   description!: string
+
+  @Column({ name: 'category_id', nullable: false })
+  categoryId!: string
 
   @ManyToOne(() => Category)
   @JoinColumn({ name: 'category_id' })
@@ -34,6 +32,9 @@ export class Product extends AbstractModel {
 
   @Column({ type: 'enum', enum: ProductStatus, default: ProductStatus.AVAILABLE })
   status!: ProductStatus
+
+  @Column({ nullable: true, name: 'shop_id' })
+  shopId!: string
 
   @ManyToOne(() => Shop, (shop) => shop.products)
   @JoinColumn({ name: 'shop_id' })
@@ -48,6 +49,6 @@ export class Product extends AbstractModel {
   @OneToMany(() => Comment, (comment) => comment.product)
   comments!: Comment[]
 
-  @OneToMany(() => ProductRating, (rating) => rating.product)
-  ratings!: ProductRating[]
+  @OneToMany(() => Review, (review) => review.product)
+  reviews!: Review[]
 }

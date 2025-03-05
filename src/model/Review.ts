@@ -3,13 +3,13 @@ import { User } from '@/model/User'
 import { Product } from '@/model/Product'
 import { AbstractModel } from '@/model/base/AbstractModel'
 
-@Entity('tbl_product_rating')
-export class ProductRating extends AbstractModel {
-  @Column()
+@Entity('tbl_product_review')
+export class Review extends AbstractModel {
+  @Column({ type: 'int', default: 5 })
   rating!: number
 
   @Column({ nullable: true, type: 'text' })
-  review!: string
+  content!: string
 
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })

@@ -1,26 +1,21 @@
 import { CreateCategoryType, UpdateCategoryType } from '@/validation/CategorySchema'
 import CategoryRepository from '@/repository/CategoryRepository'
-import { getSlug, omitFields } from '@/utils/helper'
-import { BadRequestError, UnauthorizedError } from '@/core/ErrorResponse'
+import { generateSlug, omitFields } from '@/utils/helper'
+import { BadRequestError, EntityError, ValidationError } from '@/core/ErrorResponse'
 import ImageRepository from '@/repository/ImageRepository'
-import { User } from '@/model/User'
 import { Request } from 'express'
-import { PaginationUtils } from '@/utils/PaginationUtils'
+import { PaginationUtils as PaginationUtilsV2 } from '@/utils/PaginationUtilsV2'
 import { Like } from 'typeorm'
+import { DecodedJwtToken } from './JwtService'
 
 class CategoryService {
-  async getCategories(name: string, parentId: string, req: Request) {
-    const paginationOptions = PaginationUtils.extractPaginationOptions(req, 'createdAt')
-    const paginatedProducts = await PaginationUtils.paginate(
-      CategoryRepository,
-      paginationOptions,
-      {
-        name: name ? Like(`%${name}%`) : undefined,
-        parent: { id: parentId ?? undefined }
-      },
-      { image: true }
-    )
-    return omitFields(paginatedProducts)
+  async getCategoiesV2(name: string, parentId: string, req: Request) {
+    const options = PaginationUtilsV2.extractPaginationOptions(req, 'createdAt')
+    const result = await PaginationUtilsV2.paginate(CategoryRepository, options, {
+      name: name ? Like(`%${name}%`) : undefined,
+      parent: { id: parentId ?? undefined }
+    })
+    return omitFields(result)
   }
 
   async getCategoryBySlug(slug: string) {
@@ -29,10 +24,8 @@ class CategoryService {
     return omitFields(result, ['children'])
   }
 
-  async create(body: CreateCategoryType, user: User | null) {
-    if (!user) throw new UnauthorizedError()
-
-    const { name, parentId, imageFilename, description } = body
+  async create(body: CreateCategoryType, user: DecodedJwtToken) {
+    const { name, parentId, image, description } = body
 
     const existingCategory = await CategoryRepository.existByName(name)
     if (existingCategory) throw new BadRequestError('Category already exists')
@@ -40,15 +33,15 @@ class CategoryService {
     const newCategory = CategoryRepository.create({
       name,
       description: description ?? '',
-      slug: getSlug(name),
+      slug: generateSlug(name),
       image: null,
       parent: null
     })
 
-    if (imageFilename) {
-      const image = await ImageRepository.findByFileNameAndUserId(imageFilename, user.id)
-      if (!image) throw new BadRequestError('Image not found')
-      newCategory.image = image
+    if (image) {
+      const imageExists = await ImageRepository.findByFileNameAndUserId(image, user.payload.id)
+      if (!imageExists) throw new BadRequestError('Image not found')
+      newCategory.image = imageExists
     }
 
     if (parentId) {
@@ -61,42 +54,42 @@ class CategoryService {
       newCategory.level = parentCategory.level + 1
     }
 
-    return CategoryRepository.save(newCategory)
+    return omitFields(await CategoryRepository.save(newCategory), ['deletedAt', 'parent', 'children', 'image'])
   }
 
-  async update(id: string, body: UpdateCategoryType, user: User | null) {
-    if (!user) throw new UnauthorizedError()
+  async update(id: string, body: UpdateCategoryType, user: DecodedJwtToken) {
+    try {
+      const category = await CategoryRepository.findById(id)
+      if (!category) throw new BadRequestError('Category not found')
 
-    const category = await CategoryRepository.findById(id)
-    if (!category) throw new BadRequestError('Category not found')
+      const { name, image, description } = body
 
-    const { name, imageFilename, description } = body
+      if (name !== category.name) {
+        category.name = name
+        category.slug = generateSlug(name)
+      }
 
-    if (name !== category.name) {
-      const existingCategory = await CategoryRepository.existByName(name)
-      if (existingCategory) throw new BadRequestError('Category already exists')
+      category.description = description ?? ''
+
+      if (image) {
+        const imageExists = await ImageRepository.findByFileNameAndUserId(image, user.payload.id)
+        if (!imageExists) throw new BadRequestError('Image not found')
+        category.image = imageExists
+      } else {
+        category.image = null
+      }
+
+      return omitFields(await CategoryRepository.save(category), ['deletedAt', 'parent', 'children', 'image'])
+    } catch (error) {
+      throw new ValidationError('Category already exists', [new EntityError('name', 'Category already exists')])
     }
-
-    category.name = name
-    category.description = description ?? ''
-    category.slug = getSlug(name)
-
-    if (imageFilename) {
-      const image = await ImageRepository.findByFileNameAndUserId(imageFilename, user.id)
-      if (!image) throw new BadRequestError('Image not found')
-      category.image = image
-    } else {
-      category.image = null
-    }
-
-    return CategoryRepository.save(category)
   }
 
   async delete(id: string) {
     const category = await CategoryRepository.findById(id)
     if (!category) throw new BadRequestError('Category not found')
 
-    await CategoryRepository.remove(category)
+    await CategoryRepository.softRemove(category)
   }
 }
 

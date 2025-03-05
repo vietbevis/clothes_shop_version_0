@@ -16,6 +16,7 @@ export class Comment extends AbstractModel {
   parent!: Comment
 
   @TreeLevelColumn()
+  @Column({ default: 1 })
   level!: number
 
   @ManyToOne(() => User, { nullable: false })

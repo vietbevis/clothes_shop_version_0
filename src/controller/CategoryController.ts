@@ -22,7 +22,7 @@ class CategoryController {
   async getCategories(req: Request, res: Response) {
     const name = req.query.name as string
     const parentId = req.query.parentId as string
-    const result = await categoryService.getCategories(name, parentId, req)
+    const result = await categoryService.getCategoiesV2(name, parentId, req)
     new OkResponse('Categories retrieved', result).send(res)
   }
 

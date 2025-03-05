@@ -1,5 +1,5 @@
 import { AbstractModel } from '@/model/base/AbstractModel'
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm'
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, RelationId } from 'typeorm'
 import { Role } from '@/model/Role'
 import { UserStatus } from '@/utils/enums'
 import { compare } from 'bcryptjs'
@@ -23,12 +23,18 @@ export class User extends AbstractModel {
   @Column({ type: 'nvarchar', length: 70, nullable: false })
   fullName!: string
 
-  @OneToOne(() => Image, { cascade: true })
-  @JoinColumn({ name: 'avatar' })
-  avatar!: Image
+  @Column({ type: 'varchar', name: 'avatar_url', default: null })
+  avatarUrl!: string
 
   @OneToOne(() => Image, { cascade: true })
-  @JoinColumn({ name: 'coverPhoto' })
+  @JoinColumn({ name: 'avatar_url' })
+  avatar!: Image
+
+  @Column({ type: 'varchar', name: 'cover_photo_url', default: null })
+  coverPhotoUrl!: string
+
+  @OneToOne(() => Image, { cascade: true })
+  @JoinColumn({ name: 'cover_photo_url' })
   coverPhoto!: Image
 
   @Column({ type: 'varchar', name: 'provider_id', default: '' })
@@ -38,15 +44,19 @@ export class User extends AbstractModel {
   status!: UserStatus
 
   @ManyToMany(() => Role)
-  @JoinTable()
+  @JoinTable({
+    name: 'tbl_user_role',
+    joinColumn: { name: 'user_id' },
+    inverseJoinColumn: { name: 'role_id' }
+  })
   roles!: Role[]
 
-  @OneToOne(() => Shop, (shop) => shop.owner)
-  shop!: Shop
+  @Column({ name: 'shop_id', default: null })
+  shopId!: string
 
-  @ManyToOne(() => Shop, (shop) => shop.staff)
-  @JoinColumn({ name: 'staff_in_shop_id' })
-  staffIn!: Shop
+  @OneToOne(() => Shop, (shop) => shop.owner, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'shop_id' })
+  shop!: Shop
 
   @OneToMany(() => UserDevice, (device) => device.user)
   devices!: UserDevice[]

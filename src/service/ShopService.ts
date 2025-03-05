@@ -6,30 +6,31 @@ import { AppDataSource } from '@/config/database'
 import ShopRepository from '@/repository/ShopRepository'
 import ImageRepository from '@/repository/ImageRepository'
 import { Shop } from '@/model/Shop'
-import { getSlug } from '@/utils/helper'
+import { generateSlug, omitFields } from '@/utils/helper'
 import { ApproveStatus, ShopStatus } from '@/utils/enums'
 import { ApproveQueryType } from '@/validation/CommonSchema'
 import { AddressBodyType } from '@/validation/AddressSchema'
 import { Request } from 'express'
-import { PaginationUtils } from '@/utils/PaginationUtils'
+import { PaginationUtils } from '@/utils/PaginationUtilsV2'
 import { Like } from 'typeorm'
+import { DecodedJwtToken } from './JwtService'
+import { pick } from 'lodash'
 
 class ShopService {
-  async createShop(shop: CreateShopType, user: User | null) {
+  async createShop(shop: CreateShopType, user: DecodedJwtToken) {
     return AppDataSource.manager.transaction(async (transaction) => {
-      if (!user) throw new UnauthorizedError()
-
       const AddressRepo = transaction.withRepository(AddressRepository)
       const ShopRepo = transaction.withRepository(ShopRepository)
       const ImageRepo = transaction.withRepository(ImageRepository)
 
-      const existingShop = await ShopRepo.findByOwner(user.id)
+      const existingShop = await ShopRepo.findByOwner(user.payload.id)
       if (existingShop) throw new BadRequestError('Shop already exists')
 
-      const logo = await ImageRepo.findByFileNameAndUserId(shop.logo, user.id)
+      const [logo, banner] = await Promise.all([
+        ImageRepo.findByFileNameAndUserId(shop.logo, user.payload.id),
+        ImageRepo.findByFileNameAndUserId(shop.banner, user.payload.id)
+      ])
       if (!logo) throw new ValidationError('Logo not found', [new EntityError('logo', 'Logo not found')])
-
-      const banner = await ImageRepo.findByFileNameAndUserId(shop.banner, user.id)
       if (!banner) throw new ValidationError('Banner not found', [new EntityError('banner', 'Banner not found')])
 
       const address = AddressRepo.create({ ...shop.address })
@@ -37,56 +38,51 @@ class ShopService {
 
       const newShop: Shop = ShopRepo.create({
         ...shop,
-        slug: getSlug(shop.name),
+        slug: generateSlug(shop.name),
         address: result,
-        owner: user,
+        owner: { id: user.payload.id },
         logo,
         banner
       })
 
-      return ShopRepo.save(newShop)
+      return omitFields(await ShopRepo.save(newShop), ['owner', 'deletedAt', 'logo', 'banner'])
     })
   }
 
-  async updateShop(shop: UpdateShopType, user: User | null) {
-    if (!user) throw new UnauthorizedError()
-
-    const currentShop = await ShopRepository.findByOwner(user.id)
+  async updateShop(shop: UpdateShopType, user: DecodedJwtToken) {
+    const currentShop = await ShopRepository.findByOwner(user.payload.id, { address: true })
     if (!currentShop) throw new BadRequestError('Shop not found')
 
-    const { banner, logo, name, ...rest } = shop
+    const { banner, logo, name, address, ...rest } = shop
 
     const updatedShop = ShopRepository.merge(currentShop, rest)
+    updatedShop.address = AddressRepository.merge(currentShop.address, address)
 
-    if (name && name !== currentShop.name) {
+    if (name !== currentShop.name) {
       updatedShop.name = name
-      updatedShop.slug = getSlug(name)
+      updatedShop.slug = generateSlug(name)
     }
 
-    if (logo) {
-      const newLogo = await ImageRepository.findByFileNameAndUserId(logo, user.id)
+    if (logo !== currentShop.logoUrl) {
+      const newLogo = await ImageRepository.findByFileNameAndUserId(logo, user.payload.id)
       if (!newLogo) throw new ValidationError('Logo not found', [new EntityError('logo', 'Logo not found')])
-
       updatedShop.logo = newLogo
     }
-    if (banner) {
-      const newBanner = await ImageRepository.findByFileNameAndUserId(banner, user.id)
+    if (banner !== currentShop.bannerUrl) {
+      const newBanner = await ImageRepository.findByFileNameAndUserId(banner, user.payload.id)
       if (!newBanner) throw new ValidationError('Banner not found', [new EntityError('banner', 'Banner not found')])
-
       updatedShop.banner = newBanner
     }
 
-    return ShopRepository.save(updatedShop)
+    return omitFields(await ShopRepository.save(updatedShop), ['owner', 'deletedAt', 'logo', 'banner'])
   }
 
-  async changeShopStatus(status: ShopStatus, user: User | null) {
-    if (!user) throw new UnauthorizedError()
-
-    const shop = await ShopRepository.findByOwner(user.id)
+  async changeShopStatus(status: ShopStatus, user: DecodedJwtToken) {
+    const shop = await ShopRepository.findByOwner(user.payload.id)
     if (!shop) throw new BadRequestError('Shop not found')
 
     shop.status = status
-    return ShopRepository.save(shop)
+    return omitFields(await ShopRepository.save(shop), ['owner', 'deletedAt'])
   }
 
   async approveShop(shopId: string, status: ApproveQueryType['status']) {
@@ -99,32 +95,18 @@ class ShopService {
       shop.status = ShopStatus.OPEN
     }
 
-    return ShopRepository.save(shop)
-  }
-
-  async updateAddressShop(address: AddressBodyType, user: User | null) {
-    if (!user) throw new UnauthorizedError()
-
-    const shop = await ShopRepository.findByOwner(user.id, { address: true })
-    if (!shop) throw new BadRequestError('Shop not found')
-
-    const updatedAddress = AddressRepository.merge(shop.address, address)
-
-    return AddressRepository.save(updatedAddress)
+    return omitFields(await ShopRepository.save(shop), ['owner', 'deletedAt'])
   }
 
   async getShopByShopSlug(slug: string) {
-    return ShopRepository.findByShopSlug(slug, { owner: true, address: true, logo: true, banner: true })
+    const result = await ShopRepository.findByShopSlug(slug, { address: true, owner: true })
+    if (!result) throw new BadRequestError('Shop not found or deleted')
+    return { ...result, owner: pick(result.owner, ['username', 'email', 'fullName']) }
   }
 
   async getAllShops(name: string, req: Request) {
     const paginationOptions = PaginationUtils.extractPaginationOptions(req, 'createdAt')
-    return PaginationUtils.paginate(
-      ShopRepository,
-      paginationOptions,
-      { name: name ? Like(`%${name}%`) : undefined },
-      { owner: true }
-    )
+    return PaginationUtils.paginate(ShopRepository, paginationOptions, { name: name ? Like(`%${name}%`) : undefined })
   }
 }
 

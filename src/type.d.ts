@@ -1,11 +1,10 @@
-import { User } from '@/model/User'
 import { Image } from '@/model/Image'
+import { DecodedJwtToken } from './service/JwtService'
 
 declare module 'express-serve-static-core' {
   interface Request {
-    user: User | null
-    deviceName: string
-    deviceType: string
+    user: DecodedJwtToken
+    deviceId: string
     filesUploaded: Image[]
   }
 }

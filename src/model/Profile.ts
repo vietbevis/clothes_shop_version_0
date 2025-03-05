@@ -4,7 +4,7 @@ import { Gender } from '@/utils/enums'
 
 @Entity('tbl_profile')
 export class Profile {
-  @PrimaryColumn({ name: 'user_id', type: 'uuid', select: false })
+  @PrimaryColumn({ name: 'user_id' })
   userId!: string
 
   @Column({ name: 'gender', type: 'enum', enum: Gender, default: Gender.OTHER })

@@ -3,6 +3,6 @@ import { Profile } from '@/model/Profile'
 
 export const ProfileRepository = AppDataSource.getRepository(Profile).extend({
   async findByUserId(userId: string) {
-    return this.findOneBy({ userId })
+    return this.findOneBy({ user: { id: userId } })
   }
 })

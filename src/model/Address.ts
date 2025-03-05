@@ -1,6 +1,7 @@
 import { AbstractModel } from '@/model/base/AbstractModel'
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm'
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToOne } from 'typeorm'
 import { User } from '@/model/User'
+import { Shop } from './Shop'
 
 @Entity('tbl_address')
 export class Address extends AbstractModel {
@@ -35,7 +36,10 @@ export class Address extends AbstractModel {
   @Column({ name: 'user_id', select: false, nullable: true })
   userId!: string
 
-  @ManyToOne(() => User, (user) => user.addresses)
+  @ManyToOne(() => User, (user) => user.addresses, { orphanedRowAction: 'delete' })
   @JoinColumn({ name: 'user_id' })
   user!: User
+
+  @OneToOne(() => Shop, (shop) => shop.address, { orphanedRowAction: 'delete' })
+  shop!: Shop
 }

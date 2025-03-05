@@ -1,10 +1,19 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+  UpdateDateColumn
+} from 'typeorm'
 import { User } from './User'
-import { AbstractModel } from '@/model/base/AbstractModel'
 
 @Entity('tbl_image')
-export class Image extends AbstractModel {
-  @Column({ name: 'file_name', unique: true })
+@Index('idx_user_id', ['userId', 'fileName'], { unique: true })
+export class Image {
+  @PrimaryColumn({ name: 'file_name' })
   fileName!: string
 
   @Column()
@@ -19,4 +28,10 @@ export class Image extends AbstractModel {
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user_id' })
   user!: User
+
+  @CreateDateColumn({ name: 'created_at', type: 'datetime' })
+  createdAt!: Date
+
+  @UpdateDateColumn({ name: 'updated_at', type: 'datetime' })
+  updatedAt!: Date
 }

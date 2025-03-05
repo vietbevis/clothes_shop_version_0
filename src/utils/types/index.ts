@@ -3,3 +3,8 @@ export type ProcessedImage = {
   width: number
   height: number
 }
+
+export type RouteInfo = {
+  path: string
+  methods: string
+}

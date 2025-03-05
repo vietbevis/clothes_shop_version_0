@@ -1,7 +1,6 @@
 import { OkResponse } from '@/core/SuccessResponse'
 import { Request, Response } from 'express'
 import authService from '@/service/AuthService'
-import { EmailParamsType } from '@/validation/AuthSchema'
 
 class AuthController {
   async register(req: Request, res: Response) {
@@ -12,16 +11,6 @@ class AuthController {
   async login(req: Request, res: Response) {
     const result = await authService.login(req.body, req)
     new OkResponse('Login successfully', result).send(res)
-  }
-
-  async verifyAccount(req: Request, res: Response) {
-    await authService.verifyAccount(req.body)
-    new OkResponse('Account verified successfully').send(res)
-  }
-
-  async sendEmailForgotPassword(req: Request<EmailParamsType>, res: Response) {
-    const result = await authService.sendTokenForgotPassword(req.body)
-    new OkResponse('Email verified successfully', result).send(res)
   }
 
   async forgotPassword(req: Request, res: Response) {
@@ -42,6 +31,11 @@ class AuthController {
   async changePassword(req: Request, res: Response) {
     await authService.changePassword(req.user, req.body)
     new OkResponse('Change password successfully').send(res)
+  }
+
+  async sendOTP(req: Request, res: Response) {
+    await authService.sendOTP(req.body)
+    new OkResponse('OTP sent successfully').send(res)
   }
 }
 

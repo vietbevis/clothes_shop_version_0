@@ -3,17 +3,17 @@ import userService from '@/service/UserService'
 import { UnauthorizedError } from '@/core/ErrorResponse'
 import { ChangeImageProfileParamsType, UsernameParamsType } from '@/validation/CommonSchema'
 import { OkResponse } from '@/core/SuccessResponse'
+import { omitFields } from '@/utils/helper'
 
 class UserController {
   async getMe(req: Request, res: Response) {
-    if (!req.user) throw new UnauthorizedError()
     const result = await userService.getMe(req.user)
-    new OkResponse('User data', result).send(res)
+    new OkResponse('User data', omitFields(result, ['password', 'providerId', 'status', 'userId'])).send(res)
   }
 
   async getUser(req: Request<UsernameParamsType>, res: Response) {
     const result = await userService.getUserByUsername(req.params.username)
-    new OkResponse('User data', result).send(res)
+    new OkResponse('User data', omitFields(result, ['password', 'providerId', 'status', 'userId'])).send(res)
   }
 
   async changeImageProfile(req: Request, res: Response) {

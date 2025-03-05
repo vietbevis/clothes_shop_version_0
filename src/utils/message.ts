@@ -9,5 +9,6 @@ export const MESSAGES = {
   REQUEST_IN_PROGRESS: 'Request in progress. Please wait a moment',
   ROLE_NOT_FOUND: 'Role not found',
   DEVICE_ALREADY_LOGGED_IN: 'Device already logged in',
-  ADDRESS_NOT_FOUND: 'Address not found'
+  ADDRESS_NOT_FOUND: 'Address not found',
+  CAN_NOT_RESEND_OTP: 'Can not resend OTP'
 }
