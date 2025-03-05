@@ -1,11 +1,10 @@
 import { AbstractModel } from '@/model/base/AbstractModel'
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, RelationId } from 'typeorm'
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm'
 import { Category } from '@/model/Category'
 import { ProductAttribute } from '@/model/ProductAttribute'
 import { Comment } from '@/model/Comment'
 import { Review } from '@/model/Review'
 import { Shop } from '@/model/Shop'
-import { Image } from '@/model/Image'
 import { ProductStatus } from '@/utils/enums'
 import { ProductVariant } from '@/model/ProductVariant'
 

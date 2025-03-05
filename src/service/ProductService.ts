@@ -8,7 +8,7 @@ import ProductVariantRepository, { TProductVariantRepository } from '@/repositor
 import ProductRepository from '@/repository/ProductRepository'
 import CategoryRepository from '@/repository/CategoryRepository'
 import { BadRequestError, EntityError, UnauthorizedError, ValidationError } from '@/core/ErrorResponse'
-import ImageRepository, { TImageRepository } from '@/repository/ImageRepository'
+import ImageRepository from '@/repository/ImageRepository'
 import ShopRepository from '@/repository/ShopRepository'
 import {
   getLowestInStockOldPrice,

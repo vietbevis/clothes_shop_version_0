@@ -39,10 +39,6 @@ export class Category extends AbstractModel {
   @OneToMany(() => Product, (product) => product.category)
   products!: Product[]
 
-  @Column({ nullable: true, name: 'image_id' })
+  @Column({ name: 'image_url', default: '' })
   imageUrl!: string
-
-  @ManyToOne(() => Image, { nullable: true })
-  @JoinColumn({ name: 'image_id' })
-  image!: Image | null
 }

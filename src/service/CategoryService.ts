@@ -24,7 +24,7 @@ class CategoryService {
     return omitFields(result, ['children'])
   }
 
-  async create(body: CreateCategoryType, user: DecodedJwtToken) {
+  async create(body: CreateCategoryType) {
     const { name, parentId, image, description } = body
 
     const existingCategory = await CategoryRepository.existByName(name)
@@ -34,15 +34,16 @@ class CategoryService {
       name,
       description: description ?? '',
       slug: generateSlug(name),
-      image: null,
       parent: null
     })
 
-    if (image) {
-      const imageExists = await ImageRepository.findByFileNameAndUserId(image, user.payload.id)
-      if (!imageExists) throw new BadRequestError('Image not found')
-      newCategory.image = imageExists
-    }
+    // if (image) {
+    //   const imageExists = await ImageRepository.findByFileNameAndUserId(image, user.payload.id)
+    //   if (!imageExists) throw new BadRequestError('Image not found')
+    //   newCategory.image = imageExists
+    // }
+
+    newCategory.imageUrl = image ?? ''
 
     if (parentId) {
       const parentCategory = await CategoryRepository.findById(parentId)
@@ -57,7 +58,7 @@ class CategoryService {
     return omitFields(await CategoryRepository.save(newCategory), ['deletedAt', 'parent', 'children', 'image'])
   }
 
-  async update(id: string, body: UpdateCategoryType, user: DecodedJwtToken) {
+  async update(id: string, body: UpdateCategoryType) {
     try {
       const category = await CategoryRepository.findById(id)
       if (!category) throw new BadRequestError('Category not found')
@@ -70,14 +71,7 @@ class CategoryService {
       }
 
       category.description = description ?? ''
-
-      if (image) {
-        const imageExists = await ImageRepository.findByFileNameAndUserId(image, user.payload.id)
-        if (!imageExists) throw new BadRequestError('Image not found')
-        category.image = imageExists
-      } else {
-        category.image = null
-      }
+      category.imageUrl = image ?? ''
 
       return omitFields(await CategoryRepository.save(category), ['deletedAt', 'parent', 'children', 'image'])
     } catch (error) {

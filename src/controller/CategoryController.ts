@@ -5,12 +5,12 @@ import { omitFields } from '@/utils/helper'
 
 class CategoryController {
   async createCategory(req: Request, res: Response) {
-    const result = await categoryService.create(req.body, req.user)
+    const result = await categoryService.create(req.body)
     new OkResponse('Category created', omitFields(result, [])).send(res)
   }
 
   async updateCategory(req: Request, res: Response) {
-    const result = await categoryService.update(req.params.id, req.body, req.user)
+    const result = await categoryService.update(req.params.id, req.body)
     new OkResponse('Category updated', omitFields(result, [])).send(res)
   }
 
