@@ -109,6 +109,7 @@ export function serializeProduct(product: Product) {
     id: product.id,
     name: product.name,
     slug: product.slug,
+    shopSlug: product.shopSlug,
     category: {
       id: product.category.id,
       name: product.category.name,

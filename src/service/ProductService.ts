@@ -71,7 +71,7 @@ class ProductService {
       const product = repositories.product.create({
         ...rest,
         category,
-        shopId: shop.id,
+        shopSlug: shop.slug,
         slug: generateSlug(rest.name),
         images: Array.from(imagesSet),
         attributes: savedAttributes,

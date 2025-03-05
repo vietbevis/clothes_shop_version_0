@@ -33,11 +33,11 @@ export class Product extends AbstractModel {
   @Column({ type: 'enum', enum: ProductStatus, default: ProductStatus.AVAILABLE })
   status!: ProductStatus
 
-  @Column({ nullable: true, name: 'shop_id' })
-  shopId!: string
+  @Column({ nullable: true, name: 'shop_slug' })
+  shopSlug!: string
 
   @ManyToOne(() => Shop, (shop) => shop.products)
-  @JoinColumn({ name: 'shop_id' })
+  @JoinColumn({ name: 'shop_slug', referencedColumnName: 'slug' })
   shop!: Shop
 
   @OneToMany(() => ProductAttribute, (attr) => attr.product, { cascade: true, nullable: false })
