@@ -4,6 +4,7 @@ import { UserRepository } from '@/repository/UserRepository'
 import { RoleRepository } from '@/repository/RoleRepository'
 import { PermissionRepository } from '@/repository/PermissionRepository'
 import { Injectable } from '@/decorators/inject'
+import { RoleBased } from '@/utils/enums'
 
 @Injectable()
 export class RBACService {
@@ -25,6 +26,17 @@ export class RBACService {
 
     user.roles.push(role)
     return this.userRepository.save(user)
+  }
+
+  async initRoles() {
+    const count = await this.roleRepository.count()
+    if (count > 0) return
+    const roles = [
+      { name: RoleBased.ADMIN, description: 'Admin role' },
+      { name: RoleBased.USER, description: 'User role' }
+    ].map((role) => this.roleRepository.create(role))
+
+    await this.roleRepository.save(roles)
   }
 
   async createRole(name: string, description: string): Promise<Role> {

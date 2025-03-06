@@ -6,13 +6,15 @@ import { logError, logInfo } from '@/utils/log'
 import { initFolder } from '@/utils/helper'
 import { InitMinio } from '@/config/minio'
 import { getRedisClient } from './config/redis'
+import Container from './container'
+import { SeedService } from './seed/seed'
 
 class ServerApplication {
   private readonly port: number
   private readonly server: Application
 
-  constructor() {
-    this.server = new Application()
+  constructor(app: Application) {
+    this.server = app
     this.port = envConfig.PORT
   }
 
@@ -23,6 +25,12 @@ class ServerApplication {
       await AppDataSource.initialize()
       logInfo('Database Connected')
 
+      // Init Permission, Role
+      const seed = Container.resolve<SeedService>(SeedService)
+      await seed.initPermission()
+      await seed.initRoles()
+
+      // Init Folder for Upload File
       initFolder()
 
       await InitMinio()
@@ -37,5 +45,5 @@ class ServerApplication {
   }
 }
 
-const app = new ServerApplication()
+const app = new ServerApplication(Container.resolve<Application>(Application))
 app.initialize()

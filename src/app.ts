@@ -8,7 +8,9 @@ import { corsConfig } from '@/config/corsConfig'
 import { ErrorHandling } from '@/middleware/errorHandling'
 import router from '@/route'
 import { morganMiddleware } from '@/utils/logger'
+import { Injectable } from './decorators/inject'
 
+@Injectable()
 export class Application {
   app: Express = express()
 
