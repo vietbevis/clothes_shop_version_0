@@ -1,12 +1,10 @@
 import { getRedisClient } from '@/config/redis'
 import { Redis } from 'ioredis'
+import { Injectable } from '@/decorators/inject'
 
-class RedisService {
-  private redisClient: Redis
-
-  constructor() {
-    this.redisClient = getRedisClient()
-  }
+@Injectable()
+export class RedisService {
+  private redisClient: Redis = getRedisClient()
 
   async setCacheItem(key: string, value: string, expirationInSeconds?: number): Promise<void> {
     if (expirationInSeconds) {
@@ -38,5 +36,3 @@ class RedisService {
     return this.redisClient.ttl(key)
   }
 }
-const redisService = new RedisService()
-export default redisService

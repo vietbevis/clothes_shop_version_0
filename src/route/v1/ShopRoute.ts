@@ -2,8 +2,7 @@ import { Router } from 'express'
 import { validateRequest } from '@/middleware/validateRequest'
 import { CreateShopSchema, UpdateShopSchema, UpdateShopStatusSchema } from '@/validation/ShopSchema'
 import { authMiddleware } from '@/middleware/authMiddleware'
-import shopController from '@/controller/ShopController'
-import asyncHandler from '@/middleware/asyncHandler'
+import { ShopController } from '@/controller/ShopController'
 import {
   ApproveQuerySchema,
   IdParamsSchema,
@@ -11,6 +10,7 @@ import {
   SeachSchema,
   SlugParamsSchema
 } from '@/validation/CommonSchema'
+import { resolveInstance } from '@/container'
 
 const ShopRoute = Router()
 
@@ -18,26 +18,35 @@ ShopRoute.post(
   '/',
   validateRequest({ body: CreateShopSchema }),
   authMiddleware,
-  asyncHandler(shopController.createShop)
+  resolveInstance(ShopController, 'createShop')
 )
-ShopRoute.put('/', validateRequest({ body: UpdateShopSchema }), authMiddleware, asyncHandler(shopController.updateShop))
-ShopRoute.get('/:slug', validateRequest({ params: SlugParamsSchema }), asyncHandler(shopController.getShopByShopSlug))
+ShopRoute.put(
+  '/',
+  validateRequest({ body: UpdateShopSchema }),
+  authMiddleware,
+  resolveInstance(ShopController, 'updateShop')
+)
+ShopRoute.get(
+  '/:slug',
+  validateRequest({ params: SlugParamsSchema }),
+  resolveInstance(ShopController, 'getShopByShopSlug')
+)
 ShopRoute.put(
   '/:status/change-status',
   validateRequest({ params: UpdateShopStatusSchema }),
   authMiddleware,
-  asyncHandler(shopController.changeShopStatus)
+  resolveInstance(ShopController, 'changeShopStatus')
 )
 ShopRoute.put(
   '/:id/approve',
   validateRequest({ params: IdParamsSchema, query: ApproveQuerySchema }),
   authMiddleware,
-  asyncHandler(shopController.approveShop)
+  resolveInstance(ShopController, 'approveShop')
 )
 ShopRoute.get(
   '/',
   validateRequest({ query: PaginationQuerySchema.merge(SeachSchema) }),
-  asyncHandler(shopController.getAllShops)
+  resolveInstance(ShopController, 'getAllShops')
 )
 
 export default ShopRoute

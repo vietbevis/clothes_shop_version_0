@@ -4,37 +4,40 @@ import fs from 'fs/promises'
 import { omitFields, UPLOAD_TEMP_DIR_OPTIMIZE } from '@/utils/helper'
 import { ImageType } from '@/utils/enums'
 import { ProcessedImage } from '@/utils/types'
-import { User } from '@/model/User'
 import { BUCKET_NAME, minioClient } from '@/config/minio'
-import ImageRepository from '@/repository/ImageRepository'
+import { ImageRepository } from '@/repository/ImageRepository'
 import { Request } from 'express'
-import { PaginationUtils } from '@/utils/PaginationUtilsV2'
+import { PaginationUtils } from '@/utils/PaginationUtils'
 import { BadRequestError } from '@/core/ErrorResponse'
 import { DecodedJwtToken } from './JwtService'
+import { Injectable } from '@/decorators/inject'
 
-class ImageService {
+@Injectable()
+export class ImageService {
+  constructor(private imageRepository: ImageRepository) {}
+
   async uploadImages(uploadedFiles: Express.Multer.File[], type: ImageType, user: DecodedJwtToken) {
     const processedImages = await Promise.all(uploadedFiles.map(this.processImage))
     const newImages = processedImages.map((image) =>
-      ImageRepository.create({
+      this.imageRepository.create({
         ...image,
         user: { id: user.payload.id }
       })
     )
-    return ImageRepository.save(newImages)
+    return this.imageRepository.save(newImages)
   }
 
   async findImageByFilenamesOrFail(filename: string | string[]) {
     if (filename instanceof Array) {
       const imagesReq = new Set(filename)
-      const images = await ImageRepository.findByFilenames([...imagesReq])
+      const images = await this.imageRepository.findByFilenames([...imagesReq])
       if (images.length !== imagesReq.size) {
         throw new BadRequestError('Image not found')
       }
       return images
     }
 
-    const image = await ImageRepository.findByFileName(filename)
+    const image = await this.imageRepository.findByFileName(filename)
     if (!image) {
       throw new BadRequestError('Image not found')
     }
@@ -43,7 +46,7 @@ class ImageService {
 
   async getImage(req: Request, email: string) {
     const paginationOptions = PaginationUtils.extractPaginationOptions(req, 'createdAt')
-    const paginatedUsers = await PaginationUtils.paginate(ImageRepository, paginationOptions, {
+    const paginatedUsers = await PaginationUtils.paginate(this.imageRepository, paginationOptions, {
       user: { email }
     })
     return omitFields(paginatedUsers, ['userId', 'user'])
@@ -84,6 +87,3 @@ class ImageService {
     }
   }
 }
-
-const imageService = new ImageService()
-export default imageService

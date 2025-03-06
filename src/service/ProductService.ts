@@ -1,15 +1,6 @@
 import { ProductSchemaType } from '@/validation/ProductSchema'
 import { AppDataSource } from '@/config/database'
-import AttributeValueRepository, { TAttributeValueRepository } from '@/repository/AttributeValueRepository'
-import ProductAttributeRepository, { TProductAttributeRepository } from '@/repository/ProductAttributeRepository'
-import VariantRepository, { TVariantRepository } from '@/repository/VariantRepository'
-import VariantOptionRepository, { TVariantOptionRepository } from '@/repository/VariantOptionRepository'
-import ProductVariantRepository, { TProductVariantRepository } from '@/repository/ProductVariantRepository'
-import ProductRepository from '@/repository/ProductRepository'
-import CategoryRepository from '@/repository/CategoryRepository'
 import { BadRequestError, EntityError, UnauthorizedError, ValidationError } from '@/core/ErrorResponse'
-import ImageRepository from '@/repository/ImageRepository'
-import ShopRepository from '@/repository/ShopRepository'
 import {
   getLowestInStockOldPrice,
   getLowestInStockPrice,
@@ -18,29 +9,53 @@ import {
   serializeProduct,
   getGroupedVariantOptions
 } from '@/utils/helper'
-import { PaginationUtils } from '@/utils/PaginationUtilsV2'
+import { PaginationUtils } from '@/utils/PaginationUtils'
 import { Request } from 'express'
 import { In, Like } from 'typeorm'
 import { DecodedJwtToken } from './JwtService'
-import AttributeRepository, { TAttributeRepository } from '@/repository/AttributeRepository'
+import { Injectable } from '@/decorators/inject'
+import { ProductRepository } from '@/repository/ProductRepository'
+import { CategoryRepository } from '@/repository/CategoryRepository'
+import { ImageRepository } from '@/repository/ImageRepository'
+import { ShopRepository } from '@/repository/ShopRepository'
+import { AttributeRepository } from '@/repository/AttributeRepository'
+import { AttributeValueRepository } from '@/repository/AttributeValueRepository'
+import { ProductAttributeRepository } from '@/repository/ProductAttributeRepository'
+import { VariantRepository } from '@/repository/VariantRepository'
+import { VariantOptionRepository } from '@/repository/VariantOptionRepository'
+import { ProductVariantRepository } from '@/repository/ProductVariantRepository'
 
-class ProductService {
+@Injectable()
+export class ProductService {
+  constructor(
+    private readonly productRepository: ProductRepository,
+    private readonly categoryRepository: CategoryRepository,
+    private readonly imageRepository: ImageRepository,
+    private readonly shopRepository: ShopRepository,
+    private readonly attributeRepository: AttributeRepository,
+    private readonly attributeValueRepository: AttributeValueRepository,
+    private readonly productAttributeRepository: ProductAttributeRepository,
+    private readonly variantRepository: VariantRepository,
+    private readonly variantOptionRepository: VariantOptionRepository,
+    private readonly productVariantRepository: ProductVariantRepository
+  ) {}
+
   async createProduct(body: ProductSchemaType, user: DecodedJwtToken) {
     const { attributes, variants, categoryId, images, ...rest } = body
     const imagesSet = new Set(images)
 
     return AppDataSource.manager.transaction(async (manager) => {
       const repositories = {
-        attribute: manager.withRepository(AttributeRepository),
-        attributeValue: manager.withRepository(AttributeValueRepository),
-        productAttribute: manager.withRepository(ProductAttributeRepository),
-        variant: manager.withRepository(VariantRepository),
-        variantOption: manager.withRepository(VariantOptionRepository),
-        productVariant: manager.withRepository(ProductVariantRepository),
-        product: manager.withRepository(ProductRepository),
-        category: manager.withRepository(CategoryRepository),
-        image: manager.withRepository(ImageRepository),
-        shop: manager.withRepository(ShopRepository)
+        attribute: manager.withRepository(this.attributeRepository),
+        attributeValue: manager.withRepository(this.attributeValueRepository),
+        productAttribute: manager.withRepository(this.productAttributeRepository),
+        variant: manager.withRepository(this.variantRepository),
+        variantOption: manager.withRepository(this.variantOptionRepository),
+        productVariant: manager.withRepository(this.productVariantRepository),
+        product: manager.withRepository(this.productRepository),
+        category: manager.withRepository(this.categoryRepository),
+        image: manager.withRepository(this.imageRepository),
+        shop: manager.withRepository(this.shopRepository)
       }
 
       const [shop, category] = await Promise.all([
@@ -86,15 +101,15 @@ class ProductService {
   async updateProduct(id: string, body: ProductSchemaType, user: DecodedJwtToken) {
     return AppDataSource.manager.transaction(async (manager) => {
       const repositories = {
-        product: manager.withRepository(ProductRepository),
-        category: manager.withRepository(CategoryRepository),
-        image: manager.withRepository(ImageRepository),
-        productAttribute: manager.withRepository(ProductAttributeRepository),
-        attribute: manager.withRepository(AttributeRepository),
-        attributeValue: manager.withRepository(AttributeValueRepository),
-        productVariant: manager.withRepository(ProductVariantRepository),
-        variant: manager.withRepository(VariantRepository),
-        variantOption: manager.withRepository(VariantOptionRepository)
+        product: manager.withRepository(this.productRepository),
+        category: manager.withRepository(this.categoryRepository),
+        image: manager.withRepository(this.imageRepository),
+        productAttribute: manager.withRepository(this.productAttributeRepository),
+        attribute: manager.withRepository(this.attributeRepository),
+        attributeValue: manager.withRepository(this.attributeValueRepository),
+        productVariant: manager.withRepository(this.productVariantRepository),
+        variant: manager.withRepository(this.variantRepository),
+        variantOption: manager.withRepository(this.variantOptionRepository)
       }
 
       const { attributes, variants, categoryId, images, ...rest } = body
@@ -172,9 +187,9 @@ class ProductService {
 
   private async checkAndCreateAttribute(
     attributes: { value: string; name: string }[],
-    attributeRepo: TAttributeRepository,
-    attributeValueRepo: TAttributeValueRepository,
-    productAttributeRepo: TProductAttributeRepository
+    attributeRepo: AttributeRepository,
+    attributeValueRepo: AttributeValueRepository,
+    productAttributeRepo: ProductAttributeRepository
   ) {
     if (!attributes?.length) return []
 
@@ -239,9 +254,9 @@ class ProductService {
 
   private async checkAndCreateVariant(
     variants: { options: { imageUrl: string; value: string; variantName: string }[]; [key: string]: any }[],
-    variantRepo: TVariantRepository,
-    variantOptionRepo: TVariantOptionRepository,
-    productVariantRepo: TProductVariantRepository
+    variantRepo: VariantRepository,
+    variantOptionRepo: VariantOptionRepository,
+    productVariantRepo: ProductVariantRepository
   ) {
     // Nhóm variant options dựa vào input
     const groupedVariants = getGroupedVariantOptions(variants)
@@ -306,8 +321,8 @@ class ProductService {
     return productVariants
   }
 
-  async getProduct(slug: string) {
-    const result = await ProductRepository.findBySlug(slug, {
+  async getProductBySlug(slug: string) {
+    const result = await this.productRepository.findBySlug(slug, {
       variants: { options: { variant: true } },
       attributes: { value: true, attribute: true },
       category: true
@@ -318,10 +333,10 @@ class ProductService {
     return serializeProduct(result)
   }
 
-  async getProductByShopSlug(slug: string, req: Request) {
+  async getProductsByShopSlug(slug: string, req: Request) {
     const paginationOptions = PaginationUtils.extractPaginationOptions(req, 'createdAt')
     const paginatedProducts = await PaginationUtils.paginate(
-      ProductRepository,
+      this.productRepository,
       paginationOptions,
       {
         shop: slug ? { slug } : undefined,
@@ -342,8 +357,7 @@ class ProductService {
             ...item,
             price: getLowestInStockPrice(item),
             oldPrice: getLowestInStockOldPrice(item),
-            stock: item.variants.reduce((acc, variant) => acc + variant.stock, 0),
-            shopSlug: item.shop.slug
+            stock: item.variants.reduce((acc, variant) => acc + variant.stock, 0)
           }
         })
       },
@@ -352,13 +366,7 @@ class ProductService {
   }
 
   async getProducts(req: Request) {
-    // if (!req?.user) throw new UnauthorizedError()
-    // const shop = await ShopRepository.findByOwner(req.user.id)
-    // if (!shop) throw new BadRequestError('Shop not found')
     const shopSlug = req.query.shopSlug as string
-    return this.getProductByShopSlug(shopSlug, req)
+    return this.getProductsByShopSlug(shopSlug, req)
   }
 }
-
-const productService = new ProductService()
-export default productService

@@ -1,7 +1,11 @@
 import { AppDataSource } from '@/config/database'
 import { Attribute } from '@/model/Attribute'
+import { Repository } from 'typeorm'
+import { Injectable } from '@/decorators/inject'
 
-const AttributeRepository = AppDataSource.getRepository(Attribute).extend({})
-
-export type TAttributeRepository = typeof AttributeRepository
-export default AttributeRepository
+@Injectable()
+export class AttributeRepository extends Repository<Attribute> {
+  constructor() {
+    super(Attribute, AppDataSource.manager)
+  }
+}

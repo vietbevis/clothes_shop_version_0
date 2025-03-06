@@ -1,8 +1,10 @@
 import { SendEmailType } from '@/validation/CommonSchema'
 import apiClient from '@/config/axiosClient'
 import { logError, logInfo } from '@/utils/log'
+import { Injectable } from '@/decorators/inject'
 
-class EmailService {
+@Injectable()
+export class EmailService {
   async sendEmail(body: SendEmailType) {
     try {
       await apiClient.post('/api/v1/send-email-verify-account', body)
@@ -12,6 +14,3 @@ class EmailService {
     }
   }
 }
-
-const emailService = new EmailService()
-export default emailService

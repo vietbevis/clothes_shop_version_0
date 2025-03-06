@@ -1,19 +1,20 @@
 import { Request, Response } from 'express'
 import { omitFields } from '@/utils/helper'
 import { OkResponse } from '@/core/SuccessResponse'
-import imageService from '@/service/ImageService'
+import { ImageService } from '@/service/ImageService'
+import { Injectable } from '@/decorators/inject'
 
-class ImageController {
+@Injectable()
+export class ImageController {
+  constructor(private readonly imageService: ImageService) {}
+
   async uploadImage(req: Request, res: Response) {
     new OkResponse('Image uploaded', omitFields(req.filesUploaded, ['user', 'userId'])).send(res)
   }
 
   async getImages(req: Request, res: Response) {
     const email = req.user.sub as string
-    const result = await imageService.getImage(req, email)
+    const result = await this.imageService.getImage(req, email)
     new OkResponse('Image data', result).send(res)
   }
 }
-
-const imageController = new ImageController()
-export default imageController

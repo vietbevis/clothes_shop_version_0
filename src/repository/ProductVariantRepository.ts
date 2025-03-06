@@ -1,7 +1,11 @@
 import { AppDataSource } from '@/config/database'
+import { Injectable } from '@/decorators/inject'
 import { ProductVariant } from '@/model/ProductVariant'
+import { Repository } from 'typeorm'
 
-const ProductVariantRepository = AppDataSource.getRepository(ProductVariant).extend({})
-
-export type TProductVariantRepository = typeof ProductVariantRepository
-export default ProductVariantRepository
+@Injectable()
+export class ProductVariantRepository extends Repository<ProductVariant> {
+  constructor() {
+    super(ProductVariant, AppDataSource.manager)
+  }
+}

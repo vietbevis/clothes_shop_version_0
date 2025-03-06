@@ -1,15 +1,22 @@
 import { User } from '@/model/User'
 import { Role } from '@/model/Role'
-import { Permission } from '@/model/Permisstion'
 import { UserRepository } from '@/repository/UserRepository'
 import { RoleRepository } from '@/repository/RoleRepository'
 import { PermissionRepository } from '@/repository/PermissionRepository'
+import { Injectable } from '@/decorators/inject'
 
+@Injectable()
 export class RBACService {
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly roleRepository: RoleRepository,
+    private readonly permissionRepository: PermissionRepository
+  ) {}
+
   async assignRoleToUser(userId: string, roleName: string): Promise<User> {
     const [user, role] = await Promise.all([
-      UserRepository.findById(userId, { roles: true }),
-      RoleRepository.findByName(roleName)
+      this.userRepository.findById(userId, { roles: true }),
+      this.roleRepository.findByName(roleName)
     ])
 
     if (!user || !role) {
@@ -17,16 +24,16 @@ export class RBACService {
     }
 
     user.roles.push(role)
-    return UserRepository.save(user)
+    return this.userRepository.save(user)
   }
 
   async createRole(name: string, description: string): Promise<Role> {
-    const role = RoleRepository.create({ name, description })
-    return RoleRepository.save(role)
+    const role = this.roleRepository.create({ name, description })
+    return this.roleRepository.save(role)
   }
 
   async hasRole(userId: string, roleName: string): Promise<boolean> {
-    const user = await UserRepository.findById(userId, { roles: true })
+    const user = await this.userRepository.findById(userId, { roles: true })
 
     if (!user) {
       return false
@@ -37,8 +44,8 @@ export class RBACService {
 
   async addPermissionToRole(roleName: string, permissionName: string): Promise<Role> {
     const [role, permission] = await Promise.all([
-      RoleRepository.findByName(roleName, { permissions: true }),
-      PermissionRepository.findByName(permissionName)
+      this.roleRepository.findByName(roleName, { permissions: true }),
+      this.permissionRepository.findByName(permissionName)
     ])
 
     if (!role || !permission) {
@@ -46,11 +53,11 @@ export class RBACService {
     }
 
     role.permissions.push(permission)
-    return RoleRepository.save(role)
+    return this.roleRepository.save(role)
   }
 
   async hasPermission(userId: string, permissionName: string): Promise<boolean> {
-    const user = await UserRepository.findById(userId, { roles: { permissions: true } })
+    const user = await this.userRepository.findById(userId, { roles: { permissions: true } })
 
     if (!user) {
       return false

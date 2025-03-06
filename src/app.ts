@@ -9,7 +9,7 @@ import { ErrorHandling } from '@/middleware/errorHandling'
 import router from '@/route'
 import { morganMiddleware } from '@/utils/logger'
 
-class Server {
+export class Application {
   app: Express = express()
 
   constructor() {
@@ -42,5 +42,3 @@ class Server {
     this.app.use(ErrorHandling.globalError)
   }
 }
-
-export default Server

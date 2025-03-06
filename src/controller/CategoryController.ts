@@ -1,36 +1,37 @@
-import categoryService from '@/service/CategoryService'
+import { CategoryService } from '@/service/CategoryService'
 import { Request, Response } from 'express'
 import { OkResponse } from '@/core/SuccessResponse'
 import { omitFields } from '@/utils/helper'
+import { Injectable } from '@/decorators/inject'
 
-class CategoryController {
+@Injectable()
+export class CategoryController {
+  constructor(private readonly categoryService: CategoryService) {}
+
   async createCategory(req: Request, res: Response) {
-    const result = await categoryService.create(req.body)
+    const result = await this.categoryService.create(req.body)
     new OkResponse('Category created', omitFields(result, [])).send(res)
   }
 
   async updateCategory(req: Request, res: Response) {
-    const result = await categoryService.update(req.params.id, req.body)
+    const result = await this.categoryService.update(req.params.id, req.body)
     new OkResponse('Category updated', omitFields(result, [])).send(res)
   }
 
   async deleteCategory(req: Request, res: Response) {
-    await categoryService.delete(req.params.id)
+    await this.categoryService.delete(req.params.id)
     new OkResponse('Category deleted').send(res)
   }
 
   async getCategories(req: Request, res: Response) {
     const name = req.query.name as string
     const parentId = req.query.parentId as string
-    const result = await categoryService.getCategoiesV2(name, parentId, req)
+    const result = await this.categoryService.getCategoiesV2(name, parentId, req)
     new OkResponse('Categories retrieved', result).send(res)
   }
 
   async getCategoryBySlug(req: Request, res: Response) {
-    const result = await categoryService.getCategoryBySlug(req.params.slug)
+    const result = await this.categoryService.getCategoryBySlug(req.params.slug)
     new OkResponse('Category retrieved', result).send(res)
   }
 }
-
-const categoryController = new CategoryController()
-export default categoryController

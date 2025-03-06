@@ -8,6 +8,7 @@ import { UnauthorizedError } from '@/core/ErrorResponse'
 import { logError, logInfo } from '@/utils/log'
 import { Response } from 'express'
 import ms from 'ms'
+import { Injectable } from '@/decorators/inject'
 
 export type PayloadJwtToken = {
   id: string
@@ -22,9 +23,10 @@ export type DecodedJwtToken = {
   sub: string
 }
 
-class JwtService {
-  private readonly publicKey = fs.readFileSync(path.resolve(__dirname, '..', '..', 'public_key.pem'), 'utf8')
-  private readonly privateKey = fs.readFileSync(path.resolve(__dirname, '..', '..', 'private_key.pem'), 'utf8')
+@Injectable()
+export class JwtService {
+  static readonly publicKey = fs.readFileSync(path.resolve(__dirname, '..', '..', 'public_key.pem'), 'utf8')
+  static readonly privateKey = fs.readFileSync(path.resolve(__dirname, '..', '..', 'private_key.pem'), 'utf8')
 
   async generateToken(user: User | DecodedJwtToken, tokenType: TokenType, deviceId: string): Promise<string> {
     // Claims for the JWT token
@@ -48,7 +50,7 @@ class JwtService {
     switch (tokenType) {
       case TokenType.ACCESS_TOKEN: {
         logInfo('Generating: ' + TokenType.ACCESS_TOKEN)
-        const token = sign({ payload }, this.privateKey, {
+        const token = sign({ payload }, JwtService.privateKey, {
           expiresIn: envConfig.ACCESS_TOKEN_EXPIRES_IN,
           subject: email,
           algorithm: ALGORITHM
@@ -58,7 +60,7 @@ class JwtService {
       }
       case TokenType.REFRESH_TOKEN: {
         logInfo('Generating: ' + TokenType.REFRESH_TOKEN)
-        const token = sign({ payload }, this.privateKey, {
+        const token = sign({ payload }, JwtService.privateKey, {
           expiresIn: envConfig.REFRESH_TOKEN_EXPIRES_IN,
           subject: email,
           algorithm: ALGORITHM
@@ -69,9 +71,9 @@ class JwtService {
     }
   }
 
-  async verifyToken(token: string, tokenType: TokenType): Promise<DecodedJwtToken> {
+  static async verifyToken(token: string, tokenType: TokenType): Promise<DecodedJwtToken> {
     return new Promise((resolve, reject) => {
-      verify(token, this.publicKey, (err, decoded) => {
+      verify(token, JwtService.publicKey, (err, decoded) => {
         if (err) {
           logError('Invalid Token', err)
           return reject(new UnauthorizedError())
@@ -104,6 +106,3 @@ class JwtService {
     }
   }
 }
-
-const jwtService = new JwtService()
-export default jwtService

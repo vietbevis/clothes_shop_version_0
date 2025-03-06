@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { UnauthorizedError } from '@/core/ErrorResponse'
 import { TokenType } from '@/utils/enums'
-import jwtService from '@/service/JwtService'
+import { JwtService } from '@/service/JwtService'
 
 export const authMiddleware = async (req: Request, _res: Response, next: NextFunction) => {
   try {
@@ -9,7 +9,7 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
     const jwtToken = getJwtTokenFromHeaderOrCookies(req)
 
     // Verify JWT token
-    const decoded = await jwtService.verifyToken(jwtToken, TokenType.ACCESS_TOKEN)
+    const decoded = await JwtService.verifyToken(jwtToken, TokenType.ACCESS_TOKEN)
 
     // Get device info
     const { deviceId } = decoded.payload

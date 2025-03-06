@@ -1,43 +1,44 @@
 import { OkResponse } from '@/core/SuccessResponse'
 import { Request, Response } from 'express'
-import authService from '@/service/AuthService'
+import { Injectable } from '@/decorators/inject'
+import { AuthService } from '@/service/AuthService'
 
-class AuthController {
+@Injectable()
+export class AuthController {
+  constructor(private authService: AuthService) {}
+
   async register(req: Request, res: Response) {
-    await authService.register(req.body)
+    await this.authService.register(req.body)
     new OkResponse('Registered successfully').send(res)
   }
 
   async login(req: Request, res: Response) {
-    const result = await authService.login(req.body, req)
+    const result = await this.authService.login(req.body, req)
     new OkResponse('Login successfully', result).send(res)
   }
 
   async forgotPassword(req: Request, res: Response) {
-    await authService.forgotPassword(req.body)
+    await this.authService.forgotPassword(req.body)
     new OkResponse('Forgot password successfully').send(res)
   }
 
   async logout(req: Request, res: Response) {
-    await authService.logout(req.user, req)
+    await this.authService.logout(req.user, req)
     new OkResponse('Logout successfully').send(res)
   }
 
   async refreshToken(req: Request, res: Response) {
-    const result = await authService.refreshToken(req.body)
+    const result = await this.authService.refreshToken(req.body)
     new OkResponse('Refresh token successfully', result).send(res)
   }
 
   async changePassword(req: Request, res: Response) {
-    await authService.changePassword(req.user, req.body)
+    await this.authService.changePassword(req.user, req.body)
     new OkResponse('Change password successfully').send(res)
   }
 
   async sendOTP(req: Request, res: Response) {
-    await authService.sendOTP(req.body)
+    await this.authService.sendOTP(req.body)
     new OkResponse('OTP sent successfully').send(res)
   }
 }
-
-const authController = new AuthController()
-export default authController

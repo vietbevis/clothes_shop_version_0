@@ -30,16 +30,12 @@ export const SendEmailSchema = z.object({
   verificationToken: z.string()
 })
 
-export type SendEmailType = z.infer<typeof SendEmailSchema>
-
 export const UsernameParamsSchema = z
   .object({
     username: z.string()
   })
   .strict()
   .strip()
-
-export type UsernameParamsType = z.infer<typeof UsernameParamsSchema>
 
 export const IdParamsSchema = z
   .object({
@@ -48,8 +44,6 @@ export const IdParamsSchema = z
   .strict()
   .strip()
 
-export type IdParamsType = z.infer<typeof IdParamsSchema>
-
 export const ChangeImageProfileParamsSchema = z
   .object({
     type: z.enum([ImageType.AVATAR, ImageType.COVER])
@@ -57,16 +51,12 @@ export const ChangeImageProfileParamsSchema = z
   .strict()
   .strip()
 
-export type ChangeImageProfileParamsType = z.infer<typeof ChangeImageProfileParamsSchema>
-
 export const FilenameBodySchema = z
   .object({
     filename: z.string()
   })
   .strict()
   .strip()
-
-export type FilenameBodyType = z.infer<typeof FilenameBodySchema>
 
 export const PaginationQuerySchema = z
   .object({
@@ -90,15 +80,11 @@ export const PaginationQuerySchema = z
   .strict()
   .strip()
 
-export type PaginationQueryType = z.infer<typeof PaginationQuerySchema>
-
 export const GetImagesQuerySchema = PaginationQuerySchema.extend({
   type: z.nativeEnum(ImageType).optional()
 })
   .strict()
   .strip()
-
-export type GetImageQueryType = z.infer<typeof GetImagesQuerySchema>
 
 export const UpdateProfileSchema = z
   .object({
@@ -114,8 +100,6 @@ export const UpdateProfileSchema = z
   .strict()
   .strip()
 
-export type UpdateProfileType = z.infer<typeof UpdateProfileSchema>
-
 export const DepthQuerySchema = z
   .object({
     depth: z
@@ -128,8 +112,6 @@ export const DepthQuerySchema = z
   })
   .strict()
   .strip()
-
-export type DepthQueryType = z.infer<typeof DepthQuerySchema>
 
 export const GetCategoriesSchema = PaginationQuerySchema.extend({
   name: z.string().optional(),
@@ -152,16 +134,12 @@ export const SlugParamsSchema = z
   .strict()
   .strip()
 
-export type SlugParamsType = z.infer<typeof SlugParamsSchema>
-
 export const ApproveQuerySchema = z
   .object({
     status: z.nativeEnum(ApproveStatus)
   })
   .strict()
   .strip()
-
-export type ApproveQueryType = z.infer<typeof ApproveQuerySchema>
 
 export const GetProductPaginationQuerySchema = PaginationQuerySchema.extend({
   name: z.string().optional(),
@@ -172,3 +150,14 @@ export const GetProductPaginationQuerySchema = PaginationQuerySchema.extend({
   .strip()
 
 export type GetProductPaginationQueryType = z.infer<typeof GetProductPaginationQuerySchema>
+export type GetImageQueryType = z.infer<typeof GetImagesQuerySchema>
+export type PaginationQueryType = z.infer<typeof PaginationQuerySchema>
+export type SendEmailType = z.infer<typeof SendEmailSchema>
+export type UsernameParamsType = z.infer<typeof UsernameParamsSchema>
+export type IdParamsType = z.infer<typeof IdParamsSchema>
+export type ChangeImageProfileParamsType = z.infer<typeof ChangeImageProfileParamsSchema>
+export type FilenameBodyType = z.infer<typeof FilenameBodySchema>
+export type UpdateProfileType = z.infer<typeof UpdateProfileSchema>
+export type DepthQueryType = z.infer<typeof DepthQuerySchema>
+export type SlugParamsType = z.infer<typeof SlugParamsSchema>
+export type ApproveQueryType = z.infer<typeof ApproveQuerySchema>
