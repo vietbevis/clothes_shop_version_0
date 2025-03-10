@@ -2,8 +2,8 @@ import { Router } from 'express'
 import { authMiddleware } from '@/middleware/authMiddleware'
 import { ProductController } from '@/controller/ProductController'
 import { validateRequest } from '@/middleware/validateRequest'
-import { ProductSchema } from '@/validation/ProductSchema'
-import { GetProductPaginationQuerySchema, IdParamsSchema, SlugParamsSchema } from '@/validation/CommonSchema'
+import { GetProductPaginationQuerySchema, ProductSchema } from '@/validation/ProductSchema'
+import { IdParamsSchema, SlugParamsSchema } from '@/validation/CommonSchema'
 import { resolveInstance } from '@/container'
 
 const ProductRoute = Router()

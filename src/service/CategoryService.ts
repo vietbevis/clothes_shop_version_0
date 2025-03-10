@@ -18,13 +18,13 @@ export class CategoryService {
       name: name ? Like(`%${name}%`) : undefined,
       parent: { id: parentId ?? undefined }
     })
-    return PaginateCategoryDTO.safeParse(result).data
+    return PaginateCategoryDTO.parse(result)
   }
 
   async getCategoryBySlug(slug: string) {
     const result = await this.categoryRepository.findBySlug(slug)
     if (!result) throw new BadRequestError('Category not found')
-    return CategoryDTO.safeParse(result).data
+    return CategoryDTO.parse(result)
   }
 
   async create(body: CreateCategoryType) {
@@ -52,7 +52,7 @@ export class CategoryService {
 
       const result = await this.categoryRepository.save(newCategory)
 
-      return CategoryDTO.safeParse(result).data
+      return CategoryDTO.parse(result)
     } catch (error) {
       throw new ValidationError('Category already exists', [new EntityError('name', 'Category already exists')])
     }
@@ -75,7 +75,7 @@ export class CategoryService {
 
       const result = await this.categoryRepository.save(category)
 
-      return CategoryDTO.safeParse(result).data
+      return CategoryDTO.parse(result)
     } catch (error) {
       throw new ValidationError('Category already exists', [new EntityError('name', 'Category already exists')])
     }

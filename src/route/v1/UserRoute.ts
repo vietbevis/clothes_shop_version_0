@@ -2,8 +2,8 @@ import { Router } from 'express'
 import { authMiddleware } from '@/middleware/authMiddleware'
 import { UserController } from '@/controller/UserController'
 import { validateRequest } from '@/middleware/validateRequest'
-import { UpdateProfileSchema } from '@/validation/CommonSchema'
 import { resolveInstance } from '@/container'
+import { UpdateProfileSchema } from '@/validation/UserSchema'
 
 const UserRoute = Router()
 

@@ -42,7 +42,7 @@ export class ShopService {
 
       const savedShop = await ShopRepo.save(newShop)
 
-      return ShopDTO.safeParse(savedShop).data
+      return ShopDTO.parse(savedShop)
     })
   }
 
@@ -66,7 +66,7 @@ export class ShopService {
 
     const savedShop = await this.shopRepository.save(updatedShop)
 
-    return ShopDTO.safeParse(savedShop).data
+    return ShopDTO.parse(savedShop)
   }
 
   async approveShop(shopId: string, status: ApproveQueryType['status']) {
@@ -81,13 +81,13 @@ export class ShopService {
 
     const updatedShop = await this.shopRepository.save(shop)
 
-    return ShopDTO.safeParse(updatedShop).data
+    return ShopDTO.parse(updatedShop)
   }
 
   async getShopByShopSlug(slug: string) {
     const result = await this.shopRepository.findByShopSlug(slug)
     if (!result) throw new BadRequestError('Shop not found or deleted')
-    return ShopDTO.safeParse(result).data
+    return ShopDTO.parse(result)
   }
 
   async getAllShops(name: string, req: Request) {
@@ -95,6 +95,6 @@ export class ShopService {
     const result = await PaginationUtils.paginate(this.shopRepository, paginationOptions, {
       name: name ? Like(`%${name}%`) : undefined
     })
-    return PaginateShopDTO.safeParse(result).data
+    return PaginateShopDTO.parse(result)
   }
 }

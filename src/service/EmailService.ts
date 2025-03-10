@@ -1,7 +1,7 @@
-import { SendEmailType } from '@/validation/CommonSchema'
 import apiClient from '@/config/axiosClient'
 import { logError, logInfo } from '@/utils/log'
 import { Injectable } from '@/decorators/inject'
+import { SendEmailType } from '@/validation/AuthSchema'
 
 @Injectable()
 export class EmailService {

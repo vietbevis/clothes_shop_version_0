@@ -1,7 +1,6 @@
 import { CategoryService } from '@/service/CategoryService'
 import { Request, Response } from 'express'
 import { OkResponse } from '@/core/SuccessResponse'
-import { omitFields } from '@/utils/helper'
 import { Injectable } from '@/decorators/inject'
 
 @Injectable()

@@ -1,13 +1,11 @@
-import { User } from '@/model/User'
-import { omitFields } from '@/utils/helper'
 import { UserRepository } from '@/repository/UserRepository'
 import { BadRequestError } from '@/core/ErrorResponse'
-import { UpdateProfileType } from '@/validation/CommonSchema'
 import { ProfileRepository } from '@/repository/ProfileRepository'
 import { MESSAGES } from '@/utils/message'
 import { DecodedJwtToken } from './JwtService'
 import { Injectable } from '@/decorators/inject'
 import { ProfileDTO, UserDTO } from '@/dtos/UserDTO'
+import { UpdateProfileType } from '@/validation/UserSchema'
 
 @Injectable()
 export class UserService {
@@ -19,13 +17,13 @@ export class UserService {
   async getMe(user: DecodedJwtToken) {
     const result = await this.userRepository.findById(user.payload.id, { profile: true })
     if (!result) throw new BadRequestError()
-    return UserDTO.safeParse(result).data
+    return UserDTO.parse(result)
   }
 
   async getUserByUsername(username: string) {
     const result = await this.userRepository.findByUsernameAndActiveProfile(username)
     if (!result) throw new BadRequestError('User not found')
-    return UserDTO.safeParse(result).data
+    return UserDTO.parse(result)
   }
 
   async updateProfile(user: DecodedJwtToken, data: UpdateProfileType) {
@@ -33,6 +31,6 @@ export class UserService {
     if (!profile) throw new BadRequestError(MESSAGES.ACCOUNT_NOT_FOUND)
     const updatedUser = this.profileRepository.merge(profile, data)
     const result = await this.profileRepository.save(updatedUser)
-    return ProfileDTO.safeParse(result).data
+    return ProfileDTO.parse(result)
   }
 }

@@ -1,6 +1,7 @@
-import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
-import { z } from 'zod'
 import { ProductStatus } from '@/utils/enums'
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
+import z from 'zod'
+import { PaginationQuerySchema } from './CommonSchema'
 
 extendZodWithOpenApi(z)
 
@@ -11,7 +12,6 @@ export const AttributeSchema = z
   })
   .strict()
   .strip()
-  .openapi({ description: 'Attribute schema', title: 'Attribute' })
 
 export const OptionSchema = z
   .object({
@@ -20,7 +20,6 @@ export const OptionSchema = z
   })
   .strict()
   .strip()
-  .openapi({ description: 'Option schema', title: 'Option' })
 
 export const VariantSchema = z
   .object({
@@ -33,7 +32,6 @@ export const VariantSchema = z
   })
   .strict()
   .strip()
-  .openapi({ description: 'Variant schema', title: 'Variant' })
 
 export const ProductSchema = z
   .object({
@@ -53,6 +51,48 @@ export const ProductSchema = z
   })
   .strict()
   .strip()
-  .openapi({ description: 'Product schema', title: 'Product' })
+  .openapi('ProductSchema', {
+    description: 'Product schema',
+    title: 'Product',
+    example: {
+      name: 'Product name',
+      description: 'Product description',
+      categoryId: '123',
+      attributes: [
+        {
+          name: 'Made in',
+          value: 'Viet Nam'
+        }
+      ],
+      variants: [
+        {
+          sku: '123',
+          imageUrl: '01957fa49d7b74aa8ed07288a3b00214.webp',
+          price: 100000,
+          oldPrice: 150000,
+          stock: 10,
+          options: [
+            {
+              variantName: 'Size',
+              value: 'S'
+            }
+          ]
+        }
+      ],
+      images: ['01957fa49d7b74aa8ed07288a3b00214.webp'],
+      status: ProductStatus.AVAILABLE
+    }
+  })
 
+export const GetProductPaginationQuerySchema = z
+  .object({
+    ...PaginationQuerySchema.shape,
+    name: z.string().optional(),
+    shopSlug: z.string().optional(),
+    categoryId: z.string().optional()
+  })
+  .strict()
+  .strip()
+
+export type GetProductPaginationQueryType = z.infer<typeof GetProductPaginationQuerySchema>
 export type ProductSchemaType = z.infer<typeof ProductSchema>

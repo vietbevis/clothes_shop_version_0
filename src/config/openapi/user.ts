@@ -1,5 +1,6 @@
 import { UserRes } from '@/dtos/UserDTO'
-import { UpdateProfileSchema, UsernameParamsSchema } from '@/validation/CommonSchema'
+import { UsernameParamsSchema } from '@/validation/CommonSchema'
+import { UpdateProfileSchema } from '@/validation/UserSchema'
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi'
 
 const userRegistry = (registry: OpenAPIRegistry) => {

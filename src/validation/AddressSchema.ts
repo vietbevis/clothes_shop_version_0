@@ -1,5 +1,5 @@
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
-import { z } from 'zod'
+import z from 'zod'
 
 extendZodWithOpenApi(z)
 
@@ -19,8 +19,31 @@ export const AddressSchema = z
   })
   .strict()
   .strip()
-  .openapi('AddressSchema')
+  .openapi('AddressSchema', {
+    example: {
+      streetNumber: '123',
+      streetName: 'Nguyen Van Linh',
+      ward: 'Phu My',
+      district: 'Thu Duc',
+      province: 'Ho Chi Minh',
+      note: 'Near the park',
+      isDefault: false
+    },
+    description: 'Address object',
+    title: 'AddressSchema'
+  })
 
-export const UpdateAddressSchema = AddressSchema.omit({ isDefault: true }).openapi('UpdateAddressSchema')
+export const UpdateAddressSchema = AddressSchema.omit({ isDefault: true }).openapi('UpdateAddressSchema', {
+  example: {
+    streetNumber: '123',
+    streetName: 'Nguyen Van Linh',
+    ward: 'Phu My',
+    district: 'Thu Duc',
+    province: 'Ho Chi Minh',
+    note: 'Near the park'
+  },
+  description: 'Update address schema',
+  title: 'UpdateAddressSchema'
+})
 
 export type AddressBodyType = z.infer<typeof AddressSchema>

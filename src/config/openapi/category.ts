@@ -1,7 +1,7 @@
 import { BaseDTO } from '@/dtos/BaseDTO'
 import { CategoryRes, ListCategoryRes } from '@/dtos/CategoryDTO'
-import { CreateCategorySchema, UpdateCategorySchema } from '@/validation/CategorySchema'
-import { GetCategoriesSchema, IdParamsSchema, SlugParamsSchema } from '@/validation/CommonSchema'
+import { CreateCategorySchema, GetCategoriesSchema, UpdateCategorySchema } from '@/validation/CategorySchema'
+import { IdParamsSchema, SlugParamsSchema } from '@/validation/CommonSchema'
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi'
 
 const categoryRegistry = (registry: OpenAPIRegistry) => {

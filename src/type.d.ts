@@ -5,6 +5,6 @@ declare module 'express-serve-static-core' {
   interface Request {
     user: DecodedJwtToken
     deviceId: string
-    filesUploaded: Image[]
+    filesUploaded: { createdAt: Date; updatedAt: Date; fileName: string; width: number; height: number }[]
   }
 }

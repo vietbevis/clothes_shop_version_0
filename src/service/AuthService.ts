@@ -169,7 +169,7 @@ export class AuthService {
       [TokenType.REFRESH_TOKEN]: refreshToken
     }
 
-    return LoginDataRes.safeParse(result).data
+    return LoginDataRes.parse(result)
   }
 
   async logout(user: DecodedJwtToken, req: Request): Promise<boolean> {
@@ -208,7 +208,7 @@ export class AuthService {
       [TokenType.REFRESH_TOKEN]: refreshToken
     }
 
-    return RefreshTokenDataRes.safeParse(result).data
+    return RefreshTokenDataRes.parse(result)
   }
 
   async changePassword(userReq: DecodedJwtToken, body: ChangePasswordBodyType): Promise<boolean> {

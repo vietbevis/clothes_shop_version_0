@@ -97,7 +97,7 @@ export class ProductService {
       })
 
       const savedProduct = await repositories.product.save(product)
-      return ProductDTO.safeParse(serializeProduct(savedProduct)).data
+      return ProductDTO.parse(serializeProduct(savedProduct))
     })
   }
 
@@ -186,7 +186,7 @@ export class ProductService {
 
       // Save the updated product
       const updatedProduct = await repositories.product.save(product)
-      return ProductDTO.safeParse(serializeProduct(updatedProduct)).data
+      return ProductDTO.parse(serializeProduct(updatedProduct))
     })
   }
 
@@ -380,7 +380,7 @@ export class ProductService {
 
     if (!result) throw new BadRequestError('Product not found')
 
-    return ProductDTO.safeParse(serializeProduct(result)).data
+    return ProductDTO.parse(serializeProduct(result))
   }
 
   async getProductsByShopSlug(slug: string, req: Request) {
@@ -399,7 +399,7 @@ export class ProductService {
       }
     )
 
-    return PaginateProductDTO.safeParse({
+    return PaginateProductDTO.parse({
       ...paginatedProducts,
       items: paginatedProducts.items.map((item) => {
         return {
@@ -409,7 +409,7 @@ export class ProductService {
           stock: item.variants.reduce((acc, variant) => acc + variant.stock, 0)
         }
       })
-    }).data
+    })
   }
 
   async getProducts(req: Request) {

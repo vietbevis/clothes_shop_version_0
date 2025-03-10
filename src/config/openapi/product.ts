@@ -1,6 +1,6 @@
 import { ListProductRes, ProductRes } from '@/dtos/ProductDTO'
-import { GetProductPaginationQuerySchema, IdParamsSchema, SlugParamsSchema } from '@/validation/CommonSchema'
-import { ProductSchema } from '@/validation/ProductSchema'
+import { IdParamsSchema, SlugParamsSchema } from '@/validation/CommonSchema'
+import { GetProductPaginationQuerySchema, ProductSchema } from '@/validation/ProductSchema'
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi'
 
 const productRegistry = (registry: OpenAPIRegistry) => {

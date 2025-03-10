@@ -1,9 +1,9 @@
 import { Router } from 'express'
 import { validateRequest } from '@/middleware/validateRequest'
-import { CreateCategorySchema, UpdateCategorySchema } from '@/validation/CategorySchema'
+import { CreateCategorySchema, GetCategoriesSchema, UpdateCategorySchema } from '@/validation/CategorySchema'
 import { CategoryController } from '@/controller/CategoryController'
 import { authMiddleware } from '@/middleware/authMiddleware'
-import { GetCategoriesSchema, IdParamsSchema, SlugParamsSchema } from '@/validation/CommonSchema'
+import { IdParamsSchema, SlugParamsSchema } from '@/validation/CommonSchema'
 import { resolveInstance } from '@/container'
 
 const CategoryRoute = Router()

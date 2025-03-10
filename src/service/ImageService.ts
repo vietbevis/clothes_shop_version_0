@@ -11,12 +11,13 @@ import { PaginationUtils } from '@/utils/PaginationUtils'
 import { BadRequestError } from '@/core/ErrorResponse'
 import { DecodedJwtToken } from './JwtService'
 import { Injectable } from '@/decorators/inject'
+import { ListImageResData } from '@/dtos/ImageDTO'
 
 @Injectable()
 export class ImageService {
   constructor(private imageRepository: ImageRepository) {}
 
-  async uploadImages(uploadedFiles: Express.Multer.File[], type: ImageType, user: DecodedJwtToken) {
+  async uploadImages(uploadedFiles: Express.Multer.File[], user: DecodedJwtToken) {
     const processedImages = await Promise.all(uploadedFiles.map(this.processImage))
     const newImages = processedImages.map((image) =>
       this.imageRepository.create({
@@ -24,7 +25,9 @@ export class ImageService {
         user: { id: user.payload.id }
       })
     )
-    return this.imageRepository.save(newImages)
+    const savedImages = await this.imageRepository.save(newImages)
+
+    return ListImageResData.parse(savedImages)
   }
 
   async findImageByFilenamesOrFail(filename: string | string[]) {

@@ -12,13 +12,13 @@ export class AddressService {
 
   async getAddress(user: DecodedJwtToken) {
     const addresses = await this.addressRepository.findByUserId(user.payload.id)
-    return ListAddressData.safeParse(addresses).data
+    return ListAddressData.parse(addresses)
   }
 
   async getAddressById(user: DecodedJwtToken, addressId: string) {
     const result = await this.addressRepository.findByIdAndUserId(addressId, user.payload.id)
     if (!result) throw new BadRequestError(MESSAGES.ADDRESS_NOT_FOUND)
-    return AddressDTO.safeParse(result).data
+    return AddressDTO.parse(result)
   }
 
   async addAddress(user: DecodedJwtToken, addressData: AddressBodyType) {
@@ -30,7 +30,7 @@ export class AddressService {
     if (addressData.isDefault) {
       await this.setAddressDefault(user, result.id)
     }
-    return AddressDTO.safeParse(result).data
+    return AddressDTO.parse(result)
   }
 
   async deleteAddress(user: DecodedJwtToken, addressId: string) {
@@ -48,7 +48,7 @@ export class AddressService {
     if (addressData.isDefault) {
       await this.setAddressDefault(user, addressId)
     }
-    return AddressDTO.safeParse(result).data
+    return AddressDTO.parse(result)
   }
 
   async setAddressDefault(user: DecodedJwtToken, addressId: string) {
@@ -65,6 +65,6 @@ export class AddressService {
 
     const result = await this.addressRepository.save(updatedAddresses)
 
-    return ListAddressData.safeParse(result).data
+    return ListAddressData.parse(result)
   }
 }

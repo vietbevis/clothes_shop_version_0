@@ -1,7 +1,7 @@
-import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
-import { z } from 'zod'
 import { EmailSchema, NameSchema, PasswordSchema } from '@/validation/CommonSchema'
 import { VerificationCodeType } from '@/utils/enums'
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
+import z from 'zod'
 
 extendZodWithOpenApi(z)
 
@@ -11,7 +11,7 @@ export const RegisterSchema = z
     email: EmailSchema,
     password: PasswordSchema,
     confirmPassword: PasswordSchema,
-    otp: z.string().length(6).openapi({ example: '123456' })
+    otp: z.string().length(6)
   })
   .strict()
   .strip()
@@ -19,7 +19,17 @@ export const RegisterSchema = z
     message: 'Confirm password does not match.',
     path: ['confirmPassword']
   })
-  .openapi('RegisterSchema')
+  .openapi('RegisterSchema', {
+    description: 'Register schema',
+    title: 'RegisterSchema',
+    example: {
+      fullName: 'John Doe',
+      email: 'user@gmail.com',
+      password: 'Abc@1234',
+      confirmPassword: 'Abc@1234',
+      otp: '123456'
+    }
+  })
 
 export const LoginSchema = z
   .object({
@@ -29,16 +39,15 @@ export const LoginSchema = z
   })
   .strict()
   .strip()
-  .openapi('LoginSchema')
-
-export const VerifyAccountSchema = z
-  .object({
-    email: EmailSchema,
-    token: z.string().length(6)
+  .openapi('LoginSchema', {
+    description: 'Login schema',
+    title: 'LoginSchema',
+    example: {
+      email: 'user@gmail.com',
+      password: 'Abc@1234',
+      deviceId: '01956421-5968-7509-b7aa-6eb26473d489'
+    }
   })
-  .strict()
-  .strip()
-  .openapi('VerifyAccountSchema')
 
 export const RefreshTokenSchema = z
   .object({
@@ -46,15 +55,13 @@ export const RefreshTokenSchema = z
   })
   .strict()
   .strip()
-  .openapi('RefreshTokenSchema')
-
-export const EmailParamsSchema = z
-  .object({
-    email: EmailSchema
+  .openapi('RefreshTokenSchema', {
+    description: 'Refresh token schema',
+    title: 'RefreshTokenSchema',
+    example: {
+      refreshToken: 'eyJhbGciOiJSUzI1...'
+    }
   })
-  .strict()
-  .strip()
-  .openapi('EmailParamsSchema')
 
 export const ForgotPasswordSchema = z
   .object({
@@ -69,7 +76,16 @@ export const ForgotPasswordSchema = z
     message: 'Confirm password does not match.',
     path: ['confirmNewPassword']
   })
-  .openapi('ForgotPasswordSchema')
+  .openapi('ForgotPasswordSchema', {
+    description: 'Forgot password schema',
+    title: 'ForgotPasswordSchema',
+    example: {
+      email: 'user@gmail.com',
+      otp: '123456',
+      newPassword: 'Abc@1234',
+      confirmNewPassword: 'Abc@1234'
+    }
+  })
 
 export const ChangePasswordSchema = z
   .object({
@@ -83,7 +99,19 @@ export const ChangePasswordSchema = z
     message: 'Confirm password does not match.',
     path: ['confirmNewPassword']
   })
-  .openapi('ChangePasswordSchema')
+  .refine((data) => data.currentPassword !== data.newPassword, {
+    message: 'New password must be different from current password.',
+    path: ['newPassword']
+  })
+  .openapi('ChangePasswordSchema', {
+    description: 'Change password schema',
+    title: 'ChangePasswordSchema',
+    example: {
+      currentPassword: 'Abc@1234',
+      newPassword: 'Abc@1234',
+      confirmNewPassword: 'Abc@1234'
+    }
+  })
 
 export const SendOTPBodySchema = z
   .object({
@@ -92,13 +120,35 @@ export const SendOTPBodySchema = z
   })
   .strict()
   .strip()
-  .openapi('SendOTPBodySchema')
+  .openapi('SendOTPBodySchema', {
+    description: 'Send OTP schema',
+    title: 'SendOTPBodySchema',
+    example: {
+      email: 'user@gmail.com',
+      type: VerificationCodeType.REGISTER
+    }
+  })
 
+export const SendEmailSchema = z
+  .object({
+    email: EmailSchema,
+    verificationToken: z.string()
+  })
+  .strict()
+  .strip()
+  .openapi('SendEmailSchema', {
+    description: 'Send email schema',
+    title: 'SendEmailSchema',
+    example: {
+      email: 'user@gmail.com',
+      verificationToken: '123456'
+    }
+  })
+
+export type SendEmailType = z.infer<typeof SendEmailSchema>
 export type SendOTPBodyType = z.infer<typeof SendOTPBodySchema>
 export type ChangePasswordBodyType = z.infer<typeof ChangePasswordSchema>
 export type RegisterBodyType = z.infer<typeof RegisterSchema>
 export type ForgotPasswordBodyType = z.infer<typeof ForgotPasswordSchema>
-export type EmailParamsType = z.infer<typeof EmailParamsSchema>
 export type RefreshTokenBodyType = z.infer<typeof RefreshTokenSchema>
-export type VerifyAccountBodyType = z.infer<typeof VerifyAccountSchema>
 export type LoginBodyType = z.infer<typeof LoginSchema>

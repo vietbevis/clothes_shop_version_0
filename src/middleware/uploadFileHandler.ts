@@ -48,12 +48,11 @@ export class FileUploadMiddleware {
   }
 
   uploadFileHandler = async (req: Request, _res: Response, next: NextFunction) => {
-    const type = req.query.type as ImageType
     const uploadedFiles = req.files as Express.Multer.File[]
     if (!uploadedFiles || uploadedFiles.length === 0) throw new BadRequestError('No file uploaded.')
     if (!req.user) throw new UnauthorizedError()
 
-    const filesUploaded = await this.imageService.uploadImages(uploadedFiles, type, req.user)
+    const filesUploaded = await this.imageService.uploadImages(uploadedFiles, req.user)
     req.filesUploaded = filesUploaded
     return next()
   }

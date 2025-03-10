@@ -9,7 +9,7 @@ export class ImageController {
   constructor(private readonly imageService: ImageService) {}
 
   async uploadImage(req: Request, res: Response) {
-    new OkResponse('Image uploaded', omitFields(req.filesUploaded, ['user', 'userId'])).send(res)
+    new OkResponse('Image uploaded', req.filesUploaded).send(res)
   }
 
   async getImages(req: Request, res: Response) {
