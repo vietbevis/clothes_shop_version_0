@@ -90,3 +90,12 @@ export enum HttpMethod {
   HEAD = 'HEAD',
   ALL = 'ALL'
 }
+
+export enum OrderStatus {
+  PENDING = 'pending',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
+  REFUNDED = 'refunded',
+  SHIPPING = 'shipping',
+  DELIVERED = 'delivered'
+}

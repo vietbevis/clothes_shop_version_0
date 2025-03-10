@@ -24,6 +24,8 @@ import { ProductAttributeRepository } from '@/repository/ProductAttributeReposit
 import { VariantRepository } from '@/repository/VariantRepository'
 import { VariantOptionRepository } from '@/repository/VariantOptionRepository'
 import { ProductVariantRepository } from '@/repository/ProductVariantRepository'
+import { ProductVariant } from '@/model/ProductVariant'
+import { VariantOption } from '@/model/VariantOption'
 
 @Injectable()
 export class ProductService {
@@ -118,11 +120,11 @@ export class ProductService {
         attributes: { attribute: true, value: true },
         variants: { options: { variant: true } },
         category: true,
-        shop: true
+        shop: { owner: true }
       })
 
       if (!product) throw new BadRequestError('Product not found')
-      if (product.shop.ownerId !== user.payload.id) {
+      if (product.shop.owner.id !== user.payload.id) {
         throw new UnauthorizedError('You are not authorized to update this product')
       }
 
@@ -154,17 +156,19 @@ export class ProductService {
       }
 
       if (variants && variants.length > 0) {
+        // Lấy existingVariants từ sản phẩm hiện tại
+        const existingVariants = product.variants || []
         parallelOperations.push(
           this.checkAndCreateVariant(
             variants,
             repositories.variant,
             repositories.variantOption,
-            repositories.productVariant
+            repositories.productVariant,
+            existingVariants
           ).then((productVariants) => {
             product.variants = productVariants
           })
         )
-        parallelOperations.push(repositories.productVariant.delete({ product: { id } }))
       }
 
       if (images && images.length > 0) {
@@ -253,10 +257,11 @@ export class ProductService {
   }
 
   private async checkAndCreateVariant(
-    variants: { options: { imageUrl: string; value: string; variantName: string }[]; [key: string]: any }[],
+    variants: { options: { value: string; variantName: string }[]; [key: string]: any }[],
     variantRepo: VariantRepository,
     variantOptionRepo: VariantOptionRepository,
-    productVariantRepo: ProductVariantRepository
+    productVariantRepo: ProductVariantRepository,
+    existingVariants: ProductVariant[] = []
   ) {
     // Nhóm variant options dựa vào input
     const groupedVariants = getGroupedVariantOptions(variants)
@@ -277,46 +282,90 @@ export class ProductService {
     }
 
     // Xử lý các variant options
+    const missOptions: VariantOption[] = []
     await Promise.all(
       groupedVariants.map(async (group) => {
         const variantEntity = variantMap.get(group.name)!
         const existingOptions = variantEntity.options || []
-        const existingOptionMap = new Map(existingOptions.map((opt) => [`${opt.value}-${opt.imageUrl}`, opt]))
+        const existingOptionMap = new Map(existingOptions.map((opt) => [`${opt.value}`, opt]))
 
         // Lọc các option chưa có
-        const missingOptions = group.options.filter((opt) => !existingOptionMap.has(`${opt.value}-${opt.imageUrl}`))
+        const missingOptions = group.options.filter((opt) => !existingOptionMap.has(`${opt.value}`))
         if (missingOptions.length > 0) {
           const newOptions = variantOptionRepo.create(
             missingOptions.map((opt) => ({
               value: opt.value,
-              imageUrl: opt.imageUrl || '',
               variant: variantEntity
             }))
           )
-          const savedOptions = await variantOptionRepo.save(newOptions)
-          variantEntity.options = [...existingOptions, ...savedOptions]
+          missOptions.push(...newOptions)
+          variantEntity.options = [...existingOptions, ...newOptions]
         }
       })
     )
 
-    // Tạo các ProductVariant từ variants input
-    const productVariants = variants.map((variant) => {
-      const productVariant = productVariantRepo.create({
-        ...variant,
-        options: variant.options.map((opt) => {
-          const variantEntity = variantMap.get(opt.variantName)
-          if (!variantEntity) {
-            throw new BadRequestError(`Variant ${opt.variantName} not found`)
-          }
-          const optionEntity = variantEntity.options.find((o) => o.value === opt.value && o.imageUrl === opt.imageUrl)
-          if (!optionEntity) {
-            throw new BadRequestError(`Option ${opt.value} for variant ${opt.variantName} not found`)
-          }
-          return optionEntity
-        })
-      })
-      return productVariant
+    await variantOptionRepo.save(missOptions)
+
+    // Tạo map cho các ProductVariant hiện có
+    const existingVariantMap = new Map<string, ProductVariant>()
+    existingVariants.forEach((variant) => {
+      const key = variant.options
+        .map((opt) => `${opt.variant.name}:${opt.value}`)
+        .sort()
+        .join('|')
+      existingVariantMap.set(key, variant)
     })
+
+    // Danh sách các ProductVariant sẽ được giữ hoặc cập nhật
+    const productVariants: ProductVariant[] = []
+
+    for (const variant of variants) {
+      // Tạo key từ input
+      const inputKey = variant.options
+        .map((opt) => `${opt.variantName}:${opt.value}`)
+        .sort()
+        .join('|')
+
+      // Tìm các VariantOption từ input
+      const options = variant.options.map((opt) => {
+        const variantEntity = variantMap.get(opt.variantName)
+        if (!variantEntity) {
+          throw new BadRequestError(`Variant ${opt.variantName} not found`)
+        }
+        const optionEntity = variantEntity.options.find((o) => o.value === opt.value)
+        if (!optionEntity) {
+          throw new BadRequestError(`Option ${opt.value} for variant ${opt.variantName} not found`)
+        }
+        return optionEntity
+      })
+
+      // Kiểm tra xem ProductVariant đã tồn tại chưa
+      const existingVariant = existingVariantMap.get(inputKey)
+      if (existingVariant) {
+        // Cập nhật thông tin của ProductVariant hiện có
+        existingVariant.imageUrl = variant.imageUrl
+        existingVariant.price = variant.price
+        existingVariant.oldPrice = variant.oldPrice
+        existingVariant.stock = variant.stock
+        existingVariant.sku = variant.sku
+        productVariants.push(existingVariant)
+      } else {
+        // Tạo mới ProductVariant
+        const newVariant = productVariantRepo.create({
+          ...variant,
+          options
+        })
+        productVariants.push(newVariant)
+      }
+    }
+
+    // Xác định các ProductVariant cần xóa
+    const variantsToDelete = existingVariants.filter((variant) => !productVariants.some((v) => v.id === variant.id))
+
+    // Xóa các ProductVariant không còn trong input
+    if (variantsToDelete.length > 0) {
+      await productVariantRepo.remove(variantsToDelete)
+    }
 
     return productVariants
   }

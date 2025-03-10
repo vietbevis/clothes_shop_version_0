@@ -12,8 +12,7 @@ export const AttributeSchema = z
 export const OptionSchema = z
   .object({
     variantName: z.string().nonempty(),
-    value: z.string().nonempty(),
-    imageUrl: z.string()
+    value: z.string().nonempty()
   })
   .strict()
   .strip()
@@ -21,6 +20,7 @@ export const OptionSchema = z
 export const VariantSchema = z
   .object({
     sku: z.string().nonempty(),
+    imageUrl: z.string().default(''),
     price: z.number(),
     oldPrice: z.number(),
     stock: z.number().int(),

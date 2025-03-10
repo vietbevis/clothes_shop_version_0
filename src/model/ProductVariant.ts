@@ -1,5 +1,5 @@
 import { AbstractModel } from '@/model/base/AbstractModel'
-import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, Unique } from 'typeorm'
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, Unique } from 'typeorm'
 import { Product } from '@/model/Product'
 import { VariantOption } from '@/model/VariantOption'
 
@@ -8,6 +8,9 @@ import { VariantOption } from '@/model/VariantOption'
 export class ProductVariant extends AbstractModel {
   @Column({ nullable: false })
   sku!: string
+
+  @Column({ name: 'image_id', default: '' })
+  imageUrl!: string
 
   @Column('decimal', { precision: 10, scale: 2, nullable: false })
   price!: number

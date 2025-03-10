@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { BadRequestError, UnauthorizedError } from '@/core/ErrorResponse'
+import { UnauthorizedError } from '@/core/ErrorResponse'
 import { IdParamsType } from '@/validation/CommonSchema'
 import { OkResponse } from '@/core/SuccessResponse'
 import { AddressService } from '@/service/AddressService'

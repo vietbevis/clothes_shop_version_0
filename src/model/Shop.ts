@@ -33,9 +33,6 @@ export class Shop extends AbstractModel {
   @OneToMany(() => Product, (product) => product.shop)
   products!: Product[]
 
-  @RelationId((shop: Shop) => shop.owner)
-  ownerId!: string
-
   @Column({ name: 'logo_id', nullable: false })
   logoUrl!: string
 

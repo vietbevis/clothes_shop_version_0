@@ -91,12 +91,12 @@ export function serializeProduct(product: Product) {
     // Serialize options, gắn imageUrl riêng cho mỗi option
     const options = variant.options.map((option) => ({
       variantName: option.variant.name,
-      value: option.value,
-      imageUrl: option.imageUrl || null
+      value: option.value
     }))
 
     return {
       sku: variant.sku,
+      imageUrl: variant.imageUrl,
       price: variant.price,
       oldPrice: variant.oldPrice,
       stock: variant.stock,
@@ -128,18 +128,18 @@ export function serializeProduct(product: Product) {
 export const getGroupedVariantOptionsRes = (
   variants: {
     sku: string
+    imageUrl: string
     price: number
     oldPrice: number
     stock: number
     options: {
       variantName: string
       value: string
-      imageUrl: string | null
     }[]
   }[]
 ) => {
   // Create a Map for better performance with object keys
-  const variantGroups = new Map<string, Set<{ imageUrl: string | null; value: string }>>()
+  const variantGroups = new Map<string, Set<string>>()
 
   // Process each variant's options
   for (const variant of variants) {
@@ -153,12 +153,9 @@ export const getGroupedVariantOptionsRes = (
 
       // Add the option value
       const variant = variantGroups.get(variantName)!
-      const existingOption = Array.from(variant).find((o) => o.value === option.value && o.imageUrl === option.imageUrl)
+      const existingOption = Array.from(variant).find((o) => o === option.value)
       if (!existingOption) {
-        variant.add({
-          imageUrl: option.imageUrl,
-          value: option.value
-        })
+        variant.add(option.value)
       }
     }
   }
@@ -171,10 +168,10 @@ export const getGroupedVariantOptionsRes = (
 }
 
 export const getGroupedVariantOptions = (
-  variants: { options: { imageUrl: string; value: string; variantName: string }[]; [key: string]: any }[]
+  variants: { options: { value: string; variantName: string }[]; [key: string]: any }[]
 ) => {
   // Create a Map for better performance with object keys
-  const variantGroups = new Map<string, Set<{ imageUrl: string; value: string; variantName: string }>>()
+  const variantGroups = new Map<string, Set<{ value: string; variantName: string }>>()
 
   // Process each variant's options
   for (const variant of variants) {
@@ -188,7 +185,7 @@ export const getGroupedVariantOptions = (
 
       // Add the option value
       const variant = variantGroups.get(variantName)!
-      const existingOption = Array.from(variant).find((o) => o.value === option.value && o.imageUrl === option.imageUrl)
+      const existingOption = Array.from(variant).find((o) => o.value === option.value)
       if (!existingOption) {
         variant.add(option)
       }

@@ -3,7 +3,7 @@ import { CategoryRepository } from '@/repository/CategoryRepository'
 import { generateSlug, omitFields } from '@/utils/helper'
 import { BadRequestError, EntityError, ValidationError } from '@/core/ErrorResponse'
 import { Request } from 'express'
-import { PaginationUtils as PaginationUtilsV2 } from '@/utils/PaginationUtils'
+import { PaginationUtils } from '@/utils/PaginationUtils'
 import { Like } from 'typeorm'
 import { Injectable } from '@/decorators/inject'
 
@@ -12,8 +12,8 @@ export class CategoryService {
   constructor(private readonly categoryRepository: CategoryRepository) {}
 
   async getCategoiesV2(name: string, parentId: string, req: Request) {
-    const options = PaginationUtilsV2.extractPaginationOptions(req, 'createdAt')
-    const result = await PaginationUtilsV2.paginate(this.categoryRepository, options, {
+    const options = PaginationUtils.extractPaginationOptions(req, 'createdAt')
+    const result = await PaginationUtils.paginate(this.categoryRepository, options, {
       name: name ? Like(`%${name}%`) : undefined,
       parent: { id: parentId ?? undefined }
     })
