@@ -1,5 +1,8 @@
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import { z } from 'zod'
 import { ProductStatus } from '@/utils/enums'
+
+extendZodWithOpenApi(z)
 
 export const AttributeSchema = z
   .object({
@@ -8,6 +11,7 @@ export const AttributeSchema = z
   })
   .strict()
   .strip()
+  .openapi({ description: 'Attribute schema', title: 'Attribute' })
 
 export const OptionSchema = z
   .object({
@@ -16,6 +20,7 @@ export const OptionSchema = z
   })
   .strict()
   .strip()
+  .openapi({ description: 'Option schema', title: 'Option' })
 
 export const VariantSchema = z
   .object({
@@ -28,6 +33,7 @@ export const VariantSchema = z
   })
   .strict()
   .strip()
+  .openapi({ description: 'Variant schema', title: 'Variant' })
 
 export const ProductSchema = z
   .object({
@@ -47,5 +53,6 @@ export const ProductSchema = z
   })
   .strict()
   .strip()
+  .openapi({ description: 'Product schema', title: 'Product' })
 
 export type ProductSchemaType = z.infer<typeof ProductSchema>

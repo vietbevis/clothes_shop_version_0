@@ -26,6 +26,7 @@ import { VariantOptionRepository } from '@/repository/VariantOptionRepository'
 import { ProductVariantRepository } from '@/repository/ProductVariantRepository'
 import { ProductVariant } from '@/model/ProductVariant'
 import { VariantOption } from '@/model/VariantOption'
+import { PaginateProductDTO, ProductDTO } from '@/dtos/ProductDTO'
 
 @Injectable()
 export class ProductService {
@@ -96,7 +97,7 @@ export class ProductService {
       })
 
       const savedProduct = await repositories.product.save(product)
-      return serializeProduct(savedProduct)
+      return ProductDTO.safeParse(serializeProduct(savedProduct)).data
     })
   }
 
@@ -185,7 +186,7 @@ export class ProductService {
 
       // Save the updated product
       const updatedProduct = await repositories.product.save(product)
-      return serializeProduct(updatedProduct)
+      return ProductDTO.safeParse(serializeProduct(updatedProduct)).data
     })
   }
 
@@ -379,7 +380,7 @@ export class ProductService {
 
     if (!result) throw new BadRequestError('Product not found')
 
-    return serializeProduct(result)
+    return ProductDTO.safeParse(serializeProduct(result)).data
   }
 
   async getProductsByShopSlug(slug: string, req: Request) {
@@ -398,20 +399,17 @@ export class ProductService {
       }
     )
 
-    return omitFields(
-      {
-        ...paginatedProducts,
-        items: paginatedProducts.items.map((item) => {
-          return {
-            ...item,
-            price: getLowestInStockPrice(item),
-            oldPrice: getLowestInStockOldPrice(item),
-            stock: item.variants.reduce((acc, variant) => acc + variant.stock, 0)
-          }
-        })
-      },
-      ['variants', 'shop']
-    )
+    return PaginateProductDTO.safeParse({
+      ...paginatedProducts,
+      items: paginatedProducts.items.map((item) => {
+        return {
+          ...item,
+          price: getLowestInStockPrice(item),
+          oldPrice: getLowestInStockOldPrice(item),
+          stock: item.variants.reduce((acc, variant) => acc + variant.stock, 0)
+        }
+      })
+    }).data
   }
 
   async getProducts(req: Request) {

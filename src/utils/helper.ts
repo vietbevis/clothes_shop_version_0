@@ -1,5 +1,5 @@
 import { hash } from 'bcryptjs'
-import { cloneDeep, isArray, isObject, map, omit, reduce } from 'lodash'
+import { cloneDeep, create, isArray, isObject, map, omit, reduce } from 'lodash'
 import { type ObjectLiteral } from 'typeorm'
 import { v7 } from 'uuid'
 import path from 'path'
@@ -114,14 +114,16 @@ export function serializeProduct(product: Product) {
       id: product.category.id,
       name: product.category.name,
       slug: product.category.slug,
-      imageUrl: product.category?.imageUrl || null
+      imageUrl: product.category?.imageUrl || ''
     },
     imageUrls: product.images,
     description: product?.description || '',
     status: product.status,
     attributes,
     variants,
-    groupedOptions: getGroupedVariantOptionsRes(variants)
+    groupedOptions: getGroupedVariantOptionsRes(variants),
+    createdAt: product.createdAt,
+    updatedAt: product.updatedAt
   }
 }
 

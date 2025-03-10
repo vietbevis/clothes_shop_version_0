@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { validateRequest } from '@/middleware/validateRequest'
-import { CreateShopSchema, UpdateShopSchema, UpdateShopStatusSchema } from '@/validation/ShopSchema'
+import { CreateShopSchema, UpdateShopSchema } from '@/validation/ShopSchema'
 import { authMiddleware } from '@/middleware/authMiddleware'
 import { ShopController } from '@/controller/ShopController'
 import {
@@ -30,12 +30,6 @@ ShopRoute.get(
   '/:slug',
   validateRequest({ params: SlugParamsSchema }),
   resolveInstance(ShopController, 'getShopByShopSlug')
-)
-ShopRoute.put(
-  '/:status/change-status',
-  validateRequest({ params: UpdateShopStatusSchema }),
-  authMiddleware,
-  resolveInstance(ShopController, 'changeShopStatus')
 )
 ShopRoute.put(
   '/:id/approve',

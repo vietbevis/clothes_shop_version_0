@@ -26,6 +26,7 @@ import { ProfileRepository } from '@/repository/ProfileRepository'
 import { Role } from '@/model/Role'
 import { Injectable } from '@/decorators/inject'
 import { RedisService } from './RedisService'
+import { LoginDataRes, RefreshTokenDataRes, RefreshTokenRes } from '@/dtos/AuthDTO'
 
 @Injectable()
 export class AuthService {
@@ -85,13 +86,12 @@ export class AuthService {
 
       // Create a new user
       const newUser = this.userRepository.create({
-        fullName: body.fullName,
         email: body.email,
         password: pwdHash,
         username,
         status: UserStatus.VERIFIED,
         roles: [roles],
-        profile: this.profileRepository.create()
+        profile: this.profileRepository.create({ fullName: body.fullName })
       })
 
       // Save the user
@@ -125,12 +125,12 @@ export class AuthService {
     return `${parser.getOS().name} ${parser.getOS().version} - ${parser.getBrowser().name}`
   }
 
-  async login(body: LoginBodyType, req: Request): Promise<LoginResponseType> {
+  async login(body: LoginBodyType, req: Request) {
     const { deviceId, email, password } = body
 
     // Check logged in device
-    const isLogged = await this.redisService.getCacheItem(sessionKey(email, deviceId, TokenType.REFRESH_TOKEN))
-    if (isLogged) throw new BadRequestError(MESSAGES.DEVICE_ALREADY_LOGGED_IN)
+    // const isLogged = await this.redisService.getCacheItem(sessionKey(email, deviceId, TokenType.REFRESH_TOKEN))
+    // if (isLogged) throw new BadRequestError(MESSAGES.DEVICE_ALREADY_LOGGED_IN)
 
     // Validate the user
     const user = await this.validateUser(email, password)
@@ -164,10 +164,12 @@ export class AuthService {
       )
     ])
 
-    return {
+    const result = {
       [TokenType.ACCESS_TOKEN]: accessToken,
       [TokenType.REFRESH_TOKEN]: refreshToken
     }
+
+    return LoginDataRes.safeParse(result).data
   }
 
   async logout(user: DecodedJwtToken, req: Request): Promise<boolean> {
@@ -175,7 +177,7 @@ export class AuthService {
     return true
   }
 
-  async refreshToken(body: RefreshTokenBodyType): Promise<LoginResponseType> {
+  async refreshToken(body: RefreshTokenBodyType) {
     const { refreshToken } = body
 
     const decoded = await JwtService.verifyToken(refreshToken, TokenType.REFRESH_TOKEN)
@@ -201,10 +203,12 @@ export class AuthService {
       newRefreshToken,
       ms(envConfig.REFRESH_TOKEN_EXPIRES_IN) / 1000
     )
-    return {
+    const result = {
       [TokenType.ACCESS_TOKEN]: accessToken,
-      [TokenType.REFRESH_TOKEN]: newRefreshToken
+      [TokenType.REFRESH_TOKEN]: refreshToken
     }
+
+    return RefreshTokenDataRes.safeParse(result).data
   }
 
   async changePassword(userReq: DecodedJwtToken, body: ChangePasswordBodyType): Promise<boolean> {

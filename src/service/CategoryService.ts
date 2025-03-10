@@ -6,58 +6,56 @@ import { Request } from 'express'
 import { PaginationUtils } from '@/utils/PaginationUtils'
 import { Like } from 'typeorm'
 import { Injectable } from '@/decorators/inject'
+import { CategoryDTO, PaginateCategoryDTO } from '@/dtos/CategoryDTO'
 
 @Injectable()
 export class CategoryService {
   constructor(private readonly categoryRepository: CategoryRepository) {}
 
-  async getCategoiesV2(name: string, parentId: string, req: Request) {
+  async getCategoies(name: string, parentId: string, req: Request) {
     const options = PaginationUtils.extractPaginationOptions(req, 'createdAt')
     const result = await PaginationUtils.paginate(this.categoryRepository, options, {
       name: name ? Like(`%${name}%`) : undefined,
       parent: { id: parentId ?? undefined }
     })
-    return omitFields(result)
+    return PaginateCategoryDTO.safeParse(result).data
   }
 
   async getCategoryBySlug(slug: string) {
     const result = await this.categoryRepository.findBySlug(slug)
     if (!result) throw new BadRequestError('Category not found')
-    return omitFields(result, ['children'])
+    return CategoryDTO.safeParse(result).data
   }
 
   async create(body: CreateCategoryType) {
-    const { name, parentId, image, description } = body
+    try {
+      const { name, parentId, image, description } = body
 
-    const existingCategory = await this.categoryRepository.existByName(name)
-    if (existingCategory) throw new BadRequestError('Category already exists')
+      const newCategory = this.categoryRepository.create({
+        name,
+        description: description ?? '',
+        slug: generateSlug(name),
+        parent: null
+      })
 
-    const newCategory = this.categoryRepository.create({
-      name,
-      description: description ?? '',
-      slug: generateSlug(name),
-      parent: null
-    })
+      newCategory.imageUrl = image ?? ''
 
-    // if (image) {
-    //   const imageExists = await ImageRepository.findByFileNameAndUserId(image, user.payload.id)
-    //   if (!imageExists) throw new BadRequestError('Image not found')
-    //   newCategory.image = imageExists
-    // }
+      if (parentId) {
+        const parentCategory = await this.categoryRepository.findById(parentId)
+        if (!parentCategory) throw new BadRequestError('Parent category not found')
 
-    newCategory.imageUrl = image ?? ''
+        if (parentCategory.level === 5) throw new BadRequestError('Category level exceeded (max 5 levels)')
 
-    if (parentId) {
-      const parentCategory = await this.categoryRepository.findById(parentId)
-      if (!parentCategory) throw new BadRequestError('Parent category not found')
+        newCategory.parent = parentCategory
+        newCategory.level = parentCategory.level + 1
+      }
 
-      if (parentCategory.level === 5) throw new BadRequestError('Category level exceeded (max 5 levels)')
+      const result = await this.categoryRepository.save(newCategory)
 
-      newCategory.parent = parentCategory
-      newCategory.level = parentCategory.level + 1
+      return CategoryDTO.safeParse(result).data
+    } catch (error) {
+      throw new ValidationError('Category already exists', [new EntityError('name', 'Category already exists')])
     }
-
-    return omitFields(await this.categoryRepository.save(newCategory), ['deletedAt', 'parent', 'children', 'image'])
   }
 
   async update(id: string, body: UpdateCategoryType) {
@@ -75,7 +73,9 @@ export class CategoryService {
       category.description = description ?? ''
       category.imageUrl = image ?? ''
 
-      return omitFields(await this.categoryRepository.save(category), ['deletedAt', 'parent', 'children', 'image'])
+      const result = await this.categoryRepository.save(category)
+
+      return CategoryDTO.safeParse(result).data
     } catch (error) {
       throw new ValidationError('Category already exists', [new EntityError('name', 'Category already exists')])
     }
@@ -86,5 +86,6 @@ export class CategoryService {
     if (!category) throw new BadRequestError('Category not found')
 
     await this.categoryRepository.softRemove(category)
+    return true
   }
 }

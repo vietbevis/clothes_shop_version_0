@@ -20,23 +20,6 @@ export class User extends AbstractModel {
   @Column({ type: 'varchar', nullable: false })
   password!: string
 
-  @Column({ type: 'nvarchar', length: 70, nullable: false })
-  fullName!: string
-
-  @Column({ type: 'varchar', name: 'avatar_url', default: null })
-  avatarUrl!: string
-
-  @OneToOne(() => Image, { cascade: true })
-  @JoinColumn({ name: 'avatar_url' })
-  avatar!: Image
-
-  @Column({ type: 'varchar', name: 'cover_photo_url', default: null })
-  coverPhotoUrl!: string
-
-  @OneToOne(() => Image, { cascade: true })
-  @JoinColumn({ name: 'cover_photo_url' })
-  coverPhoto!: Image
-
   @Column({ type: 'varchar', name: 'provider_id', default: '' })
   providerId!: string
 
@@ -51,11 +34,11 @@ export class User extends AbstractModel {
   })
   roles!: Role[]
 
-  @Column({ name: 'shop_id', default: null })
-  shopId!: string
+  @Column({ name: 'shop_slug', default: null })
+  shopSlug!: string
 
-  @OneToOne(() => Shop, (shop) => shop.owner, { onDelete: 'SET NULL' })
-  @JoinColumn({ name: 'shop_id' })
+  @OneToOne(() => Shop, (shop) => shop.owner, { onUpdate: 'CASCADE', onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'shop_slug', referencedColumnName: 'slug' })
   shop!: Shop
 
   @OneToMany(() => UserDevice, (device) => device.user)

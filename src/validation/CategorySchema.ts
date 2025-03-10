@@ -1,4 +1,7 @@
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import { z } from 'zod'
+
+extendZodWithOpenApi(z)
 
 export const CreateCategorySchema = z
   .object({
@@ -9,6 +12,7 @@ export const CreateCategorySchema = z
   })
   .strict()
   .strip()
+  .openapi('CreateCategorySchema')
 
 export const UpdateCategorySchema = z
   .object({
@@ -18,6 +22,7 @@ export const UpdateCategorySchema = z
   })
   .strict()
   .strip()
+  .openapi('UpdateCategorySchema')
 
 export type UpdateCategoryType = z.infer<typeof UpdateCategorySchema>
 export type CreateCategoryType = z.infer<typeof CreateCategorySchema>

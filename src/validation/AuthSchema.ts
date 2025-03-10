@@ -1,7 +1,9 @@
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import { z } from 'zod'
-
 import { EmailSchema, NameSchema, PasswordSchema } from '@/validation/CommonSchema'
 import { VerificationCodeType } from '@/utils/enums'
+
+extendZodWithOpenApi(z)
 
 export const RegisterSchema = z
   .object({
@@ -9,7 +11,7 @@ export const RegisterSchema = z
     email: EmailSchema,
     password: PasswordSchema,
     confirmPassword: PasswordSchema,
-    otp: z.string().length(6)
+    otp: z.string().length(6).openapi({ example: '123456' })
   })
   .strict()
   .strip()
@@ -17,6 +19,7 @@ export const RegisterSchema = z
     message: 'Confirm password does not match.',
     path: ['confirmPassword']
   })
+  .openapi('RegisterSchema')
 
 export const LoginSchema = z
   .object({
@@ -26,6 +29,7 @@ export const LoginSchema = z
   })
   .strict()
   .strip()
+  .openapi('LoginSchema')
 
 export const VerifyAccountSchema = z
   .object({
@@ -34,6 +38,7 @@ export const VerifyAccountSchema = z
   })
   .strict()
   .strip()
+  .openapi('VerifyAccountSchema')
 
 export const RefreshTokenSchema = z
   .object({
@@ -41,6 +46,7 @@ export const RefreshTokenSchema = z
   })
   .strict()
   .strip()
+  .openapi('RefreshTokenSchema')
 
 export const EmailParamsSchema = z
   .object({
@@ -48,6 +54,7 @@ export const EmailParamsSchema = z
   })
   .strict()
   .strip()
+  .openapi('EmailParamsSchema')
 
 export const ForgotPasswordSchema = z
   .object({
@@ -62,6 +69,7 @@ export const ForgotPasswordSchema = z
     message: 'Confirm password does not match.',
     path: ['confirmNewPassword']
   })
+  .openapi('ForgotPasswordSchema')
 
 export const ChangePasswordSchema = z
   .object({
@@ -75,6 +83,7 @@ export const ChangePasswordSchema = z
     message: 'Confirm password does not match.',
     path: ['confirmNewPassword']
   })
+  .openapi('ChangePasswordSchema')
 
 export const SendOTPBodySchema = z
   .object({
@@ -83,6 +92,7 @@ export const SendOTPBodySchema = z
   })
   .strict()
   .strip()
+  .openapi('SendOTPBodySchema')
 
 export type SendOTPBodyType = z.infer<typeof SendOTPBodySchema>
 export type ChangePasswordBodyType = z.infer<typeof ChangePasswordSchema>

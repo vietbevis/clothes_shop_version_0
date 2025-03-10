@@ -35,7 +35,7 @@ export class Product extends AbstractModel {
   @Column({ nullable: true, name: 'shop_slug' })
   shopSlug!: string
 
-  @ManyToOne(() => Shop, (shop) => shop.products)
+  @ManyToOne(() => Shop, (shop) => shop.products, { onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'shop_slug', referencedColumnName: 'slug' })
   shop!: Shop
 

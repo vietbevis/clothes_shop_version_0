@@ -47,7 +47,6 @@ export class UserRepository extends Repository<User> {
       relations: { profile: true, ...relations }
     })
     if (user) {
-      if (!user.profile.isPublic) user.profile = new Profile()
       return user
     }
     return null

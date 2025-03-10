@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { authMiddleware } from '@/middleware/authMiddleware'
 import { validateRequest } from '@/middleware/validateRequest'
-import { AddressSchema } from '@/validation/AddressSchema'
+import { AddressSchema, UpdateAddressSchema } from '@/validation/AddressSchema'
 import { IdParamsSchema } from '@/validation/CommonSchema'
 import { resolveInstance } from '@/container'
 import { AddressController } from '@/controller/AddressController'
@@ -29,7 +29,7 @@ AddressRoute.put(
 )
 AddressRoute.put(
   '/:id',
-  validateRequest({ params: IdParamsSchema, body: AddressSchema }),
+  validateRequest({ params: IdParamsSchema, body: UpdateAddressSchema }),
   authMiddleware,
   resolveInstance(AddressController, 'updateAddress')
 )

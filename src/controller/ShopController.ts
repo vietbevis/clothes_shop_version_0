@@ -10,17 +10,12 @@ export class ShopController {
   constructor(private readonly shopService: ShopService) {}
   async createShop(req: Request, res: Response) {
     const result = await this.shopService.createShop(req.body, req.user)
-    new OkResponse('Shop created', omitFields(result, ['userId'])).send(res)
+    new OkResponse('Shop created', result).send(res)
   }
 
   async updateShop(req: Request, res: Response) {
     const result = await this.shopService.updateShop(req.body, req.user)
-    new OkResponse('Shop updated', omitFields(result, ['userId'])).send(res)
-  }
-
-  async changeShopStatus(req: Request, res: Response) {
-    await this.shopService.changeShopStatus(req.params.status as any, req.user)
-    new OkResponse('Shop status updated').send(res)
+    new OkResponse('Shop updated', result).send(res)
   }
 
   async approveShop(req: Request, res: Response) {
@@ -37,6 +32,6 @@ export class ShopController {
   async getAllShops(req: Request, res: Response) {
     const search = req.query.search as string
     const result = await this.shopService.getAllShops(search, req)
-    new OkResponse('Shops found', omitFields(result, ['userId'])).send(res)
+    new OkResponse('Shops found', result).send(res)
   }
 }

@@ -7,6 +7,15 @@ export class Profile {
   @PrimaryColumn({ name: 'user_id' })
   userId!: string
 
+  @Column({ type: 'nvarchar', length: 70, nullable: false })
+  fullName!: string
+
+  @Column({ type: 'varchar', name: 'avatar_url', default: '' })
+  avatarUrl!: string
+
+  @Column({ type: 'varchar', name: 'cover_photo_url', default: '' })
+  coverPhotoUrl!: string
+
   @Column({ name: 'gender', type: 'enum', enum: Gender, default: Gender.OTHER })
   gender!: Gender
 
@@ -30,9 +39,6 @@ export class Profile {
 
   @Column({ name: 'instagram_url', type: 'varchar', default: '' })
   instagramUrl!: string
-
-  @Column({ name: 'is_public', type: 'boolean', default: true })
-  isPublic!: boolean
 
   @OneToOne(() => User, (user) => user.profile)
   @JoinColumn({ name: 'user_id' })

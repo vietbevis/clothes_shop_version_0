@@ -1,23 +1,24 @@
 import { AddressRepository } from '@/repository/AddressRepository'
-import { omitFields } from '@/utils/helper'
 import { AddressBodyType } from '@/validation/AddressSchema'
 import { BadRequestError } from '@/core/ErrorResponse'
 import { MESSAGES } from '@/utils/message'
 import { DecodedJwtToken } from './JwtService'
 import { Injectable } from '@/decorators/inject'
+import { AddressDTO, ListAddressData } from '@/dtos/AddressDTO'
 
 @Injectable()
 export class AddressService {
   constructor(private readonly addressRepository: AddressRepository) {}
 
   async getAddress(user: DecodedJwtToken) {
-    return this.addressRepository.findByUserId(user.payload.id)
+    const addresses = await this.addressRepository.findByUserId(user.payload.id)
+    return ListAddressData.safeParse(addresses).data
   }
 
   async getAddressById(user: DecodedJwtToken, addressId: string) {
     const result = await this.addressRepository.findByIdAndUserId(addressId, user.payload.id)
     if (!result) throw new BadRequestError(MESSAGES.ADDRESS_NOT_FOUND)
-    return result
+    return AddressDTO.safeParse(result).data
   }
 
   async addAddress(user: DecodedJwtToken, addressData: AddressBodyType) {
@@ -29,7 +30,7 @@ export class AddressService {
     if (addressData.isDefault) {
       await this.setAddressDefault(user, result.id)
     }
-    return omitFields(result, ['user', 'userId'])
+    return AddressDTO.safeParse(result).data
   }
 
   async deleteAddress(user: DecodedJwtToken, addressId: string) {
@@ -47,19 +48,23 @@ export class AddressService {
     if (addressData.isDefault) {
       await this.setAddressDefault(user, addressId)
     }
-    return omitFields(result, ['user', 'userId'])
+    return AddressDTO.safeParse(result).data
   }
 
   async setAddressDefault(user: DecodedJwtToken, addressId: string) {
     const addresses = await this.addressRepository.findByUserId(user.payload.id)
-    if (!addresses || !addresses.length) throw new BadRequestError('Không tồn tại địa chỉ nào.')
-    for (const address of addresses) {
-      if (address.id === addressId) {
-        address.isDefault = true
-      } else {
-        address.isDefault = false
-      }
-    }
-    return omitFields(await this.addressRepository.save(addresses), ['user', 'userId'])
+    if (!addresses || !addresses.length) throw new BadRequestError(MESSAGES.ADDRESS_NOT_FOUND)
+
+    const address = addresses.find((address) => address.id === addressId)
+    if (!address) throw new BadRequestError(MESSAGES.ADDRESS_NOT_FOUND)
+
+    const updatedAddresses = addresses.map((address) => ({
+      ...address,
+      isDefault: address.id === addressId
+    }))
+
+    const result = await this.addressRepository.save(updatedAddresses)
+
+    return ListAddressData.safeParse(result).data
   }
 }

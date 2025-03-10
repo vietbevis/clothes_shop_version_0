@@ -10,12 +10,12 @@ export class CategoryController {
 
   async createCategory(req: Request, res: Response) {
     const result = await this.categoryService.create(req.body)
-    new OkResponse('Category created', omitFields(result, [])).send(res)
+    new OkResponse('Category created', result).send(res)
   }
 
   async updateCategory(req: Request, res: Response) {
     const result = await this.categoryService.update(req.params.id, req.body)
-    new OkResponse('Category updated', omitFields(result, [])).send(res)
+    new OkResponse('Category updated', result).send(res)
   }
 
   async deleteCategory(req: Request, res: Response) {
@@ -26,7 +26,7 @@ export class CategoryController {
   async getCategories(req: Request, res: Response) {
     const name = req.query.name as string
     const parentId = req.query.parentId as string
-    const result = await this.categoryService.getCategoiesV2(name, parentId, req)
+    const result = await this.categoryService.getCategoies(name, parentId, req)
     new OkResponse('Categories retrieved', result).send(res)
   }
 

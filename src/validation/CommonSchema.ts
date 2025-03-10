@@ -1,9 +1,15 @@
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import { z } from 'zod'
-import { ApproveStatus, ESort, Gender, ImageType } from '@/utils/enums'
+import { ApproveStatus, Gender, ImageType } from '@/utils/enums'
 
-export const EmailSchema = z.string({ message: 'Email can not be blank' }).email({
-  message: 'Invalid email address.'
-})
+extendZodWithOpenApi(z)
+
+export const EmailSchema = z
+  .string({ message: 'Email can not be blank' })
+  .email({
+    message: 'Invalid email address.'
+  })
+  .openapi({ description: 'Email address', title: 'Email' })
 
 export const PasswordSchema = z
   .string({ message: 'Password can not be blank' })
@@ -15,20 +21,27 @@ export const PasswordSchema = z
     message:
       'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.'
   })
+  .openapi({ description: 'Password', title: 'Password' })
 
 export const NameSchema = z
   .string({ message: 'Name can not be blank' })
   .min(3, { message: 'Name must be at least 3 characters.' })
   .max(20, { message: 'Name must not exceed 20 characters.' })
+  .openapi({ description: 'Name', title: 'Name' })
 
-export const phoneNumberSchema = z.string().regex(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, {
-  message: 'Phone number is invalid (Viet Nam phone number only).'
-})
+export const phoneNumberSchema = z
+  .string()
+  .regex(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, {
+    message: 'Phone number is invalid (Viet Nam phone number only).'
+  })
+  .openapi({ description: 'Phone number', title: 'Phone', example: '0987654321' })
 
-export const SendEmailSchema = z.object({
-  email: EmailSchema,
-  verificationToken: z.string()
-})
+export const SendEmailSchema = z
+  .object({
+    email: EmailSchema,
+    verificationToken: z.string()
+  })
+  .openapi({ description: 'Send email schema', title: 'SendEmail' })
 
 export const UsernameParamsSchema = z
   .object({
@@ -36,6 +49,7 @@ export const UsernameParamsSchema = z
   })
   .strict()
   .strip()
+  .openapi({ description: 'Username params', title: 'UsernameParams' })
 
 export const IdParamsSchema = z
   .object({
@@ -43,6 +57,7 @@ export const IdParamsSchema = z
   })
   .strict()
   .strip()
+  .openapi({ description: 'Id params', title: 'IdParams' })
 
 export const ChangeImageProfileParamsSchema = z
   .object({
@@ -50,6 +65,7 @@ export const ChangeImageProfileParamsSchema = z
   })
   .strict()
   .strip()
+  .openapi({ description: 'Type of image', title: 'ChangeImageProfileParams' })
 
 export const FilenameBodySchema = z
   .object({
@@ -57,6 +73,7 @@ export const FilenameBodySchema = z
   })
   .strict()
   .strip()
+  .openapi({ description: 'Filename of image', title: 'FilenameBody' })
 
 export const PaginationQuerySchema = z
   .object({
@@ -79,26 +96,36 @@ export const PaginationQuerySchema = z
   })
   .strict()
   .strip()
+  .openapi({ description: 'Pagination query', title: 'PaginationQuery' })
 
-export const GetImagesQuerySchema = PaginationQuerySchema.extend({
-  type: z.nativeEnum(ImageType).optional()
-})
-  .strict()
-  .strip()
-
-export const UpdateProfileSchema = z
+export const GetImagesQuerySchema = z
   .object({
-    gender: z.nativeEnum(Gender).optional(),
-    dateOfBirth: z.string().date().optional(),
-    bio: z.string().optional(),
-    phone: phoneNumberSchema.optional(),
-    website: z.string().url().optional(),
-    facebookUrl: z.string().url().optional(),
-    twitterUrl: z.string().url().optional(),
-    instagramUrl: z.string().url().optional()
+    ...PaginationQuerySchema.shape,
+    type: z.nativeEnum(ImageType).optional()
   })
   .strict()
   .strip()
+  .openapi({ description: 'Get images query', title: 'GetImagesQuery' })
+
+export const UrlSchema = z.union([z.string().url(), z.string().length(0)]).default('')
+
+export const UpdateProfileSchema = z
+  .object({
+    fullName: z.string().nonempty(),
+    avatarUrl: z.string().default(''),
+    coverPhotoUrl: z.string().default(''),
+    gender: z.nativeEnum(Gender).default(Gender.OTHER),
+    dateOfBirth: z.string().date().optional(),
+    bio: z.string().default(''),
+    phone: phoneNumberSchema,
+    website: UrlSchema,
+    facebookUrl: UrlSchema,
+    twitterUrl: UrlSchema,
+    instagramUrl: UrlSchema
+  })
+  .strict()
+  .strip()
+  .openapi({ description: 'Update profile schema', title: 'UpdateProfile' })
 
 export const DepthQuerySchema = z
   .object({
@@ -112,13 +139,17 @@ export const DepthQuerySchema = z
   })
   .strict()
   .strip()
+  .openapi({ description: 'Depth query', title: 'DepthQuery' })
 
-export const GetCategoriesSchema = PaginationQuerySchema.extend({
-  name: z.string().optional(),
-  parentId: z.string().optional()
-})
+export const GetCategoriesSchema = z
+  .object({
+    ...PaginationQuerySchema.shape,
+    name: z.string().optional(),
+    parentId: z.string().optional()
+  })
   .strict()
   .strip()
+  .openapi({ description: 'Get categories query', title: 'GetCategories' })
 
 export const SeachSchema = z
   .object({
@@ -126,6 +157,7 @@ export const SeachSchema = z
   })
   .strict()
   .strip()
+  .openapi({ description: 'Search query', title: 'Search' })
 
 export const SlugParamsSchema = z
   .object({
@@ -133,6 +165,7 @@ export const SlugParamsSchema = z
   })
   .strict()
   .strip()
+  .openapi({ description: 'Slug params', title: 'SlugParams' })
 
 export const ApproveQuerySchema = z
   .object({
@@ -140,14 +173,18 @@ export const ApproveQuerySchema = z
   })
   .strict()
   .strip()
+  .openapi({ description: 'Approve query', title: 'ApproveQuery' })
 
-export const GetProductPaginationQuerySchema = PaginationQuerySchema.extend({
-  name: z.string().optional(),
-  shopSlug: z.string().optional(),
-  categoryId: z.string().optional()
-})
+export const GetProductPaginationQuerySchema = z
+  .object({
+    ...PaginationQuerySchema.shape,
+    name: z.string().optional(),
+    shopSlug: z.string().optional(),
+    categoryId: z.string().optional()
+  })
   .strict()
   .strip()
+  .openapi({ description: 'Get product pagination query', title: 'GetProductPaginationQuery' })
 
 export type GetProductPaginationQueryType = z.infer<typeof GetProductPaginationQuerySchema>
 export type GetImageQueryType = z.infer<typeof GetImagesQuerySchema>

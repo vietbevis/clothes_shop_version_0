@@ -22,7 +22,6 @@ export class AddressController {
   }
 
   async setAddressDefault(req: Request<IdParamsType>, res: Response) {
-    if (!req.user) throw new UnauthorizedError()
     const result = await this.addressService.setAddressDefault(req.user, req.params.id)
     new OkResponse('Address default set', result).send(res)
   }

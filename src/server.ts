@@ -8,6 +8,10 @@ import { InitMinio } from '@/config/minio'
 import { getRedisClient } from './config/redis'
 import Container from './container'
 import { SeedService } from './seed/seed'
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
+import z from 'zod'
+
+extendZodWithOpenApi(z)
 
 class ServerApplication {
   private readonly port: number

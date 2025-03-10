@@ -1,4 +1,7 @@
+import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import { z } from 'zod'
+
+extendZodWithOpenApi(z)
 
 export const AddressSchema = z
   .object({
@@ -16,5 +19,8 @@ export const AddressSchema = z
   })
   .strict()
   .strip()
+  .openapi('AddressSchema')
+
+export const UpdateAddressSchema = AddressSchema.omit({ isDefault: true }).openapi('UpdateAddressSchema')
 
 export type AddressBodyType = z.infer<typeof AddressSchema>

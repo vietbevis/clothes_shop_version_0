@@ -27,23 +27,15 @@ export class Shop extends AbstractModel {
   @Column({ type: 'enum', enum: ShopStatus, default: ShopStatus.PENDING })
   status!: ShopStatus
 
-  @OneToOne(() => User, (user) => user.shop, { onDelete: 'CASCADE' })
+  @OneToOne(() => User, (user) => user.shop, { cascade: true })
   owner!: User
 
   @OneToMany(() => Product, (product) => product.shop)
   products!: Product[]
 
-  @Column({ name: 'logo_id', nullable: false })
+  @Column({ name: 'logo_id', default: '' })
   logoUrl!: string
 
-  @Column({ name: 'banner_id', nullable: false })
+  @Column({ name: 'banner_id', default: '' })
   bannerUrl!: string
-
-  @ManyToOne(() => Image)
-  @JoinColumn({ name: 'logo_id' })
-  logo!: Image
-
-  @ManyToOne(() => Image)
-  @JoinColumn({ name: 'banner_id' })
-  banner!: Image
 }
