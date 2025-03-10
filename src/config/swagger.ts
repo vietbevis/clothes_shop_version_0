@@ -20,7 +20,14 @@ const document = generator.generateDocument({
       url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
     }
   },
-  servers: [{ url: `http://localhost:${envConfig.PORT}/api` }],
+  servers: [
+    {
+      url:
+        envConfig.NODE_ENV === 'production'
+          ? 'https://ecom.vittapcode.id.vn/api'
+          : `http://localhost:${envConfig.PORT}/api`
+    }
+  ],
   security: [
     {
       BearerAuth: []
