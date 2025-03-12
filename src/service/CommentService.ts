@@ -80,11 +80,11 @@ export class CommentService {
 
     const newComment = this.commentRepository.create({
       content,
-      user: { id: userId }
+      userId
     })
 
     const productExists = await this.productRepository.existsBy({ slug: productSlug })
-    if (productExists) throw new BadRequestError('Product not found')
+    if (!productExists) throw new BadRequestError('Product not found')
 
     newComment.productSlug = productSlug
 
