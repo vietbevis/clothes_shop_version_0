@@ -26,6 +26,26 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
   }
 }
 
+export const authMiddlewareOptional = async (req: Request, _res: Response, next: NextFunction) => {
+  try {
+    // Extract JWT token from header
+    const jwtToken = getJwtTokenFromHeaderOrCookies(req)
+
+    // Verify JWT token
+    const decoded = await JwtService.verifyToken(jwtToken, TokenType.ACCESS_TOKEN)
+
+    // Get device info
+    const { deviceId } = decoded.payload
+
+    req.user = decoded
+    req.deviceId = deviceId
+
+    next()
+  } catch (e) {
+    next()
+  }
+}
+
 const getJwtTokenFromHeaderOrCookies = (req: Request): string => {
   const authHeader = req.headers.authorization
   const authCookie = req.cookies?.[TokenType.ACCESS_TOKEN]

@@ -92,10 +92,43 @@ export enum HttpMethod {
 }
 
 export enum OrderStatus {
-  PENDING = 'pending',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
-  REFUNDED = 'refunded',
-  SHIPPING = 'shipping',
-  DELIVERED = 'delivered'
+  PENDING = 'PENDING',
+  PROCESSING = 'PROCESSING',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED'
+}
+
+export enum PaymentMethod {
+  CASH = 'CASH',
+  CREDIT_CARD = 'CREDIT_CARD',
+  PAYPAL = 'PAYPAL'
+}
+
+export enum PaymentStatus {
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  FAILED = 'FAILED'
+}
+
+export enum ShippingMethod {
+  STANDARD = 'STANDARD',
+  EXPRESS = 'EXPRESS'
+}
+
+export enum ShippingStatus {
+  NOT_SHIPPED = 'NOT_SHIPPED',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED'
+}
+
+export enum VoucherType {
+  SYSTEM = 'SYSTEM',
+  SHOP = 'SHOP'
+}
+
+export enum DiscountType {
+  PERCENTAGE = 'PERCENTAGE',
+  FIXED = 'FIXED',
+  FREESHIP = 'FREESHIP'
 }

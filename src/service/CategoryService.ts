@@ -12,11 +12,12 @@ import { CategoryDTO, PaginateCategoryDTO } from '@/dtos/CategoryDTO'
 export class CategoryService {
   constructor(private readonly categoryRepository: CategoryRepository) {}
 
-  async getCategoies(name: string, parentId: string, req: Request) {
+  async getCategoies(name: string, parentId: string, level: number, req: Request) {
     const options = PaginationUtils.extractPaginationOptions(req, 'createdAt')
     const result = await PaginationUtils.paginate(this.categoryRepository, options, {
       name: name ? Like(`%${name}%`) : undefined,
-      parent: { id: parentId ?? undefined }
+      parent: { id: parentId ?? undefined },
+      level: level ?? 1
     })
     return PaginateCategoryDTO.parse(result)
   }

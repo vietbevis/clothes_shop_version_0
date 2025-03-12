@@ -8,6 +8,7 @@ import ImageRoute from '@/route/v1/ImageRoute'
 import ShopRoute from '@/route/v1/ShopRoute'
 import ProductRoute from '@/route/v1/ProductRoute'
 import document from '@/config/swagger'
+import CommentRoute from './CommentRoute'
 
 const routes_v1 = express.Router()
 
@@ -18,6 +19,7 @@ routes_v1.use('/categories', CategoryRoute)
 routes_v1.use('/images', ImageRoute)
 routes_v1.use('/shops', ShopRoute)
 routes_v1.use('/products', ProductRoute)
+routes_v1.use('/comments', CommentRoute)
 
 routes_v1.use(
   '/api-docs',

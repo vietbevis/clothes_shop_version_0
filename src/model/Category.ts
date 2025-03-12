@@ -32,7 +32,6 @@ export class Category extends AbstractModel {
   @TreeParent({ onDelete: 'CASCADE' })
   parent!: Category | null
 
-  @TreeLevelColumn()
   @Column({ default: 1 })
   level!: number
 

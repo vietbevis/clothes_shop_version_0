@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { Entity, JoinColumn, ManyToOne } from 'typeorm'
 import { Product } from '@/model/Product'
 import { AttributeValue } from '@/model/AttributeValue'
 import { AbstractModel } from '@/model/base/AbstractModel'

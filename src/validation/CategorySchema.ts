@@ -46,7 +46,14 @@ export const GetCategoriesSchema = z
   .object({
     ...PaginationQuerySchema.shape,
     name: z.string().optional(),
-    parentId: z.string().optional()
+    parentId: z.string().optional(),
+    level: z
+      .string()
+      .default('1')
+      .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+        message: 'Level must be a positive number'
+      })
+      .transform((val) => Number(val))
   })
   .strict()
   .strip()

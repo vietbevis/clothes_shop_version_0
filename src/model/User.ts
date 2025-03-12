@@ -8,6 +8,8 @@ import { Address } from '@/model/Address'
 import { Profile } from '@/model/Profile'
 import { Image } from '@/model/Image'
 import { Shop } from '@/model/Shop'
+import { CartItem } from './CartItem'
+import { Order } from './Order'
 
 @Entity('tbl_user')
 export class User extends AbstractModel {
@@ -46,6 +48,12 @@ export class User extends AbstractModel {
 
   @OneToMany(() => Address, (address) => address.user, { cascade: true })
   addresses!: Address[]
+
+  @OneToMany(() => CartItem, (item) => item.user)
+  cart!: CartItem[]
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders!: Order[]
 
   @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
   profile!: Profile
