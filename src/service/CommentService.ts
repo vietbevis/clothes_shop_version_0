@@ -3,6 +3,7 @@ import { Injectable } from '@/decorators/inject'
 import { CommentDTO, PaginateCommentDTO } from '@/dtos/CommentDTO'
 import { Comment } from '@/model/Comment'
 import { CommentRepository } from '@/repository/CommentRepository'
+import { ProductRepository } from '@/repository/ProductRepository'
 import { ProfileRepository } from '@/repository/ProfileRepository'
 import { PaginationUtils } from '@/utils/PaginationUtils'
 import { CreateCommentType, UpdateCommentType } from '@/validation/CommentSchema'
@@ -12,7 +13,8 @@ import { Request } from 'express'
 export class CommentService {
   constructor(
     private readonly commentRepository: CommentRepository,
-    private readonly profileRepository: ProfileRepository
+    private readonly profileRepository: ProfileRepository,
+    private readonly productRepository: ProductRepository
   ) {}
 
   async getCommentByProductSlug(slug: string, req: Request) {
@@ -78,9 +80,13 @@ export class CommentService {
 
     const newComment = this.commentRepository.create({
       content,
-      productSlug,
       user: { id: userId }
     })
+
+    const productExists = await this.productRepository.existsBy({ slug: productSlug })
+    if (productExists) throw new BadRequestError('Product not found')
+
+    newComment.productSlug = productSlug
 
     let parentComment: Comment | null = null
     if (parentId) {
