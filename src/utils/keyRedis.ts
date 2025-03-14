@@ -6,7 +6,7 @@ export const lockKey = (...args: string[]) => {
   return `lock:${args.join(':')}`
 }
 
-export const verificationKey = (email: string, otp: string) => {
+export const verificationKey = (email: string, otp: string | number) => {
   return `verification:${email}-${otp}`
 }
 
