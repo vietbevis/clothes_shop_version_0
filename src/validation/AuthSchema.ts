@@ -11,7 +11,7 @@ export const RegisterSchema = z
     email: EmailSchema,
     password: PasswordSchema,
     confirmPassword: PasswordSchema,
-    otp: z.number().min(100000).max(999999)
+    otp: z.string().regex(/^\d{6}$/, 'The otp must be exactly 6 digits')
   })
   .strict()
   .strip()
@@ -27,7 +27,7 @@ export const RegisterSchema = z
       email: 'user@gmail.com',
       password: 'Abc@1234',
       confirmPassword: 'Abc@1234',
-      otp: 123456
+      otp: '123456'
     }
   })
 
