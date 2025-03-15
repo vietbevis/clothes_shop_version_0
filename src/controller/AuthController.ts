@@ -2,6 +2,7 @@ import { OkResponse } from '@/core/SuccessResponse'
 import { Request, Response } from 'express'
 import { Injectable } from '@/decorators/inject'
 import { AuthService } from '@/service/AuthService'
+import { BadRequestError } from '@/core/ErrorResponse'
 
 @Injectable()
 export class AuthController {
@@ -14,6 +15,11 @@ export class AuthController {
 
   async login(req: Request, res: Response) {
     const result = await this.authService.login(req.body, req)
+    new OkResponse('Login successfully', result).send(res)
+  }
+
+  async googleLogin(req: Request, res: Response) {
+    const result = await this.authService.googleLogin(req)
     new OkResponse('Login successfully', result).send(res)
   }
 

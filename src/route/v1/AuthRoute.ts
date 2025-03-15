@@ -3,6 +3,7 @@ import { validateRequest } from '@/middleware/validateRequest'
 import {
   ChangePasswordSchema,
   ForgotPasswordSchema,
+  GoogleLoginSchema,
   LoginSchema,
   RefreshTokenSchema,
   RegisterSchema,
@@ -38,6 +39,11 @@ AuthRoute.post(
   authMiddleware,
   validateRequest({ body: ChangePasswordSchema }),
   asyncHandler(resolveInstance(AuthController, 'changePassword'))
+)
+AuthRoute.post(
+  '/google-login',
+  validateRequest({ body: GoogleLoginSchema }),
+  resolveInstance(AuthController, 'googleLogin')
 )
 
 export default AuthRoute

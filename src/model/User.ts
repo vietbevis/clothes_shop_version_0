@@ -22,8 +22,8 @@ export class User extends AbstractModel {
   @Column({ type: 'varchar', nullable: false })
   password!: string
 
-  @Column({ type: 'varchar', name: 'provider_id', default: '' })
-  providerId!: string
+  @Column({ type: 'varchar', name: 'google_id', default: '' })
+  googleId!: string
 
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.NOT_VERIFIED })
   status!: UserStatus

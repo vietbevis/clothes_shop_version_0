@@ -19,5 +19,17 @@ export const LoginRes = z
   .strip()
   .openapi('LoginRes')
 
+export const GetGoogleUrlDataRes = z
+  .object({
+    url: z.string()
+  })
+  .strip()
+  .openapi('GetGoogleUrlDataRes')
+
+export const GetGoogleUrlRes = z.object({
+  ...BaseDTO.shape,
+  data: GetGoogleUrlDataRes
+})
+
 export const RefreshTokenDataRes = LoginDataRes
 export const RefreshTokenRes = LoginRes

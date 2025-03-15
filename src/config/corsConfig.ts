@@ -16,11 +16,12 @@ export const corsConfig: CorsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
   origin: function (origin, callback) {
+    callback(null, true)
     // Kiểm tra nếu origin nằm trong danh sách cho phép hoặc là undefined (trường hợp non-browser client)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true) // Cho phép truy cập
-    } else {
-      callback(new Error('Not allowed by CORS')) // Từ chối truy cập
-    }
+    // if (!origin || allowedOrigins.includes(origin)) {
+    //   callback(null, true) // Cho phép truy cập
+    // } else {
+    //   callback(new Error('Not allowed by CORS')) // Từ chối truy cập
+    // }
   }
 }

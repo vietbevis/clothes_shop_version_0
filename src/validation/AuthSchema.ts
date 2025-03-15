@@ -145,6 +145,14 @@ export const SendEmailSchema = z
     }
   })
 
+export const GoogleLoginSchema = z
+  .object({
+    tokenId: z.string().nonempty(),
+    deviceId: z.string().nonempty()
+  })
+  .strict()
+  .strip()
+
 export type SendEmailType = z.infer<typeof SendEmailSchema>
 export type SendOTPBodyType = z.infer<typeof SendOTPBodySchema>
 export type ChangePasswordBodyType = z.infer<typeof ChangePasswordSchema>

@@ -1,8 +1,9 @@
-import { LoginRes, RefreshTokenRes } from '@/dtos/AuthDTO'
+import { GetGoogleUrlRes, LoginRes, RefreshTokenRes } from '@/dtos/AuthDTO'
 import { BaseDTO } from '@/dtos/BaseDTO'
 import {
   ChangePasswordSchema,
   ForgotPasswordSchema,
+  GoogleLoginSchema,
   LoginSchema,
   RefreshTokenSchema,
   RegisterSchema,
@@ -179,6 +180,32 @@ const authRegistry = (registry: OpenAPIRegistry) => {
         content: {
           'application/json': {
             schema: BaseDTO
+          }
+        }
+      }
+    }
+  })
+  // Google Link
+  registry.registerPath({
+    tags: ['Auth'],
+    method: 'post',
+    path: '/v1/auth/google-login',
+    summary: 'Login with Google',
+    request: {
+      body: {
+        content: {
+          'application/json': {
+            schema: GoogleLoginSchema
+          }
+        }
+      }
+    },
+    responses: {
+      200: {
+        description: 'Login with Google',
+        content: {
+          'application/json': {
+            schema: LoginRes
           }
         }
       }
