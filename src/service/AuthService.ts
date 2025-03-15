@@ -26,15 +26,13 @@ import { ProfileRepository } from '@/repository/ProfileRepository'
 import { Role } from '@/model/Role'
 import { Injectable } from '@/decorators/inject'
 import { RedisService } from './RedisService'
-import { GetGoogleUrlDataRes, LoginDataRes, RefreshTokenDataRes } from '@/dtos/AuthDTO'
-import { google } from 'googleapis'
+import { LoginDataRes, RefreshTokenDataRes } from '@/dtos/AuthDTO'
 import { OAuth2Client } from 'google-auth-library'
 import { v7 } from 'uuid'
 
 @Injectable()
 export class AuthService {
   private roleBased: Role | null = null
-  private readonly oauth2Client: OAuth2Client
   private readonly client: OAuth2Client
 
   constructor(
@@ -46,11 +44,6 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly redisService: RedisService
   ) {
-    this.oauth2Client = new google.auth.OAuth2(
-      envConfig.GOOGLE_CLIENT_ID,
-      envConfig.GOOGLE_CLIENT_SECRET,
-      envConfig.GOOGLE_REDIRECT_URI
-    )
     this.client = new OAuth2Client(envConfig.GOOGLE_CLIENT_ID)
   }
 

@@ -23,9 +23,7 @@ const configSchema = z.object({
   MINIO_ACCESSKEY: z.string(),
   MINIO_SECRETKEY: z.string(),
   BASE_IMAGE_URL: z.string(),
-  GOOGLE_CLIENT_ID: z.string(),
-  GOOGLE_CLIENT_SECRET: z.string(),
-  GOOGLE_REDIRECT_URI: z.string()
+  GOOGLE_CLIENT_ID: z.string()
 })
 
 const configServer = configSchema.safeParse(process.env)
