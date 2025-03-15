@@ -8,6 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Cài đặt các dependency
+RUN npm install --os=linux --cpu=x64 sharp
 RUN npm install
 
 # Copy toàn bộ code vào container
