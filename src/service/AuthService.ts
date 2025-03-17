@@ -7,7 +7,7 @@ import {
   SendOTPBodyType
 } from '@/validation/AuthSchema'
 import { UserRepository } from '@/repository/UserRepository'
-import { BadRequestError, UnauthorizedError } from '@/core/ErrorResponse'
+import { BadRequestError, EntityError, UnauthorizedError, ValidationError } from '@/core/ErrorResponse'
 import { generateOTP, generateUsername, hashPassword } from '@/utils/helper'
 import { RoleBased, TokenType, UserStatus, VerificationCodeType } from '@/utils/enums'
 import { User } from '@/model/User'
@@ -57,10 +57,11 @@ export class AuthService {
   }
 
   async sendOTP({ email, type }: SendOTPBodyType): Promise<boolean> {
-    if (type === VerificationCodeType.REGISTER) {
-      const user = await this.userRepository.findByEmail(email)
-      if (user) throw new BadRequestError(MESSAGES.USER_ALREADY_EXISTS)
-    }
+    const user = await this.userRepository.findByEmail(email)
+
+    if (type === VerificationCodeType.REGISTER && user) throw new BadRequestError(MESSAGES.USER_ALREADY_EXISTS)
+    if (type === VerificationCodeType.FORGOT_PASSWORD && !user)
+      throw new ValidationError(MESSAGES.ACCOUNT_NOT_FOUND, new EntityError('email', MESSAGES.ACCOUNT_NOT_FOUND))
 
     const otpCode = generateOTP()
     const keyRedis =
