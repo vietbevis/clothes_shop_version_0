@@ -1,10 +1,10 @@
 import compression from 'compression'
 import cookieParser from 'cookie-parser'
-import cors from 'cors'
+// import cors from 'cors'
 import express, { type Express } from 'express'
 import helmet from 'helmet'
 
-import { corsConfig } from '@/config/corsConfig'
+// import { corsConfig } from '@/config/corsConfig'
 import { ErrorHandling } from '@/middleware/errorHandling'
 import router from '@/route'
 import { morganMiddleware } from '@/utils/logger'
