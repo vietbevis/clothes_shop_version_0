@@ -27,7 +27,7 @@ export class Application {
 
   configureMiddlewares() {
     // this.app.use(cors(corsConfig))
-    this.app.use(helmet())
+    // this.app.use(helmet())
     this.app.use(compression())
     this.app.use(cookieParser())
     this.app.use(express.json())
