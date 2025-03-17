@@ -1,10 +1,10 @@
 import compression from 'compression'
 import cookieParser from 'cookie-parser'
-// import cors from 'cors'
+import cors from 'cors'
 import express, { type Express } from 'express'
 import helmet from 'helmet'
 
-// import { corsConfig } from '@/config/corsConfig'
+import { corsConfig } from '@/config/corsConfig'
 import { ErrorHandling } from '@/middleware/errorHandling'
 import router from '@/route'
 import { morganMiddleware } from '@/utils/logger'
@@ -26,8 +26,8 @@ export class Application {
   }
 
   configureMiddlewares() {
-    // this.app.use(cors(corsConfig))
-    // this.app.use(helmet())
+    this.app.use(cors(corsConfig))
+    this.app.use(helmet())
     this.app.use(compression())
     this.app.use(cookieParser())
     this.app.use(express.json())
