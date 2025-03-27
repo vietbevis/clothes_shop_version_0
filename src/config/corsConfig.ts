@@ -12,6 +12,8 @@ const allowedOrigins = [
   'http://localhost:4001/',
   'http://localhost:5173/',
   'https://ecom.vittapcode.id.vn',
+  'https://shop.vittapcode.id.vn',
+  'https://shop.vittapcode.id.vn/',
   null // Dành cho Postman (origin null)
 ]
 
