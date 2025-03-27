@@ -99,6 +99,14 @@ export enum OrderStatus {
   CANCELLED = 'CANCELLED'
 }
 
+export enum MessageEventType {
+  MESSAGE_CREATED = 'MESSAGE_CREATED',
+  MESSAGE_UPDATED = 'MESSAGE_UPDATED',
+  MESSAGE_DELETED = 'MESSAGE_DELETED',
+  MESSAGE_STATUS_UPDATED = 'MESSAGE_STATUS_UPDATED',
+  MESSAGES_READ = 'MESSAGES_READ'
+}
+
 export enum PaymentMethod {
   CASH = 'CASH',
   CREDIT_CARD = 'CREDIT_CARD',
@@ -131,4 +139,10 @@ export enum DiscountType {
   PERCENTAGE = 'PERCENTAGE',
   FIXED = 'FIXED',
   FREESHIP = 'FREESHIP'
+}
+
+export enum MessageStatus {
+  SENT = 'SENT',
+  DELIVERED = 'DELIVERED',
+  READ = 'READ'
 }

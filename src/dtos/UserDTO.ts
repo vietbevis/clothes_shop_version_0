@@ -1,11 +1,8 @@
 import z from 'zod'
-import { BaseDTO, BaseEntityDTO } from './BaseDTO'
+import { BaseDTO, BaseEntityDTO, MetaPagination } from './BaseDTO'
 
 export const ProfileDTO = z
   .object({
-    fullName: z.string(),
-    avatarUrl: z.string(),
-    coverPhotoUrl: z.string(),
     gender: z.string(),
     dateOfBirth: z.string().nullable(),
     bio: z.string().nullable(),
@@ -20,14 +17,27 @@ export const ProfileDTO = z
 export const UserDTO = z
   .object({
     ...BaseEntityDTO.shape,
-    username: z.string(),
     email: z.string(),
+    username: z.string(),
     shopSlug: z.string().nullable(),
-    profile: ProfileDTO
+    profile: ProfileDTO.optional(),
+    fullName: z.string(),
+    avatarUrl: z.string(),
+    coverPhotoUrl: z.string()
   })
   .strip()
 
 export const UserRes = z.object({
   ...BaseDTO.shape,
   data: UserDTO
+})
+
+export const UsersDataRes = z.object({
+  items: z.array(UserDTO),
+  meta: MetaPagination
+})
+
+export const UsersRes = z.object({
+  ...BaseDTO.shape,
+  data: UsersDataRes
 })

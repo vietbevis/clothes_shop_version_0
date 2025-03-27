@@ -5,6 +5,7 @@ import { Comment } from '@/model/Comment'
 import { CommentRepository } from '@/repository/CommentRepository'
 import { ProductRepository } from '@/repository/ProductRepository'
 import { ProfileRepository } from '@/repository/ProfileRepository'
+import { UserRepository } from '@/repository/UserRepository'
 import { PaginationUtils } from '@/utils/PaginationUtils'
 import { CreateCommentType, UpdateCommentType } from '@/validation/CommentSchema'
 import { Request } from 'express'
@@ -13,7 +14,7 @@ import { Request } from 'express'
 export class CommentService {
   constructor(
     private readonly commentRepository: CommentRepository,
-    private readonly profileRepository: ProfileRepository,
+    private readonly userRepository: UserRepository,
     private readonly productRepository: ProductRepository
   ) {}
 
@@ -23,7 +24,7 @@ export class CommentService {
       this.commentRepository,
       paginationOptions,
       { productSlug: slug, level: 1 },
-      { user: { profile: true } },
+      { user: true },
       {
         id: true,
         content: true,
@@ -32,7 +33,7 @@ export class CommentService {
         level: true,
         createdAt: true,
         updatedAt: true,
-        user: { email: true, profile: { fullName: true, avatarUrl: true } }
+        user: { email: true, fullName: true, avatarUrl: true }
       }
     )
 
@@ -52,7 +53,7 @@ export class CommentService {
       this.commentRepository,
       paginationOptions,
       { parent: { id: commentId } },
-      { user: { profile: true } },
+      { user: true },
       {
         id: true,
         content: true,
@@ -61,7 +62,7 @@ export class CommentService {
         userId: true,
         createdAt: true,
         updatedAt: true,
-        user: { email: true, profile: { fullName: true, avatarUrl: true } }
+        user: { email: true, fullName: true, avatarUrl: true }
       }
     )
 
@@ -105,8 +106,8 @@ export class CommentService {
 
     const [savedComment, profileUser] = await Promise.all([
       this.commentRepository.save(newComment),
-      this.profileRepository.findOne({
-        where: { userId },
+      this.userRepository.findOne({
+        where: { id: userId },
         select: { fullName: true, avatarUrl: true }
       })
     ])
@@ -127,7 +128,7 @@ export class CommentService {
 
     const comment = await this.commentRepository.findOne({
       where: { id: commentId },
-      relations: { user: { profile: true }, parent: true },
+      relations: { user: true, parent: true },
       select: {
         id: true,
         content: true,
@@ -135,7 +136,7 @@ export class CommentService {
         productSlug: true,
         createdAt: true,
         updatedAt: true,
-        user: { id: true, profile: { fullName: true, avatarUrl: true } },
+        user: { id: true, fullName: true, avatarUrl: true },
         parent: { id: true }
       }
     })
@@ -149,8 +150,8 @@ export class CommentService {
     const transformedComment = this.transformComment(savedComment, userId, comment.parent?.id || '', {
       id: userId,
       email: userEmail,
-      fullName: comment.user.profile.fullName,
-      avatarUrl: comment.user.profile.avatarUrl
+      fullName: comment.user.fullName,
+      avatarUrl: comment.user.avatarUrl
     })
     transformedComment.isAuthor = true
     return CommentDTO.parse(transformedComment)
@@ -172,7 +173,7 @@ export class CommentService {
    * @param overrideAuthor Nếu cung cấp, sẽ ghi đè dữ liệu author.
    */
   private transformComment(
-    comment: any,
+    comment: Comment,
     reqUserId: string | undefined,
     fallbackParentId?: string,
     overrideAuthor?: { id: string; email: string; fullName: string; avatarUrl: string }
@@ -181,8 +182,8 @@ export class CommentService {
     const author = overrideAuthor ?? {
       id: comment.userId,
       email: comment.user.email,
-      fullName: comment.user.profile.fullName,
-      avatarUrl: comment.user.profile.avatarUrl
+      fullName: comment.user.fullName,
+      avatarUrl: comment.user.avatarUrl
     }
     return {
       ...comment,

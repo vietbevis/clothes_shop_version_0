@@ -4,6 +4,9 @@ import { BaseDTO, BaseEntityDTO } from './BaseDTO'
 export const AddressDTO = z
   .object({
     ...BaseEntityDTO.shape,
+    name: z.string(),
+    fullName: z.string(),
+    phoneNumber: z.string(),
     streetNumber: z.string(),
     streetName: z.string(),
     ward: z.string(),

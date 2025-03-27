@@ -35,7 +35,7 @@ export const LoginSchema = z
   .object({
     email: EmailSchema,
     password: PasswordSchema,
-    deviceId: z.string().min(3).max(255)
+    deviceId: z.string().min(3).max(255).trim().nonempty()
   })
   .strict()
   .strip()
@@ -51,7 +51,7 @@ export const LoginSchema = z
 
 export const RefreshTokenSchema = z
   .object({
-    refreshToken: z.string()
+    refreshToken: z.string().trim().nonempty()
   })
   .strict()
   .strip()
@@ -66,7 +66,7 @@ export const RefreshTokenSchema = z
 export const ForgotPasswordSchema = z
   .object({
     email: EmailSchema,
-    otp: z.string().length(6),
+    otp: z.string().length(6).trim().nonempty(),
     newPassword: PasswordSchema,
     confirmNewPassword: PasswordSchema
   })
@@ -132,7 +132,7 @@ export const SendOTPBodySchema = z
 export const SendEmailSchema = z
   .object({
     email: EmailSchema,
-    verificationToken: z.string()
+    verificationToken: z.string().trim().nonempty()
   })
   .strict()
   .strip()
@@ -147,8 +147,8 @@ export const SendEmailSchema = z
 
 export const GoogleLoginSchema = z
   .object({
-    tokenId: z.string().nonempty(),
-    deviceId: z.string().nonempty()
+    tokenId: z.string().trim().nonempty(),
+    deviceId: z.string().trim().nonempty()
   })
   .strict()
   .strip()

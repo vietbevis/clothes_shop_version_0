@@ -8,7 +8,7 @@ export const ShopDTO = z
     name: z.string(),
     slogan: z.string(),
     slug: z.string(),
-    address: AddressDTO.omit({ isDefault: true }),
+    address: AddressDTO.omit({ isDefault: true }).optional(),
     description: z.string(),
     status: z.string(),
     logoUrl: z.string(),

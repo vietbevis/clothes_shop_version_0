@@ -9,14 +9,16 @@ import { ErrorHandling } from '@/middleware/errorHandling'
 import router from '@/route'
 import { morganMiddleware } from '@/utils/logger'
 import { Injectable } from './decorators/inject'
+import { KafkaService } from './service/KafkaService'
 
 @Injectable()
 export class Application {
   app: Express = express()
 
-  constructor() {
+  constructor(private readonly kafkaService: KafkaService) {
     this.app = express()
     this.setupApplication()
+    this.setupServer()
   }
 
   async setupApplication() {
@@ -33,6 +35,10 @@ export class Application {
     this.app.use(express.json())
     this.app.use(express.urlencoded({ extended: true }))
     this.app.use(morganMiddleware)
+  }
+
+  async setupServer() {
+    await this.kafkaService.connect()
   }
 
   configureRoutes() {

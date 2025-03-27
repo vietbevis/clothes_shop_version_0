@@ -10,5 +10,6 @@ export const MESSAGES = {
   ROLE_NOT_FOUND: 'Role not found',
   DEVICE_ALREADY_LOGGED_IN: 'Device already logged in',
   ADDRESS_NOT_FOUND: 'Address not found',
-  CAN_NOT_RESEND_OTP: 'Can not resend OTP'
+  CAN_NOT_RESEND_OTP: 'Can not resend OTP',
+  CANT_DELETE_DEFAULT_ADDRESS: 'Can not delete default address'
 }

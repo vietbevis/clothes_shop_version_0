@@ -8,6 +8,10 @@ import { BadRequestError } from '@/core/ErrorResponse'
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  async checkAuth(req: Request, res: Response) {
+    new OkResponse('Authenticated').send(res)
+  }
+
   async register(req: Request, res: Response) {
     await this.authService.register(req.body)
     new OkResponse('Registered successfully').send(res)

@@ -10,6 +10,6 @@ export class ProfileRepository extends Repository<Profile> {
   }
 
   async findByUserId(userId: string) {
-    return this.findOneBy({ user: { id: userId } })
+    return this.findOneBy({ userId })
   }
 }

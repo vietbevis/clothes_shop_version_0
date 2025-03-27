@@ -1,4 +1,4 @@
-import { resolveInstance } from '@/container'
+import { resolveController } from '@/container'
 import { CommentController } from '@/controller/CommentController'
 import { authMiddleware, authMiddlewareOptional } from '@/middleware/authMiddleware'
 import { validateRequest } from '@/middleware/validateRequest'
@@ -12,31 +12,31 @@ CommentRoute.get(
   '/:slug',
   validateRequest({ query: PaginationQuerySchema, params: SlugParamsSchema }),
   authMiddlewareOptional,
-  resolveInstance(CommentController, 'getCommentByProductSlug')
+  resolveController(CommentController, 'getCommentByProductSlug')
 )
 CommentRoute.get(
   '/:id/replies',
   validateRequest({ query: PaginationQuerySchema, params: IdParamsSchema }),
   authMiddlewareOptional,
-  resolveInstance(CommentController, 'getCommentReplies')
+  resolveController(CommentController, 'getCommentReplies')
 )
 CommentRoute.post(
   '/',
   validateRequest({ body: CreateCommentSchema }),
   authMiddleware,
-  resolveInstance(CommentController, 'createComment')
+  resolveController(CommentController, 'createComment')
 )
 CommentRoute.put(
   '/:id',
   validateRequest({ body: UpdateCommentSchema, params: IdParamsSchema }),
   authMiddleware,
-  resolveInstance(CommentController, 'updateComment')
+  resolveController(CommentController, 'updateComment')
 )
 CommentRoute.delete(
   '/:id',
   validateRequest({ params: IdParamsSchema }),
   authMiddleware,
-  resolveInstance(CommentController, 'deleteComment')
+  resolveController(CommentController, 'deleteComment')
 )
 
 export default CommentRoute

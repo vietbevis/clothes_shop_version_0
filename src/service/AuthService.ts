@@ -81,17 +81,17 @@ export class AuthService {
     if (!otpInRedis) throw new BadRequestError(MESSAGES.INVALID_VERIFICATION_TOKEN)
 
     try {
-      const username = generateUsername(body.email.split('@')[0])
       const pwdHash = await hashPassword(body.password)
       const roles = await this.getRoleBased()
 
       const newUser = this.userRepository.create({
         email: body.email,
         password: pwdHash,
-        username,
         status: UserStatus.VERIFIED,
         roles: [roles],
-        profile: this.profileRepository.create({ fullName: body.fullName })
+        username: generateUsername(body.email.split('@')[0]),
+        fullName: body.fullName,
+        profile: this.profileRepository.create()
       })
 
       await this.userRepository.save(newUser)
@@ -339,15 +339,14 @@ export class AuthService {
     // Create new user
     const newUser = this.userRepository.create({
       email: userData.email,
-      username: generateUsername(userData.email.split('@')[0]),
       status: UserStatus.VERIFIED,
       password: await hashPassword(v7()),
       googleId: userData.id,
       roles: [roles],
-      profile: this.profileRepository.create({
-        fullName: userData.name,
-        avatarUrl: userData.picture || ''
-      }),
+      fullName: userData.name,
+      username: generateUsername(userData.email.split('@')[0]),
+      avatarUrl: userData.picture || '',
+      profile: this.profileRepository.create(),
       devices: [
         this.userDeviceRepository.create({
           deviceId: deviceInfo.deviceId,

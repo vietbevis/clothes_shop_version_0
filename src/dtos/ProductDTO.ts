@@ -17,9 +17,9 @@ export const ProductDTO = z
       z.object({
         sku: z.string(),
         imageUrl: z.string(),
-        price: z.number(),
-        oldPrice: z.number(),
-        stock: z.number(),
+        price: z.string().or(z.number()),
+        oldPrice: z.string().or(z.number()),
+        stock: z.string().or(z.number()),
         options: z.array(z.object({ variantName: z.string(), value: z.string() }))
       })
     ),

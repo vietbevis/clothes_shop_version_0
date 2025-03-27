@@ -23,7 +23,8 @@ const configSchema = z.object({
   MINIO_ACCESSKEY: z.string(),
   MINIO_SECRETKEY: z.string(),
   BASE_IMAGE_URL: z.string(),
-  GOOGLE_CLIENT_ID: z.string()
+  GOOGLE_CLIENT_ID: z.string(),
+  KAFKA_BROKER: z.string()
 })
 
 const configServer = configSchema.safeParse(process.env)
@@ -36,11 +37,3 @@ if (!configServer.success) {
 
 const envConfig = configServer.data
 export default envConfig
-
-export type ProcessEnv = z.infer<typeof configSchema>
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace NodeJS {
-    type CustomProcessEnv = ProcessEnv
-  }
-}

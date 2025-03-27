@@ -7,12 +7,12 @@ extendZodWithOpenApi(z)
 
 export const CreateShopSchema = z
   .object({
-    name: z.string().nonempty(),
-    slogan: z.string().nonempty(),
+    name: z.string().trim().nonempty(),
+    slogan: z.string().trim().nonempty(),
     address: AddressSchema,
-    description: z.string().nonempty(),
-    logoUrl: z.string().nonempty(),
-    bannerUrl: z.string().nonempty()
+    description: z.string().trim().nonempty(),
+    logoUrl: z.string().trim().nonempty(),
+    bannerUrl: z.string().trim().nonempty()
   })
   .strip()
   .strip()
@@ -23,6 +23,9 @@ export const CreateShopSchema = z
       name: 'Shop name',
       slogan: 'Shop slogan',
       address: {
+        name: 'Home',
+        fullName: 'John Doe',
+        phoneNumber: '0123456789',
         streetNumber: '123',
         streetName: 'Nguyen Van Linh',
         ward: 'Phu My',
@@ -38,11 +41,11 @@ export const CreateShopSchema = z
 
 export const UpdateShopSchema = z
   .object({
-    name: z.string().nonempty(),
-    slogan: z.string().nonempty(),
-    description: z.string().nonempty(),
-    logoUrl: z.string().nonempty(),
-    bannerUrl: z.string().nonempty(),
+    name: z.string().trim().nonempty(),
+    slogan: z.string().trim().nonempty(),
+    description: z.string().trim().nonempty(),
+    logoUrl: z.string().trim().nonempty(),
+    bannerUrl: z.string().trim().nonempty(),
     address: AddressSchema,
     status: z.enum([ShopStatus.OPEN, ShopStatus.CLOSED])
   })
@@ -55,6 +58,9 @@ export const UpdateShopSchema = z
       name: 'Shop name',
       slogan: 'Shop slogan',
       address: {
+        name: 'Home',
+        fullName: 'John Doe',
+        phoneNumber: '0123456789',
         streetNumber: '123',
         streetName: 'Nguyen Van Linh',
         ward: 'Phu My',

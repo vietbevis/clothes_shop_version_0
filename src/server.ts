@@ -10,44 +10,39 @@ import Container from './container'
 import { SeedService } from './seed/seed'
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import z from 'zod'
+import { SocketService } from './service/SocketService'
+import http from 'http'
 
 extendZodWithOpenApi(z)
 
-class ServerApplication {
-  private readonly port: number
-  private readonly server: Application
+async function initialize() {
+  try {
+    getRedisClient()
 
-  constructor(app: Application) {
-    this.server = app
-    this.port = envConfig.PORT
-  }
+    await AppDataSource.initialize()
+    logInfo('Database Connected')
 
-  async initialize() {
-    try {
-      getRedisClient()
+    // Init Permission, Role
+    const seed = Container.resolve<SeedService>(SeedService)
+    await seed.initPermission()
+    await seed.initRoles()
 
-      await AppDataSource.initialize()
-      logInfo('Database Connected')
+    const app = Container.resolve<Application>(Application)
+    const socketService = Container.resolve<SocketService>(SocketService)
+    const server = http.createServer(app.app)
+    socketService.initialize(server)
 
-      // Init Permission, Role
-      const seed = Container.resolve<SeedService>(SeedService)
-      await seed.initPermission()
-      await seed.initRoles()
+    // Init Folder for Upload File
+    initFolder()
 
-      // Init Folder for Upload File
-      initFolder()
+    await InitMinio()
+    logInfo('Minio Connected')
 
-      await InitMinio()
-      logInfo('Minio Connected')
-
-      this.server.app.listen(this.port, () => {
-        logInfo('Server is running on port ' + this.port)
-      })
-    } catch (error: any) {
-      logError('Internal Server Error: ', error as Error)
-    }
+    server.listen(envConfig.PORT, () => {
+      logInfo('Server is running on port ' + envConfig.PORT)
+    })
+  } catch (error: any) {
+    logError('Internal Server Error: ', error as Error)
   }
 }
-
-const app = new ServerApplication(Container.resolve<Application>(Application))
-app.initialize()
+initialize()

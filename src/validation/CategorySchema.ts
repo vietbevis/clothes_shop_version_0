@@ -6,7 +6,7 @@ extendZodWithOpenApi(z)
 
 export const CreateCategorySchema = z
   .object({
-    name: z.string().nonempty(),
+    name: z.string().trim().nonempty(),
     description: z.string().optional(),
     parentId: z.string().optional(),
     image: z.string().optional()
@@ -26,7 +26,7 @@ export const CreateCategorySchema = z
 
 export const UpdateCategorySchema = z
   .object({
-    name: z.string().nonempty(),
+    name: z.string().trim().nonempty(),
     description: z.string().optional(),
     image: z.string().optional()
   })

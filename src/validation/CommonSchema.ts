@@ -14,6 +14,8 @@ export const PasswordSchema = z
     message: 'Password must be at least 8 characters.'
   })
   .max(20, { message: 'Password must be at most 20 characters.' })
+  .trim()
+  .nonempty()
   .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[$&+,:;=?@#|'<>.^*()%!-])[A-Za-z\d$&+,:;=?@#|'<>.^*()%!-]{8,20}$/, {
     message:
       'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.'
@@ -23,6 +25,8 @@ export const NameSchema = z
   .string({ message: 'Name can not be blank' })
   .min(3, { message: 'Name must be at least 3 characters.' })
   .max(20, { message: 'Name must not exceed 20 characters.' })
+  .trim()
+  .nonempty()
 
 export const phoneNumberSchema = z.string().regex(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, {
   message: 'Phone number is invalid (Viet Nam phone number only).'
@@ -30,21 +34,21 @@ export const phoneNumberSchema = z.string().regex(/(84|0[3|5|7|8|9])+([0-9]{8})\
 
 export const UsernameParamsSchema = z
   .object({
-    username: z.string()
+    username: z.string().trim().nonempty()
   })
   .strict()
   .strip()
 
 export const IdParamsSchema = z
   .object({
-    id: z.string()
+    id: z.string().uuid({ message: 'Id must be a valid UUID' }).trim().nonempty()
   })
   .strict()
   .strip()
 
 export const FilenameBodySchema = z
   .object({
-    filename: z.string()
+    filename: z.string().trim().nonempty()
   })
   .strict()
   .strip()

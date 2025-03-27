@@ -4,7 +4,7 @@ import { CreateCategorySchema, GetCategoriesSchema, UpdateCategorySchema } from 
 import { CategoryController } from '@/controller/CategoryController'
 import { authMiddleware } from '@/middleware/authMiddleware'
 import { IdParamsSchema, SlugParamsSchema } from '@/validation/CommonSchema'
-import { resolveInstance } from '@/container'
+import { resolveController } from '@/container'
 
 const CategoryRoute = Router()
 
@@ -12,29 +12,29 @@ CategoryRoute.post(
   '/',
   validateRequest({ body: CreateCategorySchema }),
   authMiddleware,
-  resolveInstance(CategoryController, 'createCategory')
+  resolveController(CategoryController, 'createCategory')
 )
 CategoryRoute.put(
   '/:id',
   validateRequest({ body: UpdateCategorySchema, params: IdParamsSchema }),
   authMiddleware,
-  resolveInstance(CategoryController, 'updateCategory')
+  resolveController(CategoryController, 'updateCategory')
 )
 CategoryRoute.delete(
   '/:id',
   validateRequest({ params: IdParamsSchema }),
   authMiddleware,
-  resolveInstance(CategoryController, 'deleteCategory')
+  resolveController(CategoryController, 'deleteCategory')
 )
 CategoryRoute.get(
   '/',
   validateRequest({ query: GetCategoriesSchema }),
-  resolveInstance(CategoryController, 'getCategories')
+  resolveController(CategoryController, 'getCategories')
 )
 CategoryRoute.get(
   '/:slug',
   validateRequest({ params: SlugParamsSchema }),
-  resolveInstance(CategoryController, 'getCategoryBySlug')
+  resolveController(CategoryController, 'getCategoryBySlug')
 )
 
 export default CategoryRoute

@@ -4,7 +4,7 @@ import { ProductController } from '@/controller/ProductController'
 import { validateRequest } from '@/middleware/validateRequest'
 import { GetProductPaginationQuerySchema, ProductSchema } from '@/validation/ProductSchema'
 import { IdParamsSchema, SlugParamsSchema } from '@/validation/CommonSchema'
-import { resolveInstance } from '@/container'
+import { resolveController } from '@/container'
 
 const ProductRoute = Router()
 
@@ -12,22 +12,22 @@ ProductRoute.post(
   '/',
   validateRequest({ body: ProductSchema }),
   authMiddleware,
-  resolveInstance(ProductController, 'createProduct')
+  resolveController(ProductController, 'createProduct')
 )
 ProductRoute.put(
   '/:id',
   validateRequest({ body: ProductSchema, params: IdParamsSchema }),
   authMiddleware,
-  resolveInstance(ProductController, 'updateProduct')
+  resolveController(ProductController, 'updateProduct')
 )
 ProductRoute.get(
   '/',
   validateRequest({ query: GetProductPaginationQuerySchema }),
-  resolveInstance(ProductController, 'getProducts')
+  resolveController(ProductController, 'getProducts')
 )
 ProductRoute.get(
   '/:slug',
   validateRequest({ params: SlugParamsSchema }),
-  resolveInstance(ProductController, 'getProductBySlug')
+  resolveController(ProductController, 'getProductBySlug')
 )
 export default ProductRoute

@@ -78,7 +78,7 @@ export class JwtService {
           logError('Invalid Token', err)
           return reject(new UnauthorizedError())
         }
-        logInfo('Token verified: ' + tokenType)
+        // logInfo('Token verified: ' + tokenType)
         return resolve(decoded as DecodedJwtToken)
       })
     })

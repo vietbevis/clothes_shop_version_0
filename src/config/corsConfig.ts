@@ -6,21 +6,26 @@ const allowedOrigins = [
   'http://localhost:4000',
   'http://localhost:4001',
   'http://localhost:5173',
+  'http://localhost:3000/',
+  'http://localhost:3001/',
+  'http://localhost:4000/',
+  'http://localhost:4001/',
+  'http://localhost:5173/',
   'https://ecom.vittapcode.id.vn',
   null // Dành cho Postman (origin null)
 ]
 
 export const corsConfig: CorsOptions = {
-  optionsSuccessStatus: 200,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
-  origin: function (origin, callback) {
-    // Kiểm tra nếu origin nằm trong danh sách cho phép hoặc là undefined (trường hợp non-browser client)
+  origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true) // Cho phép truy cập
+      callback(null, true)
     } else {
-      callback(new Error('Not allowed by CORS')) // Từ chối truy cập
+      callback(new Error(`CORS error: Origin '${origin}' is not allowed.`))
     }
-  }
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  exposedHeaders: ['Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 204
 }

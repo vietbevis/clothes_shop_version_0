@@ -6,13 +6,15 @@ import { compare } from 'bcryptjs'
 import { UserDevice } from '@/model/UserDevice'
 import { Address } from '@/model/Address'
 import { Profile } from '@/model/Profile'
-import { Image } from '@/model/Image'
 import { Shop } from '@/model/Shop'
 import { CartItem } from './CartItem'
 import { Order } from './Order'
 
 @Entity('tbl_user')
 export class User extends AbstractModel {
+  @Column({ type: 'nvarchar', length: 70, nullable: false })
+  fullName!: string
+
   @Column({ type: 'varchar', length: 50, nullable: false })
   username!: string
 
@@ -21,6 +23,12 @@ export class User extends AbstractModel {
 
   @Column({ type: 'varchar', nullable: false })
   password!: string
+
+  @Column({ type: 'varchar', name: 'avatar_url', default: '' })
+  avatarUrl!: string
+
+  @Column({ type: 'varchar', name: 'cover_photo_url', default: '' })
+  coverPhotoUrl!: string
 
   @Column({ type: 'varchar', name: 'google_id', default: '' })
   googleId!: string
@@ -43,7 +51,7 @@ export class User extends AbstractModel {
   @JoinColumn({ name: 'shop_slug', referencedColumnName: 'slug' })
   shop!: Shop
 
-  @OneToMany(() => UserDevice, (device) => device.user)
+  @OneToMany(() => UserDevice, (device) => device.user, { cascade: true })
   devices!: UserDevice[]
 
   @OneToMany(() => Address, (address) => address.user, { cascade: true })
@@ -55,7 +63,7 @@ export class User extends AbstractModel {
   @OneToMany(() => Order, (order) => order.user)
   orders!: Order[]
 
-  @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
+  @OneToOne(() => Profile, (profile) => profile.user, { onDelete: 'RESTRICT', onUpdate: 'CASCADE', cascade: true })
   profile!: Profile
 
   async comparePassword(password: string) {

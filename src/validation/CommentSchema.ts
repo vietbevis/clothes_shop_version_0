@@ -5,8 +5,8 @@ extendZodWithOpenApi(z)
 
 export const CreateCommentSchema = z
   .object({
-    content: z.string().nonempty(),
-    productSlug: z.string().nonempty(),
+    content: z.string().trim().nonempty(),
+    productSlug: z.string().trim().nonempty(),
     parentId: z.string().default('')
   })
   .openapi('CreateCommentSchema', {

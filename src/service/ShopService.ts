@@ -10,7 +10,6 @@ import { PaginationUtils } from '@/utils/PaginationUtils'
 import { Like } from 'typeorm'
 import { DecodedJwtToken } from './JwtService'
 import { AddressRepository } from '@/repository/AddressRepository'
-
 import { Injectable } from '@/decorators/inject'
 import { ShopRepository } from '@/repository/ShopRepository'
 import { PaginateShopDTO, ShopDTO } from '@/dtos/ShopDTO'
@@ -79,9 +78,9 @@ export class ShopService {
       shop.status = ShopStatus.OPEN
     }
 
-    const updatedShop = await this.shopRepository.save(shop)
+    await this.shopRepository.save(shop)
 
-    return ShopDTO.parse(updatedShop)
+    return true
   }
 
   async getShopByShopSlug(slug: string) {

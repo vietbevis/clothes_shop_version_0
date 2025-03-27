@@ -7,23 +7,23 @@ extendZodWithOpenApi(z)
 
 export const AttributeSchema = z
   .object({
-    name: z.string().nonempty(),
-    value: z.string().nonempty()
+    name: z.string().trim().nonempty(),
+    value: z.string().trim().nonempty()
   })
   .strict()
   .strip()
 
 export const OptionSchema = z
   .object({
-    variantName: z.string().nonempty(),
-    value: z.string().nonempty()
+    variantName: z.string().trim().nonempty(),
+    value: z.string().trim().nonempty()
   })
   .strict()
   .strip()
 
 export const VariantSchema = z
   .object({
-    sku: z.string().nonempty(),
+    sku: z.string().trim().nonempty(),
     imageUrl: z.string().default(''),
     price: z.number(),
     oldPrice: z.number(),
@@ -35,9 +35,9 @@ export const VariantSchema = z
 
 export const ProductSchema = z
   .object({
-    name: z.string().nonempty(),
+    name: z.string().trim().nonempty(),
     description: z.string().default(''),
-    categoryId: z.string().nonempty(),
+    categoryId: z.string().trim().nonempty(),
     attributes: z
       .array(AttributeSchema)
       .min(1)
@@ -46,7 +46,7 @@ export const ProductSchema = z
         path: ['attributes']
       }),
     variants: z.array(VariantSchema).min(1),
-    images: z.array(z.string().nonempty()).min(5),
+    images: z.array(z.string().trim().nonempty()).min(5),
     status: z.nativeEnum(ProductStatus).default(ProductStatus.AVAILABLE)
   })
   .strict()

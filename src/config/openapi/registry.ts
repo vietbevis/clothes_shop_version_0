@@ -7,6 +7,7 @@ import userRegistry from './user'
 import shopRegistry from './shop'
 import productRegistry from './product'
 import commentRegistry from './comment'
+import chatRegistry from './chat'
 
 const registry = new OpenAPIRegistry()
 
@@ -18,5 +19,6 @@ userRegistry(registry)
 shopRegistry(registry)
 productRegistry(registry)
 commentRegistry(registry)
+chatRegistry(registry)
 
 export default registry

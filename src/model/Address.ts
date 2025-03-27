@@ -5,6 +5,18 @@ import { Shop } from './Shop'
 
 @Entity('tbl_address')
 export class Address extends AbstractModel {
+  // Tên địa chỉ
+  @Column({ name: 'name', type: 'nvarchar', length: 255, nullable: true })
+  name!: string
+
+  // Họ và tên người nhận
+  @Column({ name: 'full_name', type: 'nvarchar', length: 255, nullable: false })
+  fullName!: string
+
+  // Số điện thoại người nhận
+  @Column({ name: 'phone_number', type: 'varchar', length: 20, nullable: false })
+  phoneNumber!: string
+
   // Số nhà
   @Column({ name: 'street_number', type: 'varchar', length: 50, nullable: true })
   streetNumber!: string

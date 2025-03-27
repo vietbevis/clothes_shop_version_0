@@ -9,6 +9,8 @@ import ShopRoute from '@/route/v1/ShopRoute'
 import ProductRoute from '@/route/v1/ProductRoute'
 import document from '@/config/swagger'
 import CommentRoute from './CommentRoute'
+import ChatRoute from './ChatRoute'
+import envConfig from '@/config/envConfig'
 
 const routes_v1 = express.Router()
 
@@ -20,6 +22,7 @@ routes_v1.use('/images', ImageRoute)
 routes_v1.use('/shops', ShopRoute)
 routes_v1.use('/products', ProductRoute)
 routes_v1.use('/comments', CommentRoute)
+routes_v1.use('/chat', ChatRoute)
 
 routes_v1.use(
   '/api-docs',
@@ -28,7 +31,7 @@ routes_v1.use(
     swaggerOptions: {
       persistAuthorization: true
     },
-    customJs: '/swagger-custom.js'
+    customJs: envConfig.NODE_ENV === 'production' ? undefined : '/swagger-custom.js'
   })
 )
 

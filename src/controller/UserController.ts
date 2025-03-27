@@ -10,6 +10,11 @@ import { Injectable } from '@/decorators/inject'
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  async getUsers(req: Request, res: Response) {
+    const result = await this.userService.getUsers(req.query.search as string, req)
+    new OkResponse('Users data', result).send(res)
+  }
+
   async getMe(req: Request, res: Response) {
     const result = await this.userService.getMe(req.user)
     new OkResponse('User data', result).send(res)

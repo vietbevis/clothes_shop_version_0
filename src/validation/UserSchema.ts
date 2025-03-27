@@ -1,5 +1,5 @@
 import { Gender } from '@/utils/enums'
-import { phoneNumberSchema, UrlSchema } from './CommonSchema'
+import { PaginationQuerySchema, phoneNumberSchema, UrlSchema } from './CommonSchema'
 import { extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import z from 'zod'
 
@@ -7,7 +7,7 @@ extendZodWithOpenApi(z)
 
 export const UpdateProfileSchema = z
   .object({
-    fullName: z.string().nonempty(),
+    fullName: z.string().trim().nonempty(),
     avatarUrl: z.string().default(''),
     coverPhotoUrl: z.string().default(''),
     gender: z.nativeEnum(Gender).default(Gender.OTHER),
@@ -38,5 +38,10 @@ export const UpdateProfileSchema = z
       instagramUrl: 'https://instagram.com'
     }
   })
+
+export const GetUsersSchema = z.object({
+  search: z.string().optional(),
+  ...PaginationQuerySchema.shape
+})
 
 export type UpdateProfileType = z.infer<typeof UpdateProfileSchema>

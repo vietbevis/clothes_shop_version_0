@@ -10,7 +10,7 @@ import {
   SeachSchema,
   SlugParamsSchema
 } from '@/validation/CommonSchema'
-import { resolveInstance } from '@/container'
+import { resolveController } from '@/container'
 
 const ShopRoute = Router()
 
@@ -18,29 +18,29 @@ ShopRoute.post(
   '/',
   validateRequest({ body: CreateShopSchema }),
   authMiddleware,
-  resolveInstance(ShopController, 'createShop')
+  resolveController(ShopController, 'createShop')
 )
 ShopRoute.put(
   '/',
   validateRequest({ body: UpdateShopSchema }),
   authMiddleware,
-  resolveInstance(ShopController, 'updateShop')
+  resolveController(ShopController, 'updateShop')
 )
 ShopRoute.get(
   '/:slug',
   validateRequest({ params: SlugParamsSchema }),
-  resolveInstance(ShopController, 'getShopByShopSlug')
+  resolveController(ShopController, 'getShopByShopSlug')
 )
 ShopRoute.put(
   '/:id/approve',
   validateRequest({ params: IdParamsSchema, query: ApproveQuerySchema }),
   authMiddleware,
-  resolveInstance(ShopController, 'approveShop')
+  resolveController(ShopController, 'approveShop')
 )
 ShopRoute.get(
   '/',
   validateRequest({ query: PaginationQuerySchema.merge(SeachSchema) }),
-  resolveInstance(ShopController, 'getAllShops')
+  resolveController(ShopController, 'getAllShops')
 )
 
 export default ShopRoute

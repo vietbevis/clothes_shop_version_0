@@ -7,6 +7,7 @@ import fs from 'fs'
 import slugify from 'slugify'
 import { Product } from '@/model/Product'
 import { randomInt } from 'crypto'
+import { logInfo } from './log'
 
 export const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {
@@ -24,11 +25,11 @@ export const initFolder = () => {
   const optimizeFolderPath = path.resolve(UPLOAD_TEMP_DIR_OPTIMIZE)
   if (!fs.existsSync(uploadFolderPath)) {
     fs.mkdirSync(uploadFolderPath, { recursive: true })
-    console.log('Created: ' + uploadFolderPath)
+    logInfo('Created: ' + uploadFolderPath)
   }
   if (!fs.existsSync(optimizeFolderPath)) {
     fs.mkdirSync(optimizeFolderPath, { recursive: true })
-    console.log('Created: ' + optimizeFolderPath)
+    logInfo('Created: ' + optimizeFolderPath)
   }
 }
 

@@ -9,41 +9,37 @@ import {
   RegisterSchema,
   SendOTPBodySchema
 } from '@/validation/AuthSchema'
-import asyncHandler from '@/middleware/asyncHandler'
 import { authMiddleware } from '@/middleware/authMiddleware'
-import { resolveInstance } from '@/container'
+import { resolveController } from '@/container'
 import { AuthController } from '@/controller/AuthController'
 
 const AuthRoute = express.Router()
 
-AuthRoute.post('/register', validateRequest({ body: RegisterSchema }), resolveInstance(AuthController, 'register'))
-AuthRoute.post('/login', validateRequest({ body: LoginSchema }), asyncHandler(resolveInstance(AuthController, 'login')))
-AuthRoute.post(
-  '/send-otp',
-  validateRequest({ body: SendOTPBodySchema }),
-  asyncHandler(resolveInstance(AuthController, 'sendOTP'))
-)
+AuthRoute.get('/check', authMiddleware, resolveController(AuthController, 'checkAuth'))
+AuthRoute.post('/register', validateRequest({ body: RegisterSchema }), resolveController(AuthController, 'register'))
+AuthRoute.post('/login', validateRequest({ body: LoginSchema }), resolveController(AuthController, 'login'))
+AuthRoute.post('/send-otp', validateRequest({ body: SendOTPBodySchema }), resolveController(AuthController, 'sendOTP'))
 AuthRoute.post(
   '/refresh-token',
   validateRequest({ body: RefreshTokenSchema }),
-  asyncHandler(resolveInstance(AuthController, 'refreshToken'))
+  resolveController(AuthController, 'refreshToken')
 )
 AuthRoute.post(
   '/reset-password',
   validateRequest({ body: ForgotPasswordSchema }),
-  asyncHandler(resolveInstance(AuthController, 'forgotPassword'))
+  resolveController(AuthController, 'forgotPassword')
 )
-AuthRoute.post('/logout', authMiddleware, asyncHandler(resolveInstance(AuthController, 'logout')))
+AuthRoute.post('/logout', authMiddleware, resolveController(AuthController, 'logout'))
 AuthRoute.post(
   '/change-password',
   authMiddleware,
   validateRequest({ body: ChangePasswordSchema }),
-  asyncHandler(resolveInstance(AuthController, 'changePassword'))
+  resolveController(AuthController, 'changePassword')
 )
 AuthRoute.post(
   '/google-login',
   validateRequest({ body: GoogleLoginSchema }),
-  resolveInstance(AuthController, 'googleLogin')
+  resolveController(AuthController, 'googleLogin')
 )
 
 export default AuthRoute

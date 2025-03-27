@@ -3,7 +3,7 @@ import { authMiddleware } from '@/middleware/authMiddleware'
 import { FileUploadMiddleware } from '@/middleware/uploadFileHandler'
 import { validateRequest } from '@/middleware/validateRequest'
 import { PaginationQuerySchema } from '@/validation/CommonSchema'
-import { resolveInstance } from '@/container'
+import { resolveController } from '@/container'
 import { ImageController } from '@/controller/ImageController'
 
 const ImageRoute = Router()
@@ -11,15 +11,15 @@ const ImageRoute = Router()
 ImageRoute.post(
   '/',
   authMiddleware,
-  resolveInstance(FileUploadMiddleware, 'multerFileMiddleware'),
-  resolveInstance(FileUploadMiddleware, 'uploadFileHandler'),
-  resolveInstance(ImageController, 'uploadImage')
+  resolveController(FileUploadMiddleware, 'multerFileMiddleware'),
+  resolveController(FileUploadMiddleware, 'uploadFileHandler'),
+  resolveController(ImageController, 'uploadImage')
 )
 ImageRoute.get(
   '/',
   validateRequest({ query: PaginationQuerySchema }),
   authMiddleware,
-  resolveInstance(ImageController, 'getImages')
+  resolveController(ImageController, 'getImages')
 )
 
 export default ImageRoute
