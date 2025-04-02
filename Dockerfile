@@ -1,25 +1,24 @@
-# Sử dụng Node.js với phiên bản phù hợp
-FROM node:20.12.2
-
-# Đặt thư mục làm việc trong container
-WORKDIR /usr/src/app
-
-# Copy package.json và package-lock.json (nếu có)
+FROM node:20-alpine AS builder
+WORKDIR /app
 COPY package*.json ./
-
-# Cài đặt các dependency
 RUN npm install --os=linux --cpu=x64 sharp
-RUN npm install
-
-# Copy toàn bộ code vào container
+RUN npm ci
 COPY . .
-
-# Build ứng dụng TypeScript
 RUN npm run generate:keys
 RUN npm run build
 
-# Chỉ định cổng mà ứng dụng sử dụng (ví dụ: 3000)
+FROM node:20-alpine AS production
+WORKDIR /app
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/private_key.pem ./private_key.pem
+COPY --from=builder /app/public_key.pem ./public_key.pem
+
+ENV NODE_ENV=production
+RUN npm prune --production
+
 EXPOSE 4446
 
-# Lệnh để chạy ứng dụng
-CMD ["npm", "start"]
+# Command to run the app
+CMD ["node", "dist/server.js"]
