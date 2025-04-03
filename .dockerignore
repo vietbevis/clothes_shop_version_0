@@ -38,3 +38,18 @@ node_modules
 
 server/\*.spec.js
 kubernetes
+
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.git
+.github
+.gitignore
+.vscode
+.idea
+.env
+.env.\*
+\*.md
+dist
+logs

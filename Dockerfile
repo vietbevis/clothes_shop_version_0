@@ -1,10 +1,9 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --os=linux --cpu=x64 sharp
+# RUN npm install --platform=linuxmusl --arch=x64 sharp
 RUN npm ci
 COPY . .
-RUN npm run generate:keys
 RUN npm run build
 
 FROM node:20-alpine AS production
