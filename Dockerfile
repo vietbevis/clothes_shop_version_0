@@ -13,6 +13,7 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/private_key.pem ./private_key.pem
 COPY --from=builder /app/public_key.pem ./public_key.pem
+COPY --from=builder /app/.env ./
 
 ENV NODE_ENV=production
 RUN npm prune --production
